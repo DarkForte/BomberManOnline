@@ -17,7 +17,9 @@ class CBomberManOnlineView : public CWnd
 
 	GameState game_state;
 
-	CGame game;
+	CGame *p_game;
+	CResourceManager *p_res_manager;
+
 
 // ππ‘Ï
 public:
@@ -27,7 +29,6 @@ public:
 public:
 	void Init();
 	void LobbyRender(CDC *pDC);
-	void GameRender(CDC *pDC);
 
 // ÷ÿ–¥
 	protected:
@@ -43,5 +44,8 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
+	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };
 

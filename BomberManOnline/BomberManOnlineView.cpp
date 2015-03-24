@@ -10,27 +10,13 @@
 #define new DEBUG_NEW
 #endif
 
-CImage map_back;
-
-void TransparentPNG(CImage *png)
-{
-	for(int i = 0; i <png->GetWidth(); i++)
-	{
-		for(int j = 0; j <png->GetHeight(); j++)
-		{
-			unsigned char* pucColor = reinterpret_cast<unsigned char*>(png->GetPixelAddress(i , j));
-			pucColor[0] = pucColor[0] *pucColor[3] / 255;
-			pucColor[1] = pucColor[1] *pucColor[3] / 255;
-			pucColor[2] = pucColor[2] *pucColor[3] / 255;
-		}
-	}
-}
-
 void CBomberManOnlineView::Init()
 {
-	game_state = LOBBY;
+	p_res_manager = new CResourceManager();
+	p_game = new CGame(p_res_manager);
+	p_game->Init(1);
 
-	map_back.Load(L"pic\\meadow.png");
+	game_state = LOBBY;
 
 	return;
 }
@@ -42,12 +28,17 @@ CBomberManOnlineView::CBomberManOnlineView()
 
 CBomberManOnlineView::~CBomberManOnlineView()
 {
+	delete(p_res_manager);
+	delete(p_game);
 }
 
 
 BEGIN_MESSAGE_MAP(CBomberManOnlineView, CWnd)
 	ON_WM_PAINT()
 	ON_WM_LBUTTONDOWN()
+	ON_WM_KEYDOWN()
+	ON_WM_CREATE()
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -76,13 +67,6 @@ void CBomberManOnlineView::LobbyRender(CDC *pDC)
 	return;
 }
 
-void CBomberManOnlineView::GameRender(CDC *pDC)
-{
-	map_back.Draw(*pDC, game.map_area);
-
-	return;
-}
-
 void CBomberManOnlineView::OnPaint() 
 {
 	CDC *pDC = GetDC();
@@ -99,7 +83,7 @@ void CBomberManOnlineView::OnPaint()
 	}
 	else if(game_state == INGAME)
 	{
-		GameRender(&cacheDC);
+		p_game->Render(&cacheDC);
 	}
 
 
@@ -125,4 +109,36 @@ void CBomberManOnlineView::OnLButtonDown(UINT nFlags, CPoint point)
 
 
 	CWnd::OnLButtonDown(nFlags, point);
+}
+
+
+void CBomberManOnlineView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+	if(game_state == INGAME)
+	{
+		p_game->HandleKeyDown(nChar);
+	}
+
+
+	CWnd::OnKeyDown(nChar, nRepCnt, nFlags);
+}
+
+int CBomberManOnlineView::OnCreate(LPCREATESTRUCT lpCreateStruct)
+{
+	if (CWnd::OnCreate(lpCreateStruct) == -1)
+		return -1;
+	
+	SetTimer(TIMER_RENDER, 1000/FPS, NULL);
+}
+
+
+void CBomberManOnlineView::OnTimer(UINT_PTR nIDEvent)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+
+	if(nIDEvent == TIMER_RENDER)
+		OnPaint();
+
+	CWnd::OnTimer(nIDEvent);
 }
