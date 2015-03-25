@@ -13,31 +13,32 @@ CPlayer::~CPlayer(void)
 {
 }
 
-CPlayer::CPlayer(int x, int y, int type)
+CPlayer::CPlayer(float x, float y, int type)
 {
 	Init(x,y,type);
 }
 
-void CPlayer::Init(int x, int y, int type)
+void CPlayer::Init(float x, float y, int type)
 {
 	pos.SetPoint(x,y);
 	this->type = type;
 	
-	speed.SetPoint(10,10);
+	speed.SetPoint(0.2, 0.2);
 	hover = false;
 	reverse=false;
 
 	bomb_capacity = 1;
 	bomb_power = 1;
 	status=0;
+	moving_state = 0;
 }
 
-CPoint CPlayer::GetPosPixel()
+PointF CPlayer::GetPosPixel()
 {
 	return pos;
 }
 
-void CPlayer::SetPosPixel(int x, int y)
+void CPlayer::SetPosPixel(float x, float y)
 {
 	pos.SetPoint(x,y);
 }
@@ -64,7 +65,7 @@ int CPlayer::GetBombCapacity()
 	return bomb_capacity;
 }
 
-CPoint CPlayer::GetSpeed()
+PointF CPlayer::GetSpeed()
 {
 	return speed;
 }
@@ -93,16 +94,16 @@ void CPlayer::SetReverse(bool x)
 	reverse = x;
 }
 
-void CPlayer::SetXSpeed(int x)
+void CPlayer::SetXSpeed(float x)
 {
 	speed.x=x;
 }
-void CPlayer::SetYSpeed(int y)
+void CPlayer::SetYSpeed(float y)
 {
 	speed.y=y;
 }
 
-void CPlayer::SetSpeed(int x, int y)
+void CPlayer::SetSpeed(float x, float y)
 {
 	SetXSpeed(x);
 	SetYSpeed(y);
@@ -117,18 +118,46 @@ void CPlayer::SetBombCapacity(int r)
 	bomb_capacity = r;
 }
 
-int CPlayer::GetXPixel()
+float CPlayer::GetXPixel()
 {
 	return pos.x;
 }
 
-int CPlayer::GetYPixel()
+float CPlayer::GetYPixel()
 {
 	return pos.y;
 }
 
-void CPlayer::Move(int direction)
+void CPlayer::Move(float game_time)
 {
-	pos.x += DIRECT_VEC[direction].x * speed.x;
-	pos.y += DIRECT_VEC[direction].y * speed.y;
+	int direction = GetMovingDirection();
+	if(direction != STOP)
+	{
+		pos.x += DIRECT_VEC[direction].x * speed.x * game_time;
+		pos.y += DIRECT_VEC[direction].y * speed.y * game_time;
+	}
+}
+
+void CPlayer::SetMovingState(int next_state)
+{
+	//next state can be 0,1,2,3, we can have multiple states in order to cope with key up
+	moving_state |= 1<<next_state;
+}
+
+void CPlayer::CancelMovingState(int state)
+{
+	moving_state -= 1<<state;
+}
+
+int CPlayer::GetMovingDirection()
+{
+	//get the highest 1 in moving state
+	int now=1;
+	int ret=0;
+	while(moving_state >=now)
+	{
+		now*=2;
+		ret++;
+	}
+	return ret-1;
 }

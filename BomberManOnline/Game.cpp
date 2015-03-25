@@ -44,18 +44,55 @@ void CGame::HandleKeyDown(UINT nchar)
 {
 	if(nchar == VK_DOWN)
 	{
-		player[my_player].Move(DOWN);
+		//player[my_player].Move(DOWN, game_time);
+		player[my_player].SetMovingState(DOWN);
 	}
 	if(nchar == VK_UP)
 	{
-		player[my_player].Move(UP);
+		//player[my_player].Move(UP, game_time);
+		player[my_player].SetMovingState(UP);
 	}
 	if(nchar == VK_LEFT)
 	{
-		player[my_player].Move(LEFT);
+		//player[my_player].Move(LEFT, game_time);
+		player[my_player].SetMovingState(LEFT);
 	}
 	if(nchar == VK_RIGHT)
 	{
-		player[my_player].Move(RIGHT);
+		//player[my_player].Move(RIGHT, game_time);
+		player[my_player].SetMovingState(RIGHT);
+	}
+}
+
+void CGame::HandleKeyUp(UINT nchar)
+{
+	if(nchar == VK_DOWN)
+	{
+		//player[my_player].Move(DOWN, game_time);
+		player[my_player].CancelMovingState(DOWN);
+	}
+	if(nchar == VK_UP)
+	{
+		//player[my_player].Move(UP, game_time);
+		player[my_player].CancelMovingState(UP);
+	}
+	if(nchar == VK_LEFT)
+	{
+		//player[my_player].Move(LEFT, game_time);
+		player[my_player].CancelMovingState(LEFT);
+	}
+	if(nchar == VK_RIGHT)
+	{
+		//player[my_player].Move(RIGHT, game_time);
+		player[my_player].CancelMovingState(RIGHT);
+	}
+}
+
+void CGame::Update(float game_time)
+{
+	int i;
+	for(i=1; i<=MAX_PLAYER; i++)
+	{
+		player[i].Move(game_time);
 	}
 }

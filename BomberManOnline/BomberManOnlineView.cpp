@@ -3,8 +3,10 @@
 //
 
 #include "stdafx.h"
+#include "mmsystem.h"
 #include "BomberManOnline.h"
 #include "BomberManOnlineView.h"
+#pragma comment(lib, "winmm.lib")
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -39,6 +41,7 @@ BEGIN_MESSAGE_MAP(CBomberManOnlineView, CWnd)
 	ON_WM_KEYDOWN()
 	ON_WM_CREATE()
 	ON_WM_TIMER()
+	ON_WM_KEYUP()
 END_MESSAGE_MAP()
 
 
@@ -70,12 +73,12 @@ void CBomberManOnlineView::LobbyRender(CDC *pDC)
 void CBomberManOnlineView::OnPaint() 
 {
 	CDC *pDC = GetDC();
-	
-	// TODO: 在此处添加消息处理程序代码
+
 	GetClientRect(&client_rect);
 	cacheDC.CreateCompatibleDC(NULL);
 	cache_bitmap.CreateCompatibleBitmap(pDC, client_rect.Width(), client_rect.Height());
 	cacheDC.SelectObject(&cache_bitmap);
+	// TODO: 在此处添加消息处理程序代码
 	
 	if(game_state == LOBBY)
 	{
@@ -92,6 +95,7 @@ void CBomberManOnlineView::OnPaint()
 	ValidateRect(client_rect);
 	cache_bitmap.DeleteObject();
 	cacheDC.DeleteDC();
+	ReleaseDC(pDC);
 
 	// 不要为绘制消息而调用 CWnd::OnPaint()
 }
@@ -124,12 +128,24 @@ void CBomberManOnlineView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	CWnd::OnKeyDown(nChar, nRepCnt, nFlags);
 }
 
+void CBomberManOnlineView::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+	if(game_state == INGAME)
+	{
+		p_game->HandleKeyUp(nChar);
+	}
+	CWnd::OnKeyUp(nChar, nRepCnt, nFlags);
+}
+
+
 int CBomberManOnlineView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if (CWnd::OnCreate(lpCreateStruct) == -1)
 		return -1;
-	
-	SetTimer(TIMER_RENDER, 1000/FPS, NULL);
+
+	SetTimer(TIMER_RENDER, 1000/MAX_FPS, NULL);
+	last_time = timeGetTime();
 }
 
 
@@ -138,7 +154,16 @@ void CBomberManOnlineView::OnTimer(UINT_PTR nIDEvent)
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 
 	if(nIDEvent == TIMER_RENDER)
+	{
 		OnPaint();
-
+		if(game_state == INGAME)
+		{
+			now_time = timeGetTime();
+			p_game->Update(now_time - last_time);
+		}
+	}
+	last_time = timeGetTime();
 	CWnd::OnTimer(nIDEvent);
 }
+
+

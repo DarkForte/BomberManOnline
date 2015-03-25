@@ -103,6 +103,7 @@
   <ItemGroup>
     <ClInclude Include="BomberManOnline.h" />
     <ClInclude Include="BomberManOnlineView.h" />
+    <ClInclude Include="PointF.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="Player.h" />

@@ -1,11 +1,14 @@
+#include "PointF.h"
+
 #pragma once
 class CPlayer
 {
-	CPoint pos;
+	PointF pos;
+	int moving_state;
 	int status;
 	int bomb_capacity;
 	int bomb_power;
-	CPoint speed;
+	PointF speed;
 
 	bool hover, reverse;
 	int type;
@@ -14,16 +17,16 @@ class CPlayer
 public:
 	CPlayer(void);
 	~CPlayer(void);
-	CPlayer(int x, int y, int type);
-	void Init(int x, int y, int type);
+	CPlayer(float x, float y, int type);
+	void Init(float x, float y, int type);
 
-	CPoint GetPosPixel();
+	PointF GetPosPixel();
 	CPoint GetPosGrid();
-	void SetPosPixel(int x, int y);
+	void SetPosPixel(float x, float y);
 
 	/*Get the X in pixel of the player, max is 900*/
-	int GetXPixel();
-	int GetYPixel();
+	float GetXPixel();
+	float GetYPixel();
 
 	/*Get the X in grid of the player, max is 30*/
 	int GetXGrid();
@@ -33,24 +36,27 @@ public:
 	int GetBombPower();
 	int GetBombCapacity();
 	/*Get the speed in pixels*/
-	CPoint GetSpeed();
+	PointF GetSpeed();
 	/*pixels*/
-	double GetXSpeed();
-	double GetYSpeed();
+	float GetXSpeed();
+	float GetYSpeed();
 	bool Hover();
 	bool Reverse();
 	int Type();
 	
 	void SetHover(bool x);
 	void SetReverse(bool x);
-	void SetXSpeed(int x);
-	void SetYSpeed(int y);
-	void SetSpeed(int x, int y);
+	void SetXSpeed(float x);
+	void SetYSpeed(float y);
+	void SetSpeed(float x, float y);
 	void SetBombPower(int r);
 	void SetBombCapacity(int r);
+	void SetMovingState(int next_state);
+	void CancelMovingState(int state);
+	int GetMovingDirection();
 	
-	void Move(int direction);
-	CPoint NextGrid(int direction);
+	void Move(float game_time);
+	PointF NextGrid(int direction);
 
 };
 

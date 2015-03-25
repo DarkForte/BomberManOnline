@@ -20,5 +20,7 @@ public:
 	void Init(int player_num);
 	void Render(CDC *pDC);
 	void HandleKeyDown(UINT nchar);
+	void HandleKeyUp(UINT nchar);
+	void Update(float game_time);
 };
 

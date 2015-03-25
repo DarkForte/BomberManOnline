@@ -45,8 +45,8 @@ const int PADDING = 5;
 
 const int MAX_PLAYER = 4;
 
-const int DOWN=0, LEFT=1, RIGHT=2, UP=3;
+const int STOP=-1, DOWN=0, LEFT=1, RIGHT=2, UP=3;
 const CPoint DIRECT_VEC[]={CPoint(0,1), CPoint(-1,0), CPoint(1,0), CPoint(0,-1)};
 
 const int TIMER_RENDER=1;
-const int FPS = 60;
+const int MAX_FPS = 100;
