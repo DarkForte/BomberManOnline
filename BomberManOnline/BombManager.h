@@ -10,14 +10,14 @@ const int MAX_BOMBS = GRIDNUM_HEIGHT * GRIDNUM_WIDTH;
 class CBombManager
 {
 	int cnt_bombs;
-	CBomb* bombs[MAX_BOMBS];
+	pair<CBomb, bool> bombs[MAX_BOMBS];
 	int p_bombs_start;
 
 public:
 	CBombManager(void);
 	~CBombManager(void);
 
-	int AddBomb(CBomb* p_bomb);
-	vector<CBomb*> Update(float game_time);
+	int AddBomb(CBomb &p_bomb);
+	vector<CBomb> Update(float game_time);
 };
 

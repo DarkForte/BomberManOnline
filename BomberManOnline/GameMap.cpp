@@ -20,7 +20,7 @@ CGameMap::~CGameMap(void)
 {
 }
 
-bool CGameMap::VerifyPoint(PointF next_point)
+bool CGameMap::VerifyPoint(PointF next_point, int direction)
 {
 	PointF points[5];
 	points[1] = next_point;
@@ -37,19 +37,47 @@ bool CGameMap::VerifyPoint(PointF next_point)
 	}
 
 	//collision with obstacles
+	
+	bool ok[5];
+
 	for(i=1;i<=4; i++)
 	{
-		int x = points[i].x / GRID_WIDTH;
-		int y = points[i].y / GRID_HEIGHT;
+		int x = int(points[i].x / GRID_WIDTH);
+		int y = int(points[i].y / GRID_HEIGHT);
 
-		if(grid[x][y].first == OBSTACLE || grid[x][y].first == DESTROYABLE)
-			return false;
+		if(grid[x][y].first == OBSTACLE || grid[x][y].first == DESTROYABLE || grid[x][y].first == BOMB)
+			ok[i] = false;
+		else 
+			ok[i] = true;
 	}
-	return true;
+
+	//1:left up 2:right up 3:left down 4:right down
+
+	if(direction == UP)
+	{
+		return ok[1] & ok[2];
+	}
+	else if(direction == DOWN)
+	{
+		return ok[3] & ok[4];
+	}
+	else if(direction == LEFT)
+	{
+		return ok[1] & ok[3];
+	}
+	else //if (direction == RIGHT)
+	{
+		return ok[2] & ok[4]; 
+	}
 }
 
-void CGameMap::SetGrid(int x, int y, MAP_ELEMENTS target, int index=0)
+void CGameMap::SetGrid(int x, int y, MAP_ELEMENTS target, int index)
 {
 	grid[x][y].first = target;
 	grid[x][y].second = index;
+}
+
+MAP_ELEMENTS CGameMap::GridType(int x, int y)
+{
+	return grid[x][y].first;
 }

@@ -19,6 +19,16 @@ CBomb::CBomb(int _owner, int x, int y, double _r, int _p)
 	power = _p;
 }
 
+int CBomb::GetX()
+{
+	return pos.x;
+}
+
+int CBomb::GetY()
+{
+	return pos.y;
+}
+
 CPoint CBomb::GetPos()
 {
 	return pos;
@@ -38,3 +48,4 @@ void CBomb::DropTime(float game_time)
 {
 	remain_time -= game_time;
 }
+
