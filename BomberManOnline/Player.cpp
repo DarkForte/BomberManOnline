@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Player.h"
-
+#include <iostream>
+#include <math.h>
 
 CPlayer::CPlayer(void)
 {
@@ -28,9 +29,11 @@ void CPlayer::Init(float x, float y, int type)
 	reverse=false;
 
 	bomb_capacity = 1;
-	bomb_power = 1;
+	bomb_power = DEFAULT_BOMBPOWER;
 	status=0;
 	moving_state = 0;
+
+	now_bombs = 0;
 }
 
 PointF CPlayer::GetPosPixel()
@@ -43,11 +46,40 @@ void CPlayer::SetPosPixel(float x, float y)
 	pos.SetPoint(x,y);
 }
 
-CPoint CPlayer::GetPosGrid()
+int CPlayer::GetXJudgeGrid()
 {
-	double tmp_x = pos.x / GRID_WIDTH;
-	double tmp_y = pos.y / GRID_HEIGHT;
-	return CPoint( int(tmp_x + 0.5), int(tmp_y + 0.5) );
+	float tmp_x = pos.x / GRID_WIDTH;
+	return int(tmp_x + 0.5);
+}
+
+int CPlayer::GetYJudgeGrid()
+{
+	float tmp_y = pos.y / GRID_HEIGHT;
+	return int(tmp_y + 0.5);
+}
+
+CPoint CPlayer::GetPosJudgeGrid()
+{
+	int tmp_x = GetXJudgeGrid();
+	int tmp_y = GetYJudgeGrid();
+	return CPoint(tmp_x, tmp_y);
+}
+
+int CPlayer::GetXRealGrid()
+{
+	return int(floor(pos.x / GRID_WIDTH));
+}
+
+int CPlayer::GetYRealGrid()
+{
+	return int(floor(pos.y / GRID_HEIGHT));
+}
+
+CPoint CPlayer::GetPosRealGrid()
+{
+	int tmp_x = GetXRealGrid();
+	int tmp_y = GetYRealGrid();
+	return CPoint(tmp_x, tmp_y);
 }
 
 int CPlayer::GetStatus()
@@ -160,4 +192,39 @@ int CPlayer::GetMovingDirection()
 		ret++;
 	}
 	return ret-1;
+}
+
+CPoint CPlayer::NextGrid(int direction)
+{
+	CPoint real_grid = GetPosRealGrid();
+	if(direction == STOP)
+		return real_grid;
+	return real_grid + DIRECT_VEC[direction];
+}
+
+PointF CPlayer::TryMove(float game_time)
+{
+	PointF ret = pos;
+	int direction = GetMovingDirection();
+	if(direction != STOP)
+	{
+		ret.x += DIRECT_VEC[direction].x * speed.x * game_time;
+		ret.y += DIRECT_VEC[direction].y * speed.y * game_time;
+	}
+	return ret;
+}
+
+int CPlayer::NowBombs()
+{
+	return now_bombs;
+}
+
+int CPlayer::BombCapacity()
+{
+	return bomb_capacity;
+}
+
+void CPlayer::SetNowBombs(int bombs)
+{
+	now_bombs = bombs;
 }

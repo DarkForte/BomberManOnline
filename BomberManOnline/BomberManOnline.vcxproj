@@ -101,8 +101,11 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Bomb.h" />
     <ClInclude Include="BomberManOnline.h" />
     <ClInclude Include="BomberManOnlineView.h" />
+    <ClInclude Include="BombManager.h" />
+    <ClInclude Include="GameMap.h" />
     <ClInclude Include="PointF.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="MainFrm.h" />
@@ -113,9 +116,12 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Bomb.cpp" />
     <ClCompile Include="BomberManOnline.cpp" />
     <ClCompile Include="BomberManOnlineView.cpp" />
+    <ClCompile Include="BombManager.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameMap.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="ResourceManager.cpp" />

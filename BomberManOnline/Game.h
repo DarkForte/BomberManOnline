@@ -1,8 +1,12 @@
+
+#pragma once
 #include "stdafx.h"
 #include "ResourceManager.h"
 #include "Player.h"
+#include "GameMap.h"
+#include "BombManager.h"
 
-#pragma once
+
 class CGame
 {
 public:
@@ -11,6 +15,9 @@ public:
 
 	CPlayer player[MAX_PLAYER+1];
 	int my_player;
+
+	CGameMap game_map;
+	CBombManager bomb_manager;
 
 public:
 	CGame(void);

@@ -12,6 +12,7 @@
 #define new DEBUG_NEW
 #endif
 
+
 void CBomberManOnlineView::Init()
 {
 	p_res_manager = new CResourceManager();
@@ -159,11 +160,12 @@ void CBomberManOnlineView::OnTimer(UINT_PTR nIDEvent)
 		if(game_state == INGAME)
 		{
 			now_time = timeGetTime();
+			//OutputDebugPrintf("%lf\n", now_time - last_time);
 			p_game->Update(now_time - last_time);
 		}
 	}
 	last_time = timeGetTime();
-	CWnd::OnTimer(nIDEvent);
+	//CWnd::OnTimer(nIDEvent);
 }
 
 

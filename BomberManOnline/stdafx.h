@@ -20,7 +20,8 @@
 #include <afxext.h>         // MFC 扩展
 
 
-
+#include <iostream>
+#include <string>
 
 
 #ifndef _AFX_NO_OLE_SUPPORT
@@ -32,14 +33,14 @@
 
 #include <afxcontrolbars.h>     // 功能区和控件条的 MFC 支持
 
+
 const int WINDOW_WIDTH = 1280, WINDOW_HEIGHT = 720;
 const int GRID_WIDTH=30, GRID_HEIGHT=30;
 const int GRIDNUM_WIDTH = 30, GRIDNUM_HEIGHT = 20;
 const int SPRITE_WIDTH = 32, SPRITE_HEIGHT = 32;
 
-
-#define MAP_WIDTH GRID_WIDTH * GRIDNUM_WIDTH
-#define MAP_HEIGHT GRID_HEIGHT *GRIDNUM_HEIGHT
+const int MAP_WIDTH = GRID_WIDTH * GRIDNUM_WIDTH;
+const int MAP_HEIGHT = GRID_HEIGHT *GRIDNUM_HEIGHT;
 
 const int PADDING = 5;
 
@@ -49,4 +50,9 @@ const int STOP=-1, DOWN=0, LEFT=1, RIGHT=2, UP=3;
 const CPoint DIRECT_VEC[]={CPoint(0,1), CPoint(-1,0), CPoint(1,0), CPoint(0,-1)};
 
 const int TIMER_RENDER=1;
-const int MAX_FPS = 100;
+const int MAX_FPS = 1000;
+
+const float DEFAULT_BOMBTIME = 3000;
+const int DEFAULT_BOMBPOWER = 5;
+
+void OutputDebugPrintf(const char* strOutputString,...);
