@@ -4,15 +4,18 @@
 
 CGameMap::CGameMap(void)
 {
+
 	int i,j;
-	for(i=0;i<MAP_WIDTH;i++)
+	for(i=0;i<GRIDNUM_WIDTH;i++)
 	{
-		for(j=0;j<MAP_HEIGHT;j++)
+		for(j=0;j<GRIDNUM_HEIGHT;j++)
 		{
 			grid[i][j].first = NONE;
 			grid[i][j].second = 0;
 		}
 	}
+
+
 }
 
 

@@ -6,6 +6,7 @@
 #include "mmsystem.h"
 #include "BomberManOnline.h"
 #include "BomberManOnlineView.h"
+#include "Game.h"
 #pragma comment(lib, "winmm.lib")
 
 #ifdef _DEBUG
@@ -16,6 +17,7 @@
 void CBomberManOnlineView::Init()
 {
 	p_res_manager = new CResourceManager();
+
 	p_game = new CGame(p_res_manager);
 	p_game->Init(1);
 

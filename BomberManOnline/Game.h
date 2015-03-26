@@ -17,12 +17,12 @@ public:
 	int my_player;
 
 	CGameMap game_map;
-	CBombManager bomb_manager;
+	//CBombManager bomb_manager;
 
 public:
 	CGame(void);
 	~CGame(void);
-	CGame(CResourceManager* res_manager);
+	CGame(CResourceManager *res_manager);
 
 	void Init(int player_num);
 	void Render(CDC *pDC);

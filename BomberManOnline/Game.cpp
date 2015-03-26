@@ -4,6 +4,8 @@
 
 CGame::CGame(void)
 {
+	
+
 }
 
 CGame::~CGame(void)
@@ -18,7 +20,7 @@ CGame::CGame(CResourceManager *res_manager)
 void CGame::Init(int player_num)
 {
 	map_area.SetRect(PADDING, PADDING, GRIDNUM_WIDTH * GRID_WIDTH, GRID_HEIGHT * GRIDNUM_HEIGHT);
-	
+
 	player[1].Init(0,0,0);
 	player[2].Init(MAP_WIDTH - SPRITE_WIDTH, 0, 0);
 	player[3].Init(0, MAP_HEIGHT - SPRITE_HEIGHT, 0);
@@ -42,7 +44,7 @@ void CGame::Render(CDC *pDC)
 			SPRITE_WIDTH, SPRITE_HEIGHT);
 	}
 
-	for(i=0;i<=MAP_WIDTH;i++)
+	/*for(i=0;i<=MAP_WIDTH;i++)
 	{
 		for(j=0; j<=MAP_HEIGHT; j++)
 		{
@@ -54,7 +56,7 @@ void CGame::Render(CDC *pDC)
 				SPRITE_WIDTH*3, 0, SPRITE_WIDTH, SPRITE_HEIGHT);
 			}
 		}
-	}
+	}*/
 }
 
 void CGame::HandleKeyDown(UINT nchar)
@@ -75,7 +77,7 @@ void CGame::HandleKeyDown(UINT nchar)
 	{
 		player[my_player].SetMovingState(RIGHT);
 	}
-	if(nchar == VK_SPACE)
+	/*if(nchar == VK_SPACE)
 	{
 		int now_bombs = player[my_player].NowBombs();
 		CPoint player_pos = player[my_player].GetPosJudgeGrid();
@@ -88,7 +90,7 @@ void CGame::HandleKeyDown(UINT nchar)
 			int bomb_index = bomb_manager.AddBomb(bomb);
 			game_map.SetGrid(player_pos.x, player_pos.y, BOMB, bomb_index);
 		}
-	}
+	}*/
 }
 
 void CGame::HandleKeyUp(UINT nchar)
@@ -123,10 +125,10 @@ void CGame::Update(float game_time)
 			player[i].Move(game_time);
 		}
 	}
-	vector<CBomb> exploding_bombs = bomb_manager.Update(game_time);
+	/*vector<CBomb> exploding_bombs = bomb_manager.Update(game_time);
 	for(i=0; i<exploding_bombs.size(); i++)
 	{
 		CBomb now = exploding_bombs[i];
 		game_map.SetGrid(now.GetX(), now.GetY(), NONE);
-	}
+	}*/
 }

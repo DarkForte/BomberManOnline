@@ -21,6 +21,7 @@ CPlayer::CPlayer(float x, float y, int type)
 
 void CPlayer::Init(float x, float y, int type)
 {
+
 	pos.SetPoint(x,y);
 	this->type = type;
 	
