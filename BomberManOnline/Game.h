@@ -19,6 +19,8 @@ public:
 	CGameMap game_map;
 	CBombManager bomb_manager;
 
+	vector<CBomb> exploding_bombs;
+
 public:
 	CGame(void);
 	~CGame(void);
@@ -29,5 +31,8 @@ public:
 	void HandleKeyDown(UINT nchar);
 	void HandleKeyUp(UINT nchar);
 	void Update(float game_time);
+
+protected:
+	void OperateBombs();
 };
 

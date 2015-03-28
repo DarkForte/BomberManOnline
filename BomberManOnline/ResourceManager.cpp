@@ -20,9 +20,11 @@ CResourceManager::CResourceManager(void)
 	map_back.Load(L"pic\\meadow.png");
 	player_sprite.Load(L"pic\\player_sprite.png");
 	bomb_sprite.Load(L"pic\\bomb_sprite.png");
+	fire_sprite.Load(L"pic\\fire_sprite.png");
 
 	TransparentPNG(&player_sprite);
 	TransparentPNG(&bomb_sprite);
+	TransparentPNG(&fire_sprite);
 
 }
 

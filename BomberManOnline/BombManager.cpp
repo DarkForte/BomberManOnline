@@ -34,7 +34,7 @@ vector<CBomb> CBombManager::Update(float game_time)
 			ret.push_back(bombs[i].first);
 			bombs[i].second = false;
 			if(i==p_bombs_start)
-				p_bombs_start++;
+				p_bombs_start = (p_bombs_start + 1) % MAX_BOMBS;
 		}
 	}
 	return ret;

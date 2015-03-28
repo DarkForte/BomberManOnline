@@ -35,17 +35,27 @@ void CGame::Render(CDC *pDC)
 	p_res_manager->map_back.Draw(*pDC, map_area);
 	int i,j;
 
-	//Draw Bombs
+	//Draw Map Elements
 	for(i=0;i<GRIDNUM_WIDTH;i++)
 	{
 		for(j=0; j<GRIDNUM_HEIGHT; j++)
 		{
-			if(game_map.GridType(i,j) == BOMB)
+			MAP_ELEMENTS now_gridtype = game_map.GridType(i,j);
+			int target_x = i*GRID_WIDTH + PADDING;
+			int target_y = j*GRID_HEIGHT + PADDING;
+			if(now_gridtype == BOMB)
 			{
 				p_res_manager->bomb_sprite.Draw(*pDC,
-					i*GRID_WIDTH + PADDING, j * GRID_HEIGHT + PADDING,
+					target_x, target_y,
 					SPRITE_WIDTH, SPRITE_HEIGHT,
-					SPRITE_WIDTH*3, 0, SPRITE_WIDTH, SPRITE_HEIGHT);
+					SPRITE_WIDTH*9, 0, SPRITE_WIDTH, SPRITE_HEIGHT);
+			}
+			else if(now_gridtype == FIRE)
+			{
+				p_res_manager->fire_sprite.Draw(*pDC,
+					target_x,target_y,
+					SPRITE_WIDTH, SPRITE_HEIGHT,
+					SPRITE_WIDTH*7, 0, SPRITE_WIDTH, SPRITE_HEIGHT);
 			}
 		}
 	}
@@ -115,8 +125,14 @@ void CGame::HandleKeyUp(UINT nchar)
 	}
 }
 
+void CGame::OperateBombs()
+{
+
+}
+
 void CGame::Update(float game_time)
 {
+	//move player
 	int i;
 	for(i=1; i<=MAX_PLAYER; i++)
 	{
@@ -127,11 +143,45 @@ void CGame::Update(float game_time)
 			player[i].Move(game_time);
 		}
 	}
-	vector<CBomb> exploding_bombs = bomb_manager.Update(game_time);
+	
+	//update map
+	game_map.Update(game_time);
+
+	//operate bombs
+	exploding_bombs = bomb_manager.Update(game_time);
 	for(i=0; i<exploding_bombs.size(); i++)
 	{
-		CBomb now = exploding_bombs[i];
-		game_map.SetGrid(now.GetX(), now.GetY(), NONE);
-		player[my_player].SetNowBombs(player[my_player].NowBombs()-1);
+		CBomb now_bomb = exploding_bombs[i];
+
+		game_map.SetGrid(now_bomb.GetX(),now_bomb.GetY(), FIRE, DEFAULT_FIRETIME);
+
+		for(int i_direct = 0; i_direct<=3;i_direct++)
+		{
+			int now_power = 1;
+			CPoint now_point = now_bomb.GetPos() + DIRECT_VEC[i_direct];
+
+			while(0 <= now_point.x && now_point.x < GRIDNUM_WIDTH
+				&& 0<= now_point.y && now_point.y < GRIDNUM_HEIGHT 
+				&& now_power + 1 <= now_bomb.GetPower() 
+				&& game_map.GridType(now_point.x, now_point.y) != OBSTACLE 
+				&& game_map.GridType(now_point.x, now_point.y) != DESTROYABLE
+				&& game_map.GridType(now_point.x, now_point.y) != BOMB)
+			{
+				game_map.SetGrid(now_point.x, now_point.y, FIRE, DEFAULT_FIRETIME);
+				now_point += DIRECT_VEC[i_direct];
+				now_power++;
+			}
+
+			if(game_map.GridType(now_point.x, now_point.y) == DESTROYABLE)
+			{
+				game_map.SetGrid(now_point.x, now_point.y, NONE);
+			}
+			else if(game_map.GridType(now_point.x, now_point.y) == BOMB)
+			{
+				//later
+			}
+		}
+
+		player[now_bomb.Owner()].SetNowBombs(player[now_bomb.Owner()].NowBombs()-1);
 	}
 }

@@ -52,7 +52,8 @@ const CPoint DIRECT_VEC[]={CPoint(0,1), CPoint(-1,0), CPoint(1,0), CPoint(0,-1)}
 const int TIMER_RENDER=1;
 const int MAX_FPS = 1000;
 
-const float DEFAULT_BOMBTIME = 3000;
+const float DEFAULT_BOMBTIME = 1000;
 const int DEFAULT_BOMBPOWER = 5;
+const int DEFAULT_FIRETIME = 300;
 
 void OutputDebugPrintf(const char* strOutputString,...);

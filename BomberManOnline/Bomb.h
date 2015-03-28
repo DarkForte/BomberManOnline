@@ -5,6 +5,7 @@ using namespace std;
 class CBomb
 {
 	int owner;
+	
 	CPoint pos;
 	double remain_time;
 	int power;
@@ -29,6 +30,9 @@ public:
 	void SetPos(int x, int y);
 	void SetRemainRime(int r);
 	void SetPower(int p);
+
+	int Owner() const { return owner; }
+	void SetOwner(int val) { owner = val; }
 
 	void DropTime(float game_time);
 };

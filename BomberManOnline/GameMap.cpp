@@ -83,3 +83,23 @@ MAP_ELEMENTS CGameMap::GridType(int x, int y)
 {
 	return grid[x][y].first;
 }
+
+void CGameMap::Update( float game_time )
+{
+	int i,j;
+	//reduce fire
+	for(i=0; i<GRIDNUM_WIDTH; i++)
+	{
+		for (j=0; j<GRIDNUM_HEIGHT; j++)
+		{
+			if(grid[i][j].first == FIRE)
+			{
+				grid[i][j].second -= game_time;
+				if(grid[i][j].second <= 0)
+				{
+					grid[i][j].first = NONE;
+				}
+			}
+		}
+	}
+}

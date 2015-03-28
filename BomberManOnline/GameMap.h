@@ -22,5 +22,7 @@ public:
 	/*Set the grid to target with index, range: 0~GRIDNUM_WIDTH-1, 0~GRIDNUM_HEIGHT-1*/
 	void SetGrid(int x, int y, MAP_ELEMENTS target, int index=0);
 	MAP_ELEMENTS GridType(int x, int y);
+	void Update(float game_time);
+
 };
 
