@@ -4,7 +4,6 @@
 
 CGameMap::CGameMap(void)
 {
-
 	int i,j;
 	for(i=0;i<GRIDNUM_WIDTH;i++)
 	{

@@ -26,7 +26,7 @@ vector<CBomb> CBombManager::Update(float game_time)
 	vector<CBomb> ret;
 	ret.clear();
 	int i;
-	for(i=p_bombs_start; i<=cnt_bombs; i++)
+	for(i = p_bombs_start; i != cnt_bombs % MAX_BOMBS; i = (i+1)%MAX_BOMBS)
 	{
 		bombs[i].first.DropTime(game_time);
 		if(bombs[i].first.GetRemainTime() <= 0)

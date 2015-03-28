@@ -29,7 +29,7 @@ void CPlayer::Init(float x, float y, int type)
 	hover = false;
 	reverse=false;
 
-	bomb_capacity = 1;
+	bomb_capacity = 3;
 	bomb_power = DEFAULT_BOMBPOWER;
 	status=0;
 	moving_state = 0;

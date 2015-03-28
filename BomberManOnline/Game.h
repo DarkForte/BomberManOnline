@@ -17,7 +17,7 @@ public:
 	int my_player;
 
 	CGameMap game_map;
-	//CBombManager bomb_manager;
+	CBombManager bomb_manager;
 
 public:
 	CGame(void);
