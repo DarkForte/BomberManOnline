@@ -43,19 +43,19 @@ void CGame::Render(CDC *pDC)
 			MAP_ELEMENTS now_gridtype = game_map.GridType(i,j);
 			int target_x = i*GRID_WIDTH + PADDING;
 			int target_y = j*GRID_HEIGHT + PADDING;
-			if(now_gridtype == BOMB)
+			if(now_gridtype == MAP_ELEMENTS::BOMB)
 			{
 				p_res_manager->bomb_sprite.Draw(*pDC,
 					target_x, target_y,
 					SPRITE_WIDTH, SPRITE_HEIGHT,
 					SPRITE_WIDTH*9, 0, SPRITE_WIDTH, SPRITE_HEIGHT);
 			}
-			else if(now_gridtype == FIRE)
+			else if(now_gridtype == MAP_ELEMENTS::FIRE)
 			{
 				p_res_manager->fire_sprite.Draw(*pDC,
 					target_x,target_y,
 					SPRITE_WIDTH, SPRITE_HEIGHT,
-					SPRITE_WIDTH*7, 0, SPRITE_WIDTH, SPRITE_HEIGHT);
+					SPRITE_WIDTH*9, 0, SPRITE_WIDTH, SPRITE_HEIGHT);
 			}
 		}
 	}
@@ -63,11 +63,14 @@ void CGame::Render(CDC *pDC)
 	//Draw Players
 	for(i=1;i<=MAX_PLAYER;i++)
 	{
-		p_res_manager->player_sprite.Draw(*pDC,
-			player[i].GetXPixel() + PADDING, player[i].GetYPixel()+PADDING,
-			SPRITE_WIDTH, SPRITE_HEIGHT, 
-			SPRITE_WIDTH*3*(i-1), 0, 
-			SPRITE_WIDTH, SPRITE_HEIGHT);
+		if(player[i].Status() == PLAYER_STATUS::NONE)
+		{
+			p_res_manager->player_sprite.Draw(*pDC,
+				player[i].GetXPixel() + PADDING, player[i].GetYPixel()+PADDING,
+				SPRITE_WIDTH, SPRITE_HEIGHT, 
+				SPRITE_WIDTH*3*(i-1), 0, 
+				SPRITE_WIDTH, SPRITE_HEIGHT);
+		}
 	}
 }
 
@@ -94,13 +97,13 @@ void CGame::HandleKeyDown(UINT nchar)
 		int now_bombs = player[my_player].NowBombs();
 		CPoint player_pos = player[my_player].GetPosJudgeGrid();
 
-		if(now_bombs < player[my_player].BombCapacity() && game_map.GridType(player_pos.x, player_pos.y) == NONE)
+		if(now_bombs < player[my_player].BombCapacity() && game_map.GridType(player_pos.x, player_pos.y) == MAP_ELEMENTS::NONE)
 		{
 			player[my_player].SetNowBombs(now_bombs +1);
 
 			CBomb bomb(my_player, player_pos.x, player_pos.y, DEFAULT_BOMBTIME, player[my_player].GetBombPower());
 			int bomb_index = bomb_manager.AddBomb(bomb);
-			game_map.SetGrid(player_pos.x, player_pos.y, BOMB, bomb_index);
+			game_map.SetGrid(player_pos.x, player_pos.y, MAP_ELEMENTS::BOMB, bomb_index);
 		}
 	}
 }
@@ -153,7 +156,7 @@ void CGame::Update(float game_time)
 	{
 		CBomb now_bomb = exploding_bombs[i];
 
-		game_map.SetGrid(now_bomb.GetX(),now_bomb.GetY(), FIRE, DEFAULT_FIRETIME);
+		game_map.SetGrid(now_bomb.GetX(),now_bomb.GetY(), MAP_ELEMENTS::FIRE, DEFAULT_FIRETIME);
 
 		for(int i_direct = 0; i_direct<=3;i_direct++)
 		{
@@ -163,20 +166,27 @@ void CGame::Update(float game_time)
 			while(0 <= now_point.x && now_point.x < GRIDNUM_WIDTH
 				&& 0<= now_point.y && now_point.y < GRIDNUM_HEIGHT 
 				&& now_power + 1 <= now_bomb.GetPower() 
-				&& game_map.GridType(now_point.x, now_point.y) != OBSTACLE 
-				&& game_map.GridType(now_point.x, now_point.y) != DESTROYABLE
-				&& game_map.GridType(now_point.x, now_point.y) != BOMB)
+				&& game_map.GridType(now_point.x, now_point.y) != MAP_ELEMENTS::OBSTACLE 
+				&& game_map.GridType(now_point.x, now_point.y) != MAP_ELEMENTS::DESTROYABLE
+				&& game_map.GridType(now_point.x, now_point.y) != MAP_ELEMENTS::BOMB)
 			{
-				game_map.SetGrid(now_point.x, now_point.y, FIRE, DEFAULT_FIRETIME);
+				game_map.SetGrid(now_point.x, now_point.y, MAP_ELEMENTS::FIRE, DEFAULT_FIRETIME);
+				for(int i_player=1; i_player<=MAX_PLAYER; i_player++)
+				{
+					if(player[i_player].GetPosJudgeGrid() == now_point)
+					{
+						player[i_player].SetStatus(PLAYER_STATUS::DEAD);
+					}
+				}
 				now_point += DIRECT_VEC[i_direct];
 				now_power++;
 			}
 
-			if(game_map.GridType(now_point.x, now_point.y) == DESTROYABLE)
+			if(game_map.GridType(now_point.x, now_point.y) == MAP_ELEMENTS::DESTROYABLE)
 			{
-				game_map.SetGrid(now_point.x, now_point.y, NONE);
+				game_map.SetGrid(now_point.x, now_point.y, MAP_ELEMENTS::NONE);
 			}
-			else if(game_map.GridType(now_point.x, now_point.y) == BOMB)
+			else if(game_map.GridType(now_point.x, now_point.y) == MAP_ELEMENTS::BOMB)
 			{
 				//later
 			}

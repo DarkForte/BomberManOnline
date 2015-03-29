@@ -1,11 +1,17 @@
 #include "PointF.h"
-
 #pragma once
+
+enum class PLAYER_STATUS
+{
+	NONE, DEAD
+};
+
 class CPlayer
 {
 	PointF pos;
 	int moving_state;
-	int status;
+	PLAYER_STATUS status;
+	
 	int bomb_capacity;
 	int bomb_power;
 	PointF speed;
@@ -44,7 +50,6 @@ public:
 	int GetYRealGrid();
 	CPoint GetPosRealGrid();
 
-	int GetStatus();
 	int GetBombPower();
 	int GetBombCapacity();
 	/*Get the speed in pixels*/
@@ -73,5 +78,8 @@ public:
 	void Move(float game_time);
 	CPoint NextGrid(int direction);
 	PointF TryMove(float game_time);
+
+	PLAYER_STATUS Status() const { return status; }
+	void SetStatus(PLAYER_STATUS val) { status = val; }
 };
 

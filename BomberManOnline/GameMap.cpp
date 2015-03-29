@@ -9,7 +9,7 @@ CGameMap::CGameMap(void)
 	{
 		for(j=0;j<GRIDNUM_HEIGHT;j++)
 		{
-			grid[i][j].first = NONE;
+			grid[i][j].first = MAP_ELEMENTS::NONE;
 			grid[i][j].second = 0;
 		}
 	}
@@ -47,7 +47,7 @@ bool CGameMap::VerifyPoint(PointF next_point, int direction)
 		int x = int(points[i].x / GRID_WIDTH);
 		int y = int(points[i].y / GRID_HEIGHT);
 
-		if(grid[x][y].first == OBSTACLE || grid[x][y].first == DESTROYABLE || grid[x][y].first == BOMB)
+		if(grid[x][y].first == MAP_ELEMENTS::OBSTACLE || grid[x][y].first == MAP_ELEMENTS::DESTROYABLE || grid[x][y].first == MAP_ELEMENTS::BOMB)
 			ok[i] = false;
 		else 
 			ok[i] = true;
@@ -92,12 +92,12 @@ void CGameMap::Update( float game_time )
 	{
 		for (j=0; j<GRIDNUM_HEIGHT; j++)
 		{
-			if(grid[i][j].first == FIRE)
+			if(grid[i][j].first == MAP_ELEMENTS::FIRE)
 			{
 				grid[i][j].second -= game_time;
 				if(grid[i][j].second <= 0)
 				{
-					grid[i][j].first = NONE;
+					grid[i][j].first = MAP_ELEMENTS::NONE;
 				}
 			}
 		}

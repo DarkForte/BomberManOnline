@@ -4,7 +4,7 @@
 #include <iostream>
 using namespace std;
 
-enum MAP_ELEMENTS
+enum class MAP_ELEMENTS
 {
 	NONE, OBSTACLE, DESTROYABLE, ITEM, FIRE, BOMB
 };

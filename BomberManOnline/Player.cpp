@@ -31,7 +31,7 @@ void CPlayer::Init(float x, float y, int type)
 
 	bomb_capacity = 3;
 	bomb_power = DEFAULT_BOMBPOWER;
-	status=0;
+	status = PLAYER_STATUS::NONE;
 	moving_state = 0;
 
 	now_bombs = 0;
@@ -81,11 +81,6 @@ CPoint CPlayer::GetPosRealGrid()
 	int tmp_x = GetXRealGrid();
 	int tmp_y = GetYRealGrid();
 	return CPoint(tmp_x, tmp_y);
-}
-
-int CPlayer::GetStatus()
-{
-	return status;
 }
 
 int CPlayer::GetBombPower()
