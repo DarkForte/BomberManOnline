@@ -5,13 +5,13 @@
 #include "Player.h"
 #include "GameMap.h"
 #include "BombManager.h"
+#include "GameState.h"
+#include "SceneBase.h"
 
-
-class CGame
+class CGame : public CSceneBase
 {
 public:
 	CRect map_area;
-	CResourceManager *p_res_manager;
 
 	CPlayer player[MAX_PLAYER+1];
 	int my_player;
@@ -30,7 +30,7 @@ public:
 	void Render(CDC *pDC);
 	void HandleKeyDown(UINT nchar);
 	void HandleKeyUp(UINT nchar);
-	void Update(float game_time);
+	GameState Update(float game_time);
 
 protected:
 	void OperateBombs();

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Game.h"
-
+using namespace std;
 
 CGame::CGame(void)
 {
@@ -56,6 +56,10 @@ void CGame::Render(CDC *pDC)
 					target_x,target_y,
 					SPRITE_WIDTH, SPRITE_HEIGHT,
 					SPRITE_WIDTH*9, 0, SPRITE_WIDTH, SPRITE_HEIGHT);
+				/*p_res_manager->fire_sprite.AlphaBlend(*pDC,
+					target_x,target_y,
+					SPRITE_WIDTH, SPRITE_HEIGHT,
+					SPRITE_WIDTH*9, 0, SPRITE_WIDTH, SPRITE_HEIGHT, 128);*/
 			}
 		}
 	}
@@ -133,7 +137,7 @@ void CGame::OperateBombs()
 
 }
 
-void CGame::Update(float game_time)
+GameState CGame::Update(float game_time)
 {
 	//move player
 	int i;
@@ -194,4 +198,11 @@ void CGame::Update(float game_time)
 
 		player[now_bomb.Owner()].SetNowBombs(player[now_bomb.Owner()].NowBombs()-1);
 	}
+
+	if(player[my_player].Status() == PLAYER_STATUS::DEAD)
+	{
+		return LOBBY;
+	}
+
+	return INGAME;
 }

@@ -1,13 +1,9 @@
 #include "Game.h"
-
+#include "Lobby.h"
+#include "GameState.h"
 #pragma once
 
 // CChildView ´°¿Ú
-
-enum GameState
-{
-	LOBBY,INGAME
-};
 
 class CBomberManOnlineView : public CWnd
 {
@@ -21,6 +17,7 @@ class CBomberManOnlineView : public CWnd
 	GameState game_state;
 
 	CGame *p_game;
+	CLobby *p_lobby;
 	CResourceManager *p_res_manager;
 
 
@@ -31,7 +28,6 @@ public:
 // ²Ù×÷
 public:
 	void Init();
-	void LobbyRender(CDC *pDC);
 
 // ÖØÐ´
 	protected:

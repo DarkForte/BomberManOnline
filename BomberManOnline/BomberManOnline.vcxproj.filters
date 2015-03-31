@@ -57,6 +57,15 @@
     <ClInclude Include="BombManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Lobby.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneBase.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BomberManOnline.cpp">
@@ -87,6 +96,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="BombManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Lobby.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneBase.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

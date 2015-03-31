@@ -7,6 +7,7 @@
 #include "BomberManOnline.h"
 #include "BomberManOnlineView.h"
 #include "Game.h"
+#include "Lobby.h"
 #pragma comment(lib, "winmm.lib")
 
 #ifdef _DEBUG
@@ -19,7 +20,7 @@ void CBomberManOnlineView::Init()
 	p_res_manager = new CResourceManager();
 
 	p_game = new CGame(p_res_manager);
-	p_game->Init(1);
+	p_lobby = new CLobby(p_res_manager);
 
 	game_state = LOBBY;
 
@@ -34,6 +35,7 @@ CBomberManOnlineView::CBomberManOnlineView()
 CBomberManOnlineView::~CBomberManOnlineView()
 {
 	delete(p_res_manager);
+	delete(p_lobby);
 	delete(p_game);
 }
 
@@ -66,13 +68,6 @@ BOOL CBomberManOnlineView::PreCreateWindow(CREATESTRUCT& cs)
 	return TRUE;
 }
 
-void CBomberManOnlineView::LobbyRender(CDC *pDC)
-{
-	pDC->TextOut(100,100,L"点击开始");
-
-	return;
-}
-
 void CBomberManOnlineView::OnPaint() 
 {
 	CDC *pDC = GetDC();
@@ -85,7 +80,7 @@ void CBomberManOnlineView::OnPaint()
 	
 	if(game_state == LOBBY)
 	{
-		LobbyRender(&cacheDC);
+		p_lobby->Render(&cacheDC);
 	}
 	else if(game_state == INGAME)
 	{
@@ -110,12 +105,16 @@ void CBomberManOnlineView::OnLButtonDown(UINT nFlags, CPoint point)
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	if(game_state == LOBBY)
 	{
+		GameState next_state = p_lobby->HandleLButtonDown(nFlags, point);
+		if(next_state == INGAME)
+		{
+			p_game->Init(1);
+		}
 		game_state = INGAME;
-		Invalidate();
 	}
 
 
-	CWnd::OnLButtonDown(nFlags, point);
+	//CWnd::OnLButtonDown(nFlags, point);
 }
 
 
@@ -159,14 +158,16 @@ void CBomberManOnlineView::OnTimer(UINT_PTR nIDEvent)
 	if(nIDEvent == TIMER_RENDER)
 	{
 		OnPaint();
+		now_time = timeGetTime();
 		if(game_state == INGAME)
 		{
-			now_time = timeGetTime();
+			
 			//OutputDebugPrintf("%lf\n", now_time - last_time);
-			p_game->Update(now_time - last_time);
+			GameState next_gamestate = p_game->Update(now_time - last_time);
+			game_state = next_gamestate;
 		}
+		last_time = timeGetTime();
 	}
-	last_time = timeGetTime();
 	//CWnd::OnTimer(nIDEvent);
 }
 
