@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "ResourceManager.h"
+using namespace std;
 
 void TransparentPNG(CImage *png)
 {
@@ -18,11 +19,22 @@ void TransparentPNG(CImage *png)
 CResourceManager::CResourceManager(void)
 {
 	map_back.Load(L"pic\\meadow.png");
-	player_sprite.Load(L"pic\\player_sprite.png");
+
+	for(int i=1; i<=MAX_PLAYER; i++)
+	{
+		WCHAR buf[60];
+		swprintf_s(buf, L"pic\\player%d.png", i);
+
+		player_sprite[i].Load(buf);
+		TransparentPNG(&player_sprite[i]);
+	}
+	/*player_sprite.Load(L"pic\\player_sprite.png");
+	TransparentPNG(&player_sprite);*/
+
 	bomb_sprite.Load(L"pic\\bomb_sprite.png");
 	fire_sprite.Load(L"pic\\fire_sprite.png");
 
-	TransparentPNG(&player_sprite);
+	
 	TransparentPNG(&bomb_sprite);
 	TransparentPNG(&fire_sprite);
 

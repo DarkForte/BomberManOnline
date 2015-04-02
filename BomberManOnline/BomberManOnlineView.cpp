@@ -161,7 +161,6 @@ void CBomberManOnlineView::OnTimer(UINT_PTR nIDEvent)
 		now_time = timeGetTime();
 		if(game_state == INGAME)
 		{
-			
 			//OutputDebugPrintf("%lf\n", now_time - last_time);
 			GameState next_gamestate = p_game->Update(now_time - last_time);
 			game_state = next_gamestate;

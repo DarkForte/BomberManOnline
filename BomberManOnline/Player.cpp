@@ -3,6 +3,8 @@
 #include <iostream>
 #include <math.h>
 
+float CPlayer::frame_time = 120;
+
 CPlayer::CPlayer(void)
 {
 	pos.SetPoint(0,0);
@@ -21,7 +23,6 @@ CPlayer::CPlayer(float x, float y, int type)
 
 void CPlayer::Init(float x, float y, int type)
 {
-
 	pos.SetPoint(x,y);
 	this->type = type;
 	
@@ -35,6 +36,12 @@ void CPlayer::Init(float x, float y, int type)
 	moving_state = 0;
 
 	now_bombs = 0;
+	
+	now_frame = 1;
+	rest_frametime = frame_time;
+	facing = DOWN;
+
+	special_access = make_pair(CPoint(0,0), false);
 }
 
 PointF CPlayer::GetPosPixel()
@@ -164,6 +171,25 @@ void CPlayer::Move(float game_time)
 		pos.x += DIRECT_VEC[direction].x * speed.x * game_time;
 		pos.y += DIRECT_VEC[direction].y * speed.y * game_time;
 	}
+
+	if(direction != STOP)
+		facing = direction;
+
+	if(direction != STOP)
+	{
+		rest_frametime -= game_time;
+		if(rest_frametime <= 0)
+		{
+			now_frame = (now_frame +1)%4;
+			rest_frametime += frame_time;
+		}
+	}
+	else
+	{
+		now_frame = 2;
+		rest_frametime = frame_time;
+	}
+	
 }
 
 void CPlayer::SetMovingState(int next_state)
@@ -223,4 +249,15 @@ int CPlayer::BombCapacity()
 void CPlayer::SetNowBombs(int bombs)
 {
 	now_bombs = bombs;
+}
+
+void CPlayer::ShutSpecialAccess()
+{
+	special_access.second = false;
+}
+
+void CPlayer::SetSpecialAccess( CPoint pos )
+{
+	special_access.first = pos;
+	special_access.second = true;
 }
