@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Lobby.h"
+#include "D2D1Header.h"
 
 CLobby::CLobby( CResourceManager* p_res_manager )
 {
@@ -11,9 +12,8 @@ GameState CLobby::HandleLButtonDown( UINT nFlags, CPoint point )
 	return INGAME;
 }
 
-void CLobby::Render(CDC* pDC)
+void CLobby::Render(ID2D1HwndRenderTarget* render_target)
 {
-	pDC->TextOut(100,100,L"µã»÷¿ªÊ¼");
 
 	return;
 }

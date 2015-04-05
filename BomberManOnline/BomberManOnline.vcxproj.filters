@@ -66,6 +66,15 @@
     <ClInclude Include="GameState.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="D2D1Header.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="d2dimage.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Direct2DMFCBase.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BomberManOnline.cpp">
@@ -102,6 +111,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="SceneBase.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="d2dimage.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Direct2DMFCBase.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

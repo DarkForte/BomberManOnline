@@ -105,6 +105,9 @@
     <ClInclude Include="BomberManOnline.h" />
     <ClInclude Include="BomberManOnlineView.h" />
     <ClInclude Include="BombManager.h" />
+    <ClInclude Include="D2D1Header.h" />
+    <ClInclude Include="d2dimage.h" />
+    <ClInclude Include="Direct2DMFCBase.h" />
     <ClInclude Include="GameMap.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="Lobby.h" />
@@ -123,6 +126,8 @@
     <ClCompile Include="BomberManOnline.cpp" />
     <ClCompile Include="BomberManOnlineView.cpp" />
     <ClCompile Include="BombManager.cpp" />
+    <ClCompile Include="d2dimage.cpp" />
+    <ClCompile Include="Direct2DMFCBase.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameMap.cpp" />
     <ClCompile Include="Lobby.cpp" />

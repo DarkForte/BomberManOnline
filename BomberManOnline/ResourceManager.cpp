@@ -18,7 +18,7 @@ void TransparentPNG(CImage *png)
 
 CResourceManager::CResourceManager(void)
 {
-	map_back.Load(L"pic\\meadow.png");
+	/*map_back.Load(L"pic\\meadow.png");
 
 	for(int i=1; i<=MAX_PLAYER; i++)
 	{
@@ -28,20 +28,34 @@ CResourceManager::CResourceManager(void)
 		player_sprite[i].Load(buf);
 		TransparentPNG(&player_sprite[i]);
 	}
-	/*player_sprite.Load(L"pic\\player_sprite.png");
-	TransparentPNG(&player_sprite);*/
 
 	bomb_sprite.Load(L"pic\\bomb_sprite.png");
 	fire_sprite.Load(L"pic\\fire_sprite.png");
 
 	
 	TransparentPNG(&bomb_sprite);
-	TransparentPNG(&fire_sprite);
+	TransparentPNG(&fire_sprite);*/
 
 }
 
 
 CResourceManager::~CResourceManager(void)
 {
+}
+
+
+void CResourceManager::LoadPics( IWICImagingFactory * pIWICFactory, ID2D1HwndRenderTarget* render_target )
+{
+	map_back.Load(pIWICFactory, render_target, L"pic\\meadow.png");
+	for(int i=1; i<=MAX_PLAYER; i++)
+	{
+		WCHAR buf[60];
+		swprintf_s(buf, L"pic\\player%d.png", i);
+
+		player_sprite[i].Load(pIWICFactory, render_target, buf);
+	}
+
+	bomb_sprite.Load(pIWICFactory, render_target, L"pic\\bomb_sprite.png");
+	fire_sprite.Load(pIWICFactory, render_target, L"pic\\fire_sprite.png");
 }
 

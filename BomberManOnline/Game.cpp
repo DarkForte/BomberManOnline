@@ -32,9 +32,9 @@ void CGame::Init(int player_num)
 
 }
 
-void CGame::Render(CDC *pDC)
+void CGame::Render(ID2D1HwndRenderTarget* render_target)
 {
-	p_res_manager->map_back.Draw(*pDC, map_area);
+	p_res_manager->map_back.DrawImage(render_target, PADDING, PADDING, MAP_WIDTH, MAP_HEIGHT, 0, 0);
 	int i,j;
 
 	//Draw Map Elements
@@ -45,19 +45,20 @@ void CGame::Render(CDC *pDC)
 			MAP_ELEMENTS now_gridtype = game_map.GridType(i,j);
 			int target_x = i*GRID_WIDTH + PADDING;
 			int target_y = j*GRID_HEIGHT + PADDING;
+
 			if(now_gridtype == MAP_ELEMENTS::BOMB)
 			{
-				p_res_manager->bomb_sprite.Draw(*pDC,
+				p_res_manager->bomb_sprite.DrawImage(render_target,
 					target_x, target_y,
 					SPRITE_WIDTH, SPRITE_HEIGHT,
-					SPRITE_WIDTH*9, 0, SPRITE_WIDTH, SPRITE_HEIGHT);
+					SPRITE_WIDTH*9, 0);
 			}
 			else if(now_gridtype == MAP_ELEMENTS::FIRE)
 			{
-				p_res_manager->fire_sprite.Draw(*pDC,
+				p_res_manager->fire_sprite.DrawImage(render_target,
 					target_x,target_y,
 					SPRITE_WIDTH, SPRITE_HEIGHT,
-					SPRITE_WIDTH*9, 0, SPRITE_WIDTH, SPRITE_HEIGHT);
+					SPRITE_WIDTH*9, 0);
 				/*p_res_manager->fire_sprite.AlphaBlend(*pDC,
 					target_x,target_y,
 					SPRITE_WIDTH, SPRITE_HEIGHT,
@@ -71,11 +72,10 @@ void CGame::Render(CDC *pDC)
 	{
 		if(player[i].Status() == PLAYER_STATUS::NONE)
 		{
-			p_res_manager->player_sprite[i].Draw(*pDC,
+			p_res_manager->player_sprite[i].DrawImage(render_target,
 				player[i].GetXPixel() + PADDING, player[i].GetYPixel()+PADDING,
 				SPRITE_WIDTH, SPRITE_HEIGHT, 
-				SPRITE_WIDTH * player[i].NowFrame(), SPRITE_HEIGHT * player[i].Facing(), 
-				SPRITE_WIDTH, SPRITE_HEIGHT);
+				SPRITE_WIDTH * player[i].NowFrame(), SPRITE_HEIGHT * player[i].Facing());
 		}
 	}
 }
@@ -111,7 +111,8 @@ void CGame::HandleKeyDown(UINT nchar)
 			int bomb_index = bomb_manager.AddBomb(bomb);
 			game_map.SetGrid(player_pos.x, player_pos.y, MAP_ELEMENTS::BOMB, bomb_index);
 
-			player[my_player].SetSpecialAccess(player_pos);
+			if(min(player_pos.x, player_pos.y) > 0 && player_pos.x <= GRIDNUM_WIDTH && player_pos.y <= GRIDNUM_HEIGHT)
+				player[my_player].SetSpecialAccess(player_pos);
 		}
 	}
 }

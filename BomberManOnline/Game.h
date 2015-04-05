@@ -7,6 +7,7 @@
 #include "BombManager.h"
 #include "GameState.h"
 #include "SceneBase.h"
+#include "D2D1Header.h"
 
 class CGame : public CSceneBase
 {
@@ -27,7 +28,7 @@ public:
 	CGame(CResourceManager *res_manager);
 
 	void Init(int player_num);
-	void Render(CDC *pDC);
+	void Render(ID2D1HwndRenderTarget* render_target);
 	void HandleKeyDown(UINT nchar);
 	void HandleKeyUp(UINT nchar);
 	GameState Update(float game_time);

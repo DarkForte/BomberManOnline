@@ -1,6 +1,6 @@
 #pragma once
 #include "ResourceManager.h"
-
+#include "D2D1Header.h"
 
 class CSceneBase
 {
@@ -12,6 +12,6 @@ public:
 	~CSceneBase(void);
 
 	CSceneBase(CResourceManager* p_res_manager);
-	virtual void Render(CDC* pDC) = 0;
+	virtual void Render(ID2D1HwndRenderTarget* render_target) = 0;
 };
 
