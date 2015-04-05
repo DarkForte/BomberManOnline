@@ -1,7 +1,6 @@
 #pragma once
 #include "stdafx.h"
 #include "D2D1Header.h"
-#include "d2dimage.h"
 
 class CDirect2DMFCBase
 {
@@ -11,6 +10,7 @@ private:
 	ID2D1Factory* m_pDirect2dFactory;
 	ID2D1HwndRenderTarget* m_pRenderTarget;
 	IWICImagingFactory* m_pWICImagingFactory;
+	IDWriteFactory* m_pWriteFactory;
 
 public:
 	CDirect2DMFCBase(void);
@@ -21,6 +21,7 @@ public:
 
 	ID2D1HwndRenderTarget* GetRenderTarget();
 	IWICImagingFactory* GetWICImagingFactory();
+	IDWriteFactory* GetWriteFactory(){return m_pWriteFactory;}
 	void SetHwnd(HWND v){m_hwnd = v;}
 
 protected:

@@ -70,31 +70,6 @@ BOOL CBomberManOnlineView::PreCreateWindow(CREATESTRUCT& cs)
 
 void CBomberManOnlineView::OnPaint() 
 {
-	/*CDC *pDC = GetDC();
-
-	GetClientRect(&client_rect);
-	cacheDC.CreateCompatibleDC(NULL);
-	cache_bitmap.CreateCompatibleBitmap(pDC, client_rect.Width(), client_rect.Height());
-	cacheDC.SelectObject(&cache_bitmap);
-	// TODO: 在此处添加消息处理程序代码
-	
-	if(game_state == LOBBY)
-	{
-		p_lobby->Render(&cacheDC);
-	}
-	else if(game_state == INGAME)
-	{
-		p_game->Render(&cacheDC);
-	}
-
-
-	pDC->BitBlt(0, 0, client_rect.Width(), client_rect.Height(), &cacheDC,0,0,SRCCOPY);  
-
-	ValidateRect(client_rect);
-	cache_bitmap.DeleteObject();
-	cacheDC.DeleteDC();
-	ReleaseDC(pDC);*/
-
 	OnRender();
 
 	// 不要为绘制消息而调用 CWnd::OnPaint()
@@ -149,7 +124,6 @@ int CBomberManOnlineView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 
 	Init();
-	CoInitialize(NULL);
 	InitializeD2D();
 	CreateDeviceResources();
 
@@ -190,7 +164,7 @@ HRESULT CBomberManOnlineView::OnRender()
 	{
 		render_target->BeginDraw();
 		render_target->SetTransform(D2D1::Matrix3x2F::Identity());
-		render_target->Clear(D2D1::ColorF(D2D1::ColorF::White));
+		render_target->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
 		D2D1_SIZE_F rtSize = render_target->GetSize();
 
@@ -224,6 +198,7 @@ HRESULT CBomberManOnlineView::CreateDeviceResources()
 	HRESULT hr = CDirect2DMFCBase::CreateDeviceResources();
 
 	p_res_manager->LoadPics(CDirect2DMFCBase::GetWICImagingFactory(), CDirect2DMFCBase::GetRenderTarget());
+	p_res_manager->InitTextFormat(GetWriteFactory());
 
 	return hr;
 }

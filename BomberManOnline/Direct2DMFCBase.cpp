@@ -15,13 +15,12 @@ CDirect2DMFCBase::~CDirect2DMFCBase(void)
 {
 	SafeRelease(&m_pDirect2dFactory);
 	SafeRelease(&m_pRenderTarget);
-
 }
 
 HRESULT CDirect2DMFCBase::InitializeD2D()
 {
 	HRESULT hr;
-
+	CoInitialize(NULL);
 	// Initialize device-independent resources, such
 	// as the Direct2D factory.
 	hr = CreateDeviceIndependentResources();
@@ -48,7 +47,8 @@ HRESULT CDirect2DMFCBase::CreateDeviceIndependentResources()
 
 	// Create a Direct2D factory.
 	hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &m_pDirect2dFactory);
-	CoCreateInstance(
+
+	hr = CoCreateInstance(
 		CLSID_WICImagingFactory,
 		NULL,
 		CLSCTX_INPROC_SERVER,
@@ -56,7 +56,11 @@ HRESULT CDirect2DMFCBase::CreateDeviceIndependentResources()
 		reinterpret_cast<void **>(&m_pWICImagingFactory)
 		);
 
-
+	hr = DWriteCreateFactory(
+		DWRITE_FACTORY_TYPE_SHARED, 
+		__uuidof(IDWriteFactory),
+		reinterpret_cast<IUnknown**>(&m_pWriteFactory)
+		);
 	return hr;
 }
 

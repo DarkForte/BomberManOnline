@@ -18,24 +18,6 @@ void TransparentPNG(CImage *png)
 
 CResourceManager::CResourceManager(void)
 {
-	/*map_back.Load(L"pic\\meadow.png");
-
-	for(int i=1; i<=MAX_PLAYER; i++)
-	{
-		WCHAR buf[60];
-		swprintf_s(buf, L"pic\\player%d.png", i);
-
-		player_sprite[i].Load(buf);
-		TransparentPNG(&player_sprite[i]);
-	}
-
-	bomb_sprite.Load(L"pic\\bomb_sprite.png");
-	fire_sprite.Load(L"pic\\fire_sprite.png");
-
-	
-	TransparentPNG(&bomb_sprite);
-	TransparentPNG(&fire_sprite);*/
-
 }
 
 
@@ -57,5 +39,19 @@ void CResourceManager::LoadPics( IWICImagingFactory * pIWICFactory, ID2D1HwndRen
 
 	bomb_sprite.Load(pIWICFactory, render_target, L"pic\\bomb_sprite.png");
 	fire_sprite.Load(pIWICFactory, render_target, L"pic\\fire_sprite.png");
+}
+
+void CResourceManager::InitTextFormat(IDWriteFactory* write_factory)
+{
+	 write_factory->CreateTextFormat(
+		L"Arial",                   // Font family name
+		NULL,                          // Font collection(NULL sets it to the system font collection)
+		DWRITE_FONT_WEIGHT_REGULAR,    // Weight
+		DWRITE_FONT_STYLE_NORMAL,      // Style
+		DWRITE_FONT_STRETCH_NORMAL,    // Stretch
+		50.0f,                         // Size    
+		L"en-us",                      // Local
+		&p_text_format                 // Pointer to receive the created object
+		);
 }
 
