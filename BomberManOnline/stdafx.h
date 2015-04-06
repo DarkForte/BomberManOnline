@@ -50,7 +50,7 @@ const int STOP=-1, DOWN=0, LEFT=1, RIGHT=2, UP=3;
 const CPoint DIRECT_VEC[]={CPoint(0,1), CPoint(-1,0), CPoint(1,0), CPoint(0,-1)};
 
 const int TIMER_RENDER=1;
-const int MAX_FPS = 1000;
+const int MAX_FPS = 100;
 
 const float DEFAULT_BOMBTIME = 1000;
 const int DEFAULT_BOMBPOWER = 5;

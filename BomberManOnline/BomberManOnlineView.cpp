@@ -38,7 +38,7 @@ CBomberManOnlineView::~CBomberManOnlineView()
 	delete(p_lobby);
 	delete(p_game);
 
-	//timeKillEvent(render_timer_id);
+	timeKillEvent(render_timer_id);
 }
 
 
@@ -127,8 +127,8 @@ int CBomberManOnlineView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	InitializeD2D();
 	CreateDeviceResources();
 
-	SetTimer(TIMER_RENDER, 1000/MAX_FPS, NULL);
-	//render_timer_id = timeSetEvent(1000/MAX_FPS, 1, (LPTIMECALLBACK)OnNewTimer, (DWORD)this, TIME_PERIODIC);
+	//SetTimer(TIMER_RENDER, 1000/MAX_FPS, NULL);
+	render_timer_id = timeSetEvent(1000/MAX_FPS, 1, (LPTIMECALLBACK)OnMMTimer, (DWORD)this, TIME_PERIODIC);
 	last_time = timeGetTime();
 }
 
@@ -137,7 +137,7 @@ void CBomberManOnlineView::OnTimer(UINT_PTR nIDEvent)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 
-	if(nIDEvent == TIMER_RENDER)
+	/*if(nIDEvent == TIMER_RENDER)
 	{
 		OnPaint();
 		now_time = timeGetTime();
@@ -148,7 +148,7 @@ void CBomberManOnlineView::OnTimer(UINT_PTR nIDEvent)
 			game_state = next_gamestate;
 		}
 		last_time = timeGetTime();
-	}
+	}*/
 	//CWnd::OnTimer(nIDEvent);
 }
 
@@ -203,19 +203,20 @@ HRESULT CBomberManOnlineView::CreateDeviceResources()
 	return hr;
 }
 
-/*void CBomberManOnlineView::OnNewTimer( UINT wTimerID, UINT msg,DWORD dwUser, DWORD dwl,DWORD dw2 )
+void CBomberManOnlineView::OnMMTimer( UINT wTimerID, UINT msg,DWORD dwUser, DWORD dwl,DWORD dw2 )
 {
-	
-		//OnPaint();
+	//OnPaint();
 	CBomberManOnlineView * view = (CBomberManOnlineView *)dwUser;
-		view->now_time = timeGetTime();
-		if(view->game_state == INGAME)
-		{
-			OutputDebugPrintf("%lf\n", view->now_time - view->last_time);
-			GameState next_gamestate = view->p_game->Update(view->now_time - view->last_time);
-			view->game_state = next_gamestate;
-		}
-		view->last_time = timeGetTime();
+	view->OnPaint();
+	view->now_time = timeGetTime();
 	
-}*/
+	if(view->game_state == INGAME)
+	{
+		OutputDebugPrintf("%lf\n", view->now_time - view->last_time);
+		GameState next_gamestate = view->p_game->Update(view->now_time - view->last_time);
+		view->game_state = next_gamestate;
+	}
+	view->last_time = timeGetTime();
+	
+}
 

@@ -80,6 +80,20 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 	}
 }
 
+bool CheckSpecialOk(CPoint pos, int direction)
+{
+	if(pos.x == 0 && direction == LEFT)
+		return false;
+	if(pos.x == GRIDNUM_WIDTH - 1 && direction == RIGHT)
+		return false;
+	if(pos.y == 0 && direction == UP)
+		return false;
+	if(pos.y == GRIDNUM_HEIGHT - 1 && direction == DOWN)
+		return false;
+
+	return true;
+}
+
 void CGame::HandleKeyDown(UINT nchar)
 {
 	if(nchar == VK_DOWN)
@@ -111,7 +125,7 @@ void CGame::HandleKeyDown(UINT nchar)
 			int bomb_index = bomb_manager.AddBomb(bomb);
 			game_map.SetGrid(player_pos.x, player_pos.y, MAP_ELEMENTS::BOMB, bomb_index);
 
-			if(min(player_pos.x, player_pos.y) > 0 && player_pos.x <= GRIDNUM_WIDTH && player_pos.y <= GRIDNUM_HEIGHT)
+			if(CheckSpecialOk(player_pos, player[my_player].GetMovingDirection() ))
 				player[my_player].SetSpecialAccess(player_pos);
 		}
 	}

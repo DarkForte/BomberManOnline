@@ -21,7 +21,7 @@ class CBomberManOnlineView : public CWnd, public CDirect2DMFCBase
 	CLobby *p_lobby;
 	CResourceManager *p_res_manager;
 
-	//UINT render_timer_id;
+	UINT render_timer_id;
 // ππ‘Ï
 public:
 	CBomberManOnlineView();
@@ -49,7 +49,7 @@ public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
 
-	//static void OnNewTimer(UINT wTimerID, UINT msg,DWORD dwUser, DWORD dwl,DWORD dw2);
+	static void OnMMTimer(UINT wTimerID, UINT msg,DWORD dwUser, DWORD dwl,DWORD dw2);
 
 	HRESULT OnRender();
 	HRESULT CreateDeviceResources();
