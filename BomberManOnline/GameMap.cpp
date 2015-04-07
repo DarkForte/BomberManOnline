@@ -4,6 +4,11 @@
 
 CGameMap::CGameMap(void)
 {
+	Init();
+}
+
+void CGameMap::Init()
+{
 	int i,j;
 	for(i=0;i<GRIDNUM_WIDTH;i++)
 	{
@@ -13,7 +18,6 @@ CGameMap::CGameMap(void)
 			grid[i][j].second = 0;
 		}
 	}
-
 
 }
 

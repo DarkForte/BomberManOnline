@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "ResourceManager.h"
+using namespace std;
 
 void TransparentPNG(CImage *png)
 {
@@ -17,19 +18,41 @@ void TransparentPNG(CImage *png)
 
 CResourceManager::CResourceManager(void)
 {
-	map_back.Load(L"pic\\meadow.png");
-	player_sprite.Load(L"pic\\player_sprite.png");
-	bomb_sprite.Load(L"pic\\bomb_sprite.png");
-	fire_sprite.Load(L"pic\\fire_sprite.png");
-
-	TransparentPNG(&player_sprite);
-	TransparentPNG(&bomb_sprite);
-	TransparentPNG(&fire_sprite);
-
 }
 
 
 CResourceManager::~CResourceManager(void)
 {
+	
+}
+
+
+void CResourceManager::LoadPics( IWICImagingFactory * pIWICFactory, ID2D1HwndRenderTarget* render_target )
+{
+	map_back.Load(pIWICFactory, render_target, L"pic\\meadow.png");
+	for(int i=1; i<=MAX_PLAYER; i++)
+	{
+		WCHAR buf[60];
+		swprintf_s(buf, L"pic\\player%d.png", i);
+
+		player_sprite[i].Load(pIWICFactory, render_target, buf);
+	}
+
+	bomb_sprite.Load(pIWICFactory, render_target, L"pic\\bomb_sprite.png");
+	fire_sprite.Load(pIWICFactory, render_target, L"pic\\fire_sprite.png");
+}
+
+void CResourceManager::InitTextFormat(IDWriteFactory* write_factory)
+{
+	 write_factory->CreateTextFormat(
+		L"Arial",                   // Font family name
+		NULL,                          // Font collection(NULL sets it to the system font collection)
+		DWRITE_FONT_WEIGHT_REGULAR,    // Weight
+		DWRITE_FONT_STYLE_NORMAL,      // Style
+		DWRITE_FONT_STRETCH_NORMAL,    // Stretch
+		50.0f,                         // Size    
+		L"en-us",                      // Local
+		&p_text_format                 // Pointer to receive the created object
+		);
 }
 

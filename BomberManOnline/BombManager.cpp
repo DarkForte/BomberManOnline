@@ -28,6 +28,9 @@ vector<CBomb> CBombManager::Update(float game_time)
 	int i;
 	for(i = p_bombs_start; i != cnt_bombs % MAX_BOMBS; i = (i+1)%MAX_BOMBS)
 	{
+		if(bombs[i].second == false)
+			continue;
+
 		bombs[i].first.DropTime(game_time);
 		if(bombs[i].first.GetRemainTime() <= 0)
 		{
@@ -37,5 +40,14 @@ vector<CBomb> CBombManager::Update(float game_time)
 				p_bombs_start = (p_bombs_start + 1) % MAX_BOMBS;
 		}
 	}
+	//OutputDebugPrintf("Pbombstart: %d\n", p_bombs_start);
+	//OutputDebugPrintf("BombingSize: %d\n", ret.size());
+
 	return ret;
+}
+
+void CBombManager::Init()
+{
+	cnt_bombs = 0; 
+	p_bombs_start = 0;
 }

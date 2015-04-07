@@ -1,5 +1,6 @@
 #include "PointF.h"
 #pragma once
+using namespace std;
 
 enum class PLAYER_STATUS
 {
@@ -8,6 +9,8 @@ enum class PLAYER_STATUS
 
 class CPlayer
 {
+	static float frame_time;
+
 	PointF pos;
 	int moving_state;
 	PLAYER_STATUS status;
@@ -20,6 +23,13 @@ class CPlayer
 	int type;
 
 	int now_bombs;
+
+	int now_frame;
+	int rest_frametime;
+	int facing;
+
+	pair<CPoint, bool> special_access;
+	
 
 public:
 	CPlayer(void);
@@ -81,5 +91,13 @@ public:
 
 	PLAYER_STATUS Status() const { return status; }
 	void SetStatus(PLAYER_STATUS val) { status = val; }
+
+	int NowFrame() const { return now_frame; }
+	int Facing() const { return facing; }
+
+	pair<CPoint, bool> SpecialAccess() const { return special_access; }
+	void ShutSpecialAccess();
+	void SetSpecialAccess(CPoint pos);
+
 };
 

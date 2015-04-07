@@ -23,6 +23,6 @@ public:
 	void SetGrid(int x, int y, MAP_ELEMENTS target, int index=0);
 	MAP_ELEMENTS GridType(int x, int y);
 	void Update(float game_time);
-
+	void Init();
 };
 

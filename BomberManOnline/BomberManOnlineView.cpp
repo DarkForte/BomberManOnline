@@ -3,17 +3,9 @@
 //
 
 #include "stdafx.h"
-#include "mmsystem.h"
-#include "BomberManOnline.h"
 #include "BomberManOnlineView.h"
 #include "Game.h"
 #include "Lobby.h"
-#pragma comment(lib, "winmm.lib")
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#endif
-
 
 void CBomberManOnlineView::Init()
 {
@@ -23,6 +15,8 @@ void CBomberManOnlineView::Init()
 	p_lobby = new CLobby(p_res_manager);
 
 	game_state = LOBBY;
+
+	render_timer_id = 12121;
 
 	return;
 }
@@ -34,141 +28,118 @@ CBomberManOnlineView::CBomberManOnlineView()
 
 CBomberManOnlineView::~CBomberManOnlineView()
 {
-	delete(p_res_manager);
-	delete(p_lobby);
-	delete(p_game);
-}
-
-
-BEGIN_MESSAGE_MAP(CBomberManOnlineView, CWnd)
-	ON_WM_PAINT()
-	ON_WM_LBUTTONDOWN()
-	ON_WM_KEYDOWN()
-	ON_WM_CREATE()
-	ON_WM_TIMER()
-	ON_WM_KEYUP()
-END_MESSAGE_MAP()
-
-
-
-// CChildView 消息处理程序
-
-BOOL CBomberManOnlineView::PreCreateWindow(CREATESTRUCT& cs) 
-{
-	if (!CWnd::PreCreateWindow(cs))
-		return FALSE;
-
-	cs.dwExStyle |= WS_EX_CLIENTEDGE;
-	cs.style &= ~WS_BORDER;
-	cs.lpszClass = AfxRegisterWndClass(CS_HREDRAW|CS_VREDRAW|CS_DBLCLKS, 
-		::LoadCursor(NULL, IDC_ARROW), reinterpret_cast<HBRUSH>(COLOR_WINDOW+1), NULL);
-
-
-	Init();
-	return TRUE;
-}
-
-void CBomberManOnlineView::OnPaint() 
-{
-	CDC *pDC = GetDC();
-
-	GetClientRect(&client_rect);
-	cacheDC.CreateCompatibleDC(NULL);
-	cache_bitmap.CreateCompatibleBitmap(pDC, client_rect.Width(), client_rect.Height());
-	cacheDC.SelectObject(&cache_bitmap);
-	// TODO: 在此处添加消息处理程序代码
 	
-	if(game_state == LOBBY)
-	{
-		p_lobby->Render(&cacheDC);
-	}
-	else if(game_state == INGAME)
-	{
-		p_game->Render(&cacheDC);
-	}
-
-
-	pDC->BitBlt(0, 0, client_rect.Width(), client_rect.Height(), &cacheDC,0,0,SRCCOPY);  
-
-	ValidateRect(client_rect);
-	cache_bitmap.DeleteObject();
-	cacheDC.DeleteDC();
-	ReleaseDC(pDC);
-
-	// 不要为绘制消息而调用 CWnd::OnPaint()
 }
 
-
-
-void CBomberManOnlineView::OnLButtonDown(UINT nFlags, CPoint point)
+void CBomberManOnlineView::OnLButtonDown(CPoint point)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	if(game_state == LOBBY)
 	{
-		GameState next_state = p_lobby->HandleLButtonDown(nFlags, point);
+		GameState next_state = p_lobby->HandleLButtonDown(point);
 		if(next_state == INGAME)
 		{
 			p_game->Init(1);
 		}
 		game_state = INGAME;
 	}
-
-
-	//CWnd::OnLButtonDown(nFlags, point);
 }
 
 
-void CBomberManOnlineView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
+void CBomberManOnlineView::OnKeyDown(UINT nChar)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	if(game_state == INGAME)
 	{
 		p_game->HandleKeyDown(nChar);
 	}
-
-
-	CWnd::OnKeyDown(nChar, nRepCnt, nFlags);
 }
 
-void CBomberManOnlineView::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
+void CBomberManOnlineView::OnKeyUp(UINT nChar)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	if(game_state == INGAME)
 	{
 		p_game->HandleKeyUp(nChar);
 	}
-	CWnd::OnKeyUp(nChar, nRepCnt, nFlags);
 }
 
 
-int CBomberManOnlineView::OnCreate(LPCREATESTRUCT lpCreateStruct)
+int CBomberManOnlineView::OnCreate()
 {
-	if (CWnd::OnCreate(lpCreateStruct) == -1)
-		return -1;
+	Init();
+	InitializeD2D();
+	CreateDeviceResources();
 
-	SetTimer(TIMER_RENDER, 1000/MAX_FPS, NULL);
-	last_time = timeGetTime();
+	return 0;
 }
 
-
-void CBomberManOnlineView::OnTimer(UINT_PTR nIDEvent)
+HRESULT CBomberManOnlineView::OnRender()
 {
-	// TODO: 在此添加消息处理程序代码和/或调用默认值
+	HRESULT hr = S_OK;
+	HWND hwnd = GetHwnd();
+	GetClientRect(hwnd, &client_rect);
 
-	if(nIDEvent == TIMER_RENDER)
+	//hr = CreateDeviceResources();
+	ID2D1HwndRenderTarget* render_target = CDirect2DMFCBase::GetRenderTarget();
+
+	if (SUCCEEDED(hr))
 	{
-		OnPaint();
-		now_time = timeGetTime();
-		if(game_state == INGAME)
+		render_target->BeginDraw();
+		render_target->SetTransform(D2D1::Matrix3x2F::Identity());
+		render_target->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+
+		D2D1_SIZE_F rtSize = render_target->GetSize();
+
+		if(game_state == GameState::LOBBY)
 		{
-			
-			//OutputDebugPrintf("%lf\n", now_time - last_time);
-			GameState next_gamestate = p_game->Update(now_time - last_time);
-			game_state = next_gamestate;
+			p_lobby->Render(render_target);
 		}
-		last_time = timeGetTime();
+		else if(game_state == GameState::INGAME)
+		{
+			p_game->Render(render_target);
+		}
+
+		hr = render_target->EndDraw();
 	}
-	//CWnd::OnTimer(nIDEvent);
+	ValidateRect(hwnd, client_rect);
+
+	if (hr == D2DERR_RECREATE_TARGET)
+	{
+		hr = S_OK;
+		DiscardDeviceResources();
+	}
+
+	return hr;
+}
+
+HRESULT CBomberManOnlineView::CreateDeviceResources()
+{
+	HRESULT hr = CDirect2DMFCBase::CreateDeviceResources();
+
+	p_res_manager->LoadPics(CDirect2DMFCBase::GetWICImagingFactory(), CDirect2DMFCBase::GetRenderTarget());
+	p_res_manager->InitTextFormat(GetWriteFactory());
+
+	return hr;
+}
+
+void CBomberManOnlineView::Update(float game_time)
+{
+	if(game_state == INGAME)
+	{
+		GameState next_gamestate = p_game->Update(game_time);
+		game_state = next_gamestate;
+	}
+	
 }
 
 
+
+void CBomberManOnlineView::OnDestroy()
+{
+	// TODO: 在此处添加消息处理程序代码
+
+	delete(p_res_manager);
+	delete(p_lobby);
+	delete(p_game);
+}
