@@ -17,6 +17,7 @@ public:
 	CBombManager(void);
 	~CBombManager(void);
 
+	void Init();
 	int AddBomb(CBomb &p_bomb);
 	vector<CBomb> Update(float game_time);
 };

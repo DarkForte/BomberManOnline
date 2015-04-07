@@ -22,6 +22,7 @@ void CGame::Init(int player_num)
 	map_area.SetRect(PADDING, PADDING, GRIDNUM_WIDTH * GRID_WIDTH + PADDING, GRID_HEIGHT * GRIDNUM_HEIGHT + PADDING);
 
 	game_map.Init();
+	bomb_manager.Init();
 
 	player[1].Init(0,0,0);
 	player[2].Init(MAP_WIDTH - SPRITE_WIDTH, 0, 0);
