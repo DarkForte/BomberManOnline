@@ -23,6 +23,7 @@ public:
 	IWICImagingFactory* GetWICImagingFactory();
 	IDWriteFactory* GetWriteFactory(){return m_pWriteFactory;}
 	void SetHwnd(HWND v){m_hwnd = v;}
+	HWND GetHwnd(){return m_hwnd;}
 
 protected:
 	// Initialize device-independent resources.

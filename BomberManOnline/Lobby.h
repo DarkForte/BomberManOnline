@@ -9,7 +9,7 @@ public:
 	CLobby();
 	CLobby(CResourceManager* p_res_manager);
 	
-	GameState HandleLButtonDown(UINT nFlags, CPoint point);
+	GameState HandleLButtonDown(CPoint point);
 	void Render(ID2D1HwndRenderTarget* render_target);
 
 };

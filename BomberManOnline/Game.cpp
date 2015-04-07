@@ -230,7 +230,8 @@ GameState CGame::Update(float game_time)
 			}
 		}
 
-		player[now_bomb.Owner()].SetNowBombs(player[now_bomb.Owner()].NowBombs()-1);
+		int now_owner = now_bomb.Owner();
+		player[now_owner].SetNowBombs(player[now_owner].NowBombs()-1);
 	}
 
 	if(player[my_player].Status() == PLAYER_STATUS::DEAD)

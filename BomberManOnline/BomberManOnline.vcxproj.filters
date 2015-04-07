@@ -15,31 +15,72 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
+    <ClCompile Include="WinMain.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="BomberManOnlineView.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Direct2DMFCBase.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="d2dimage.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Lobby.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="GameMap.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneBase.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="BombManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Bomb.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BomberManOnline.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="stdafx.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="MainFrm.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="BomberManOnlineView.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Game.h">
+    <ClInclude Include="d2dimage.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneBase.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="ResourceManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Lobby.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Game.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Direct2DMFCBase.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="D2D1Header.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Player.h">
@@ -51,97 +92,20 @@
     <ClInclude Include="GameMap.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="GameState.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
     <ClInclude Include="Bomb.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="BombManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Lobby.h">
+    <ClInclude Include="targetver.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="SceneBase.h">
+    <ClInclude Include="Resource.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="GameState.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="D2D1Header.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="d2dimage.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Direct2DMFCBase.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="BomberManOnline.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="MainFrm.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="BomberManOnlineView.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Game.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceManager.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="GameMap.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Bomb.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="BombManager.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Lobby.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="SceneBase.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="d2dimage.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Direct2DMFCBase.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="BomberManOnline.rc">
-      <Filter>资源文件</Filter>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="UserImages.bmp">
-      <Filter>资源文件</Filter>
-    </Image>
-    <Image Include="res\BomberManOnline.ico">
-      <Filter>资源文件</Filter>
-    </Image>
-    <Image Include="res\Toolbar.bmp">
-      <Filter>资源文件</Filter>
-    </Image>
-    <Image Include="res\Toolbar256.bmp">
-      <Filter>资源文件</Filter>
-    </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="res\BomberManOnline.rc2">
-      <Filter>资源文件</Filter>
-    </None>
   </ItemGroup>
 </Project>

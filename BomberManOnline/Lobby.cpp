@@ -8,7 +8,7 @@ CLobby::CLobby( CResourceManager* p_res_manager )
 	this->p_res_manager = p_res_manager;
 }
 
-GameState CLobby::HandleLButtonDown( UINT nFlags, CPoint point )
+GameState CLobby::HandleLButtonDown(CPoint point )
 {
 	return INGAME;
 }

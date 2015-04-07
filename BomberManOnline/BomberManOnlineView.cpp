@@ -3,17 +3,9 @@
 //
 
 #include "stdafx.h"
-#include "mmsystem.h"
-#include "BomberManOnline.h"
 #include "BomberManOnlineView.h"
 #include "Game.h"
 #include "Lobby.h"
-#pragma comment(lib, "winmm.lib")
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#endif
-
 
 void CBomberManOnlineView::Init()
 {
@@ -39,122 +31,54 @@ CBomberManOnlineView::~CBomberManOnlineView()
 	
 }
 
-
-BEGIN_MESSAGE_MAP(CBomberManOnlineView, CWnd)
-	ON_WM_PAINT()
-	ON_WM_LBUTTONDOWN()
-	ON_WM_KEYDOWN()
-	ON_WM_CREATE()
-	ON_WM_TIMER()
-	ON_WM_KEYUP()
-	ON_WM_DESTROY()
-END_MESSAGE_MAP()
-
-
-
-// CChildView 消息处理程序
-
-BOOL CBomberManOnlineView::PreCreateWindow(CREATESTRUCT& cs) 
-{
-	if (!CWnd::PreCreateWindow(cs))
-		return FALSE;
-
-	cs.dwExStyle |= WS_EX_CLIENTEDGE;
-	cs.style &= ~WS_BORDER;
-	cs.lpszClass = AfxRegisterWndClass(CS_HREDRAW|CS_VREDRAW|CS_DBLCLKS, 
-		::LoadCursor(NULL, IDC_ARROW), reinterpret_cast<HBRUSH>(COLOR_WINDOW+1), NULL);
-
-	return TRUE;
-}
-
-void CBomberManOnlineView::OnPaint() 
-{
-	OnRender();
-
-	// 不要为绘制消息而调用 CWnd::OnPaint()
-}
-
-
-
-void CBomberManOnlineView::OnLButtonDown(UINT nFlags, CPoint point)
+void CBomberManOnlineView::OnLButtonDown(CPoint point)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	if(game_state == LOBBY)
 	{
-		GameState next_state = p_lobby->HandleLButtonDown(nFlags, point);
+		GameState next_state = p_lobby->HandleLButtonDown(point);
 		if(next_state == INGAME)
 		{
 			p_game->Init(1);
 		}
 		game_state = INGAME;
 	}
-
-
-	//CWnd::OnLButtonDown(nFlags, point);
 }
 
 
-void CBomberManOnlineView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
+void CBomberManOnlineView::OnKeyDown(UINT nChar)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	if(game_state == INGAME)
 	{
 		p_game->HandleKeyDown(nChar);
 	}
-
-
-	CWnd::OnKeyDown(nChar, nRepCnt, nFlags);
 }
 
-void CBomberManOnlineView::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
+void CBomberManOnlineView::OnKeyUp(UINT nChar)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	if(game_state == INGAME)
 	{
 		p_game->HandleKeyUp(nChar);
 	}
-	CWnd::OnKeyUp(nChar, nRepCnt, nFlags);
 }
 
 
-int CBomberManOnlineView::OnCreate(LPCREATESTRUCT lpCreateStruct)
+int CBomberManOnlineView::OnCreate()
 {
-	if (CWnd::OnCreate(lpCreateStruct) == -1)
-		return -1;
-
 	Init();
 	InitializeD2D();
 	CreateDeviceResources();
 
-	//SetTimer(TIMER_RENDER, 1000/MAX_FPS, NULL);
-	render_timer_id = timeSetEvent(1000/MAX_FPS, 1, (LPTIMECALLBACK)OnMMTimer, (DWORD)this, TIME_PERIODIC);
-	last_time = timeGetTime();
-}
-
-
-void CBomberManOnlineView::OnTimer(UINT_PTR nIDEvent)
-{
-	// TODO: 在此添加消息处理程序代码和/或调用默认值
-
-	/*if(nIDEvent == TIMER_RENDER)
-	{
-		OnPaint();
-		now_time = timeGetTime();
-		if(game_state == INGAME)
-		{
-			OutputDebugPrintf("%lf\n", now_time - last_time);
-			GameState next_gamestate = p_game->Update(now_time - last_time);
-			game_state = next_gamestate;
-		}
-		last_time = timeGetTime();
-	}*/
-	//CWnd::OnTimer(nIDEvent);
+	return 0;
 }
 
 HRESULT CBomberManOnlineView::OnRender()
 {
 	HRESULT hr = S_OK;
-	GetClientRect(&client_rect);
+	HWND hwnd = GetHwnd();
+	GetClientRect(hwnd, &client_rect);
 
 	//hr = CreateDeviceResources();
 	ID2D1HwndRenderTarget* render_target = CDirect2DMFCBase::GetRenderTarget();
@@ -178,7 +102,7 @@ HRESULT CBomberManOnlineView::OnRender()
 
 		hr = render_target->EndDraw();
 	}
-	ValidateRect(client_rect);
+	ValidateRect(hwnd, client_rect);
 
 	if (hr == D2DERR_RECREATE_TARGET)
 	{
@@ -191,9 +115,6 @@ HRESULT CBomberManOnlineView::OnRender()
 
 HRESULT CBomberManOnlineView::CreateDeviceResources()
 {
-	HWND hwnd = AfxGetMainWnd()->m_hWnd;
-	SetHwnd(hwnd);
-	
 	HRESULT hr = CDirect2DMFCBase::CreateDeviceResources();
 
 	p_res_manager->LoadPics(CDirect2DMFCBase::GetWICImagingFactory(), CDirect2DMFCBase::GetRenderTarget());
@@ -202,20 +123,13 @@ HRESULT CBomberManOnlineView::CreateDeviceResources()
 	return hr;
 }
 
-void CBomberManOnlineView::OnMMTimer( UINT wTimerID, UINT msg,DWORD dwUser, DWORD dwl,DWORD dw2 )
+void CBomberManOnlineView::Update(float game_time)
 {
-	//OnPaint();
-	CBomberManOnlineView * view = (CBomberManOnlineView *)dwUser;
-	view->OnPaint();
-	view->now_time = timeGetTime();
-	
-	if(view->game_state == INGAME)
+	if(game_state == INGAME)
 	{
-		OutputDebugPrintf("%lf\n", view->now_time - view->last_time);
-		GameState next_gamestate = view->p_game->Update(view->now_time - view->last_time);
-		view->game_state = next_gamestate;
+		GameState next_gamestate = p_game->Update(game_time);
+		game_state = next_gamestate;
 	}
-	view->last_time = timeGetTime();
 	
 }
 
@@ -223,10 +137,7 @@ void CBomberManOnlineView::OnMMTimer( UINT wTimerID, UINT msg,DWORD dwUser, DWOR
 
 void CBomberManOnlineView::OnDestroy()
 {
-	__super::OnDestroy();
-
 	// TODO: 在此处添加消息处理程序代码
-	timeKillEvent(render_timer_id);
 
 	delete(p_res_manager);
 	delete(p_lobby);
