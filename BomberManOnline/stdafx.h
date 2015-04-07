@@ -29,7 +29,7 @@ const int SPRITE_WIDTH = 32, SPRITE_HEIGHT = 32;
 const int MAP_WIDTH = GRID_WIDTH * GRIDNUM_WIDTH;
 const int MAP_HEIGHT = GRID_HEIGHT *GRIDNUM_HEIGHT;
 
-const int PADDING = 5;
+const int PADDING = 0;
 
 const int MAX_PLAYER = 4;
 

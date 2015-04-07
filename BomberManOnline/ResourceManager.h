@@ -5,7 +5,6 @@ class CResourceManager
 {
 public:
 	CD2DImage map_back;
-	//CImage player_sprite;
 	CD2DImage bomb_sprite;
 	CD2DImage fire_sprite;
 
@@ -13,6 +12,20 @@ public:
 
 	IDWriteTextFormat* p_text_format;
 
+/*Game UI*/
+	CD2DImage bottom_rect;
+	CD2DImage capacity_icon;
+	CD2DImage power_icon;
+	CD2DImage speed_icon;
+	CD2DImage item_box;
+
+	CD2DImage info_rect;
+
+	CD2DImage timer_rect;
+	
+	CD2DImage panel_rect;
+	CD2DImage exit_icon;
+	CD2DImage help_icon;
 	
 public:
 	CResourceManager(void);

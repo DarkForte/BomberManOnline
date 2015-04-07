@@ -28,6 +28,8 @@ CGameMap::~CGameMap(void)
 
 bool CGameMap::VerifyPoint(PointF next_point, int direction)
 {
+	//if(next_point.y<300)
+	//OutputDebugPrintf("Upper_left: %lf, %lf\n", next_point.x, next_point.y);
 	PointF points[5];
 	points[1] = next_point;
 	points[2] = next_point + PointF(SPRITE_WIDTH, 0);
@@ -44,6 +46,30 @@ bool CGameMap::VerifyPoint(PointF next_point, int direction)
 
 	//collision with obstacles
 	
+	//adjust, make character a little smaller in order to avoid stucking at the edge
+	const float fix=3;
+	//1:left up 2:right up 3:left down 4:right down
+	if(direction == UP)
+	{
+		points[1].x +=fix;
+		points[2].x -=fix;
+	}
+	else if(direction == DOWN)
+	{
+		points[3].x +=fix;
+		points[4].x -=fix;
+	}
+	else if(direction == LEFT)
+	{
+		points[1].y +=fix;
+		points[3].y -=fix;
+	}
+	else //if (direction == RIGHT)
+	{
+		 points[2].y +=fix;
+		 points[4].y -=fix;
+	}
+
 	bool ok[5];
 
 	for(i=1;i<=4; i++)

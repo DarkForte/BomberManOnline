@@ -40,6 +40,19 @@ void CResourceManager::LoadPics( IWICImagingFactory * pIWICFactory, ID2D1HwndRen
 
 	bomb_sprite.Load(pIWICFactory, render_target, L"pic\\bomb_sprite.png");
 	fire_sprite.Load(pIWICFactory, render_target, L"pic\\fire_sprite.png");
+
+	/*Game UI*/
+
+	bottom_rect.Load(pIWICFactory, render_target, L"pic\\game_ui\\bottom_rect.png");
+	capacity_icon.Load(pIWICFactory, render_target, L"pic\\game_ui\\capacity_icon.png");
+	power_icon.Load(pIWICFactory, render_target, L"pic\\game_ui\\power_icon.png");
+	speed_icon.Load(pIWICFactory, render_target, L"pic\\game_ui\\speed_icon.png");
+	item_box.Load(pIWICFactory, render_target, L"pic\\game_ui\\item_box.png");
+
+	info_rect.Load(pIWICFactory, render_target, L"pic\\game_ui\\info_rect.png");
+
+	exit_icon.Load(pIWICFactory, render_target, L"pic\\game_ui\\exit_icon.png");
+	help_icon.Load(pIWICFactory, render_target, L"pic\\game_ui\\help_icon.png");
 }
 
 void CResourceManager::InitTextFormat(IDWriteFactory* write_factory)

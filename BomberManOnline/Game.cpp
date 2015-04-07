@@ -17,9 +17,24 @@ CGame::CGame(CResourceManager *res_manager)
 	p_res_manager = res_manager;
 }
 
+void SetD2D1Rect(D2D1_RECT_F *r, int left, int top, int right, int bottom)
+{
+	r->left = left;
+	r->top = top;
+	r->right = right;
+	r->bottom = bottom;
+}
+
 void CGame::Init(int player_num)
 {
-	map_area.SetRect(PADDING, PADDING, GRIDNUM_WIDTH * GRID_WIDTH + PADDING, GRID_HEIGHT * GRIDNUM_HEIGHT + PADDING);
+	SetD2D1Rect(&bottom_rect, PADDING, PADDING + MAP_HEIGHT, 
+		PADDING + MAP_WIDTH, WINDOW_HEIGHT - PADDING);
+	SetD2D1Rect(&time_rect, PADDING + MAP_WIDTH, PADDING,
+		WINDOW_WIDTH - PADDING, 200);
+	SetD2D1Rect(&panel_rect, bottom_rect.right, bottom_rect.top, 
+		time_rect.right, bottom_rect.bottom);
+
+	SetD2D1Rect(&map_area, PADDING, PADDING, MAP_WIDTH + PADDING, MAP_HEIGHT + PADDING);
 
 	game_map.Init();
 	bomb_manager.Init();
@@ -35,7 +50,29 @@ void CGame::Init(int player_num)
 
 void CGame::Render(ID2D1HwndRenderTarget* render_target)
 {
+	using namespace D2D1;
+	//Draw UI
+	ID2D1SolidColorBrush *brush;
+	render_target->CreateSolidColorBrush(ColorF(ColorF::Gainsboro), &brush);
+
+	ID2D1SolidColorBrush *stroke_brush;
+	render_target->CreateSolidColorBrush(ColorF(ColorF::Black), &stroke_brush);
+
+	render_target->FillRectangle(&bottom_rect, brush);
+	render_target->DrawRectangle(&bottom_rect, stroke_brush, 0.5);
+
+	brush->SetColor(ColorF(ColorF::DarkGray));
+	render_target->FillRectangle(&time_rect, brush);
+	render_target->DrawRectangle(&time_rect, stroke_brush, 0.5);
+
+	brush->SetColor(ColorF(ColorF::DimGray));
+	render_target->FillRectangle(&panel_rect, brush);
+	render_target->DrawRectangle(&panel_rect, stroke_brush, 0.5);
+
+	//Draw Map
+
 	p_res_manager->map_back.DrawImage(render_target, PADDING, PADDING, MAP_WIDTH, MAP_HEIGHT, 0, 0);
+	
 	int i,j;
 
 	//Draw Map Elements
@@ -79,6 +116,12 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 				SPRITE_WIDTH * player[i].NowFrame(), SPRITE_HEIGHT * player[i].Facing());
 		}
 	}
+
+	//Draw Map Border
+	render_target->DrawRectangle(&map_area, stroke_brush, 1);
+
+	SafeRelease(&brush);
+	SafeRelease(&stroke_brush);
 }
 
 bool CheckSpecialOk(CPoint pos, int direction)
