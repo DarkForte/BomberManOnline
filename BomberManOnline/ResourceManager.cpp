@@ -23,6 +23,7 @@ CResourceManager::CResourceManager(void)
 
 CResourceManager::~CResourceManager(void)
 {
+	
 }
 
 

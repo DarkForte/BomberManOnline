@@ -24,6 +24,8 @@ void CBomberManOnlineView::Init()
 
 	game_state = LOBBY;
 
+	render_timer_id = 12121;
+
 	return;
 }
 
@@ -34,11 +36,7 @@ CBomberManOnlineView::CBomberManOnlineView()
 
 CBomberManOnlineView::~CBomberManOnlineView()
 {
-	delete(p_res_manager);
-	delete(p_lobby);
-	delete(p_game);
-
-	timeKillEvent(render_timer_id);
+	
 }
 
 
@@ -49,6 +47,7 @@ BEGIN_MESSAGE_MAP(CBomberManOnlineView, CWnd)
 	ON_WM_CREATE()
 	ON_WM_TIMER()
 	ON_WM_KEYUP()
+	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 
@@ -220,3 +219,16 @@ void CBomberManOnlineView::OnMMTimer( UINT wTimerID, UINT msg,DWORD dwUser, DWOR
 	
 }
 
+
+
+void CBomberManOnlineView::OnDestroy()
+{
+	__super::OnDestroy();
+
+	// TODO: 在此处添加消息处理程序代码
+	timeKillEvent(render_timer_id);
+
+	delete(p_res_manager);
+	delete(p_lobby);
+	delete(p_game);
+}

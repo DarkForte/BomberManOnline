@@ -53,5 +53,6 @@ public:
 
 	HRESULT OnRender();
 	HRESULT CreateDeviceResources();
+	afx_msg void OnDestroy();
 };
 

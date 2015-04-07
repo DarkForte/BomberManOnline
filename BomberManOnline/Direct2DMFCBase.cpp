@@ -8,6 +8,7 @@ CDirect2DMFCBase::CDirect2DMFCBase(void)
 	m_pDirect2dFactory = NULL;
 	m_pRenderTarget = NULL;
 	m_pWICImagingFactory = NULL;
+	m_pWriteFactory = NULL;
 }
 
 
@@ -15,6 +16,8 @@ CDirect2DMFCBase::~CDirect2DMFCBase(void)
 {
 	SafeRelease(&m_pDirect2dFactory);
 	SafeRelease(&m_pRenderTarget);
+	SafeRelease(&m_pWriteFactory);
+	SafeRelease(&m_pWICImagingFactory);
 }
 
 HRESULT CDirect2DMFCBase::InitializeD2D()
@@ -90,7 +93,6 @@ HRESULT CDirect2DMFCBase::CreateDeviceResources()
 void CDirect2DMFCBase::DiscardDeviceResources()
 {
 	SafeRelease(&m_pRenderTarget);
-	SafeRelease(&m_pWICImagingFactory);
 }
 
 HRESULT CDirect2DMFCBase::OnRender()
