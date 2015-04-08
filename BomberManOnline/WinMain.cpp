@@ -77,19 +77,19 @@ int WINAPI WinMain( __in HINSTANCE hInstance, __in_opt HINSTANCE hPrevInstance, 
 
 	while(msg.message!=WM_QUIT)
 	{
-		now_time = timeGetTime();
 		if(PeekMessage(&msg,0,0,0,PM_REMOVE))
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
+		now_time = timeGetTime();
 		if(now_time - last_time >= 1000/MAX_FPS)
 		{
 			OutputDebugPrintf("%lf\n", now_time - last_time);
-
 			application->Update(now_time - last_time);
 			application->OnRender();
-			last_time = timeGetTime();
+			last_time = now_time;
+			
 		}
 	}
 

@@ -12,7 +12,12 @@
 class CGame : public CSceneBase
 {
 public:
-	CRect map_area;
+	D2D1_RECT_F map_area;
+	D2D1_RECT_F bottom_rect;
+	D2D1_RECT_F time_rect;
+	//D2D1_RECT_F info_rect;
+	D2D1_RECT_F panel_rect;
+	D2D1_RECT_F user_rect;
 
 	CPlayer player[MAX_PLAYER+1];
 	int my_player;
