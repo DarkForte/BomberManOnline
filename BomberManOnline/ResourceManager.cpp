@@ -69,6 +69,8 @@ void CResourceManager::LoadPics( IWICImagingFactory * pIWICFactory, ID2D1HwndRen
 		swprintf_s(buf, L"pic\\game_ui\\user_back%d.png", i);
 		userinfo_rect[i].Load(pIWICFactory, render_target, buf);
 	}
+
+	map_none.Load(pIWICFactory, render_target, L"pic\\game_ui\\map_none.png");
 }
 
 void CResourceManager::InitTextFormat(IDWriteFactory* write_factory)
@@ -83,5 +85,6 @@ void CResourceManager::InitTextFormat(IDWriteFactory* write_factory)
 		L"en-us",                      // Local
 		&p_text_format                 // Pointer to receive the created object
 		);
+	
 }
 

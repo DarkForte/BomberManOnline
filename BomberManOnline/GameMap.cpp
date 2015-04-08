@@ -26,23 +26,15 @@ CGameMap::~CGameMap(void)
 {
 }
 
-bool CGameMap::VerifyPoint(PointF next_point, int direction)
+
+bool CGameMap::NoCollision(PointF next_point, int direction)
 {
-	//if(next_point.y<300)
-	//OutputDebugPrintf("Upper_left: %lf, %lf\n", next_point.x, next_point.y);
+	int i,j;
 	PointF points[5];
 	points[1] = next_point;
 	points[2] = next_point + PointF(SPRITE_WIDTH, 0);
 	points[3] = next_point + PointF(0, SPRITE_HEIGHT);
 	points[4] = next_point + PointF(SPRITE_WIDTH, SPRITE_HEIGHT);
-
-	//map boundary
-	int i;
-	for(i=1; i<=4; i++)
-	{
-		if(points[i].x<0 || points[i].x > MAP_WIDTH || points[i].y<0 || points[i].y>MAP_HEIGHT)
-			return false;
-	}
 
 	//collision with obstacles
 	
@@ -116,6 +108,25 @@ void CGameMap::Update( float game_time )
 			}
 		}
 	}
+}
+
+bool CGameMap::InBound( PointF next_point )
+{
+	PointF points[5];
+	points[1] = next_point;
+	points[2] = next_point + PointF(SPRITE_WIDTH, 0);
+	points[3] = next_point + PointF(0, SPRITE_HEIGHT);
+	points[4] = next_point + PointF(SPRITE_WIDTH, SPRITE_HEIGHT);
+
+	//map boundary
+	int i;
+	for(i=1; i<=4; i++)
+	{
+		if(points[i].x<0 || points[i].x > MAP_WIDTH || points[i].y<0 || points[i].y>MAP_HEIGHT)
+			return false;
+	}
+
+	return true;
 }
 
 /*PointF CGameMap::AdjustPoint( PointF next_point, int direction )
