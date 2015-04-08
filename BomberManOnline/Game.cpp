@@ -50,30 +50,74 @@ void CGame::Init(int player_num)
 
 void CGame::Render(ID2D1HwndRenderTarget* render_target)
 {
-	using namespace D2D1;
+	int i,j;
+	
 	//Draw UI
+
+	using namespace D2D1;
 	ID2D1SolidColorBrush *brush;
 	render_target->CreateSolidColorBrush(ColorF(ColorF::Gainsboro), &brush);
 
 	ID2D1SolidColorBrush *stroke_brush;
-	render_target->CreateSolidColorBrush(ColorF(ColorF::Black), &stroke_brush);
+	render_target->CreateSolidColorBrush(ColorF(ColorF::DarkGray), &stroke_brush);
 
-	render_target->FillRectangle(&bottom_rect, brush);
-	render_target->DrawRectangle(&bottom_rect, stroke_brush, 0.5);
+	////////Rectangles
+	p_res_manager->bottom_rect.DrawImage(render_target, bottom_rect.left, bottom_rect.top, 
+		p_res_manager->bottom_rect.GetWidth(), p_res_manager->bottom_rect.GetHeight(), 0,0);
 
-	brush->SetColor(ColorF(ColorF::DarkGray));
-	render_target->FillRectangle(&time_rect, brush);
-	render_target->DrawRectangle(&time_rect, stroke_brush, 0.5);
+	p_res_manager->timer_rect.DrawImage(render_target, time_rect.left, time_rect.top,
+		p_res_manager->timer_rect.GetWidth(), p_res_manager->timer_rect.GetHeight(), 0, 0 );
 
-	brush->SetColor(ColorF(ColorF::DimGray));
-	render_target->FillRectangle(&panel_rect, brush);
-	render_target->DrawRectangle(&panel_rect, stroke_brush, 0.5);
+	p_res_manager->panel_rect.DrawImage(render_target, panel_rect.left, panel_rect.top,
+		p_res_manager->panel_rect.GetWidth(), p_res_manager->panel_rect.GetHeight(), 0, 0);
+
+	////////Avatars
+	int avatar_width = p_res_manager->avatar_back.GetWidth();
+	int avatar_height = p_res_manager->avatar_back.GetHeight();
+	for(i=1;i<=MAX_PLAYER;i++)
+	{
+		int now_avatar_back_up = time_rect.bottom + (i-1)*avatar_height;
+
+		p_res_manager->avatar_back.DrawImage(render_target, 
+			time_rect.left, now_avatar_back_up, 
+			avatar_width, avatar_height, 0, 0);
+
+		p_res_manager->avatar.DrawImage(render_target, 
+			time_rect.left + 20, now_avatar_back_up + 20, 
+			p_res_manager->avatar.GetWidth(), p_res_manager->avatar.GetHeight(), 0, 0);
+
+		p_res_manager->userinfo_rect[i].DrawImage(render_target, 
+			time_rect.left + avatar_width, now_avatar_back_up,
+			p_res_manager->userinfo_rect[i].GetWidth(), p_res_manager->userinfo_rect[i].GetHeight(), 0,0);
+	}
+
+	////////Bottom Icons
+	int icon_width = p_res_manager->bottom_icon[1].GetWidth();
+	int icon_height = p_res_manager->bottom_icon[1].GetHeight();
+	int offset = 10;
+	int now_left = bottom_rect.left + 10;
+	for(i=1;i<=3;i++)
+	{
+		p_res_manager->bottom_icon[i].DrawImage(render_target,
+			now_left, bottom_rect.top + 10, icon_width, icon_height, 0,0);
+		now_left += icon_width + offset;
+	}
+
+	/////////Item Boxes
+	icon_width = p_res_manager->item_box.GetWidth();
+	icon_height = p_res_manager->item_box.GetHeight();
+	offset = 5;
+	now_left += 10;
+	for(i=1;i<=MAX_ITEMS;i++)
+	{
+		p_res_manager->item_box.DrawImage(render_target,
+			now_left, bottom_rect.top + 10, icon_width, icon_height, 0,0);
+		now_left += icon_width + offset;
+	}
 
 	//Draw Map
 
 	p_res_manager->map_back.DrawImage(render_target, PADDING, PADDING, MAP_WIDTH, MAP_HEIGHT, 0, 0);
-	
-	int i,j;
 
 	//Draw Map Elements
 	for(i=0;i<GRIDNUM_WIDTH;i++)
@@ -97,10 +141,6 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 					target_x,target_y,
 					SPRITE_WIDTH, SPRITE_HEIGHT,
 					SPRITE_WIDTH*9, 0);
-				/*p_res_manager->fire_sprite.AlphaBlend(*pDC,
-					target_x,target_y,
-					SPRITE_WIDTH, SPRITE_HEIGHT,
-					SPRITE_WIDTH*9, 0, SPRITE_WIDTH, SPRITE_HEIGHT, 128);*/
 			}
 		}
 	}

@@ -14,18 +14,19 @@ public:
 
 /*Game UI*/
 	CD2DImage bottom_rect;
-	CD2DImage capacity_icon;
-	CD2DImage power_icon;
-	CD2DImage speed_icon;
+	CD2DImage bottom_icon[4];
 	CD2DImage item_box;
 
-	CD2DImage info_rect;
+	CD2DImage avatar_back;
 
 	CD2DImage timer_rect;
 	
 	CD2DImage panel_rect;
 	CD2DImage exit_icon;
 	CD2DImage help_icon;
+
+	CD2DImage avatar;
+	CD2DImage userinfo_rect[MAX_PLAYER +1]; 
 	
 public:
 	CResourceManager(void);
