@@ -153,7 +153,7 @@ HRESULT CD2DImage::DrawImage(ID2D1RenderTarget * pd2dDevice, float fXPos, float 
 	if(pd2dDevice==NULL) return E_FAIL;
 
 	pd2dDevice->DrawBitmap( 
-								m_pID2D1Bitmap, D2D1::RectF(fXPos,fYPos,fDestWidth+fXPos,fDestHeight+fYPos) ,
+								m_pID2D1Bitmap, D2D1::RectF(fXPos,fYPos,fDestWidth*fXScale+fXPos,fDestHeight*fYScale+fYPos) ,
 								fOpacity,D2D1_BITMAP_INTERPOLATION_MODE_LINEAR,
 								D2D1::RectF(fXScr,fYSrc,fXScr+fDestWidth,fYSrc+fDestHeight)
 							);

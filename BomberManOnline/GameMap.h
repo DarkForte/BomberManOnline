@@ -24,5 +24,7 @@ public:
 	MAP_ELEMENTS GridType(int x, int y);
 	void Update(float game_time);
 	void Init();
+
+	//PointF AdjustPoint(PointF next_point, int direction);
 };
 

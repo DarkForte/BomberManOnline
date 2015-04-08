@@ -72,28 +72,34 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 		p_res_manager->panel_rect.GetWidth(), p_res_manager->panel_rect.GetHeight(), 0, 0);
 
 	////////Avatars
-	int avatar_width = p_res_manager->avatar_back.GetWidth();
-	int avatar_height = p_res_manager->avatar_back.GetHeight();
+	float target_width = p_res_manager->avatar_back.GetWidth();
+	float target_height = p_res_manager->avatar_back.GetHeight();
+	float avatar_width = p_res_manager->avatar.GetWidth();
+	float avatar_height = p_res_manager->avatar.GetHeight();
+
 	for(i=1;i<=MAX_PLAYER;i++)
 	{
-		int now_avatar_back_up = time_rect.bottom + (i-1)*avatar_height;
+		int now_avatar_back_up = time_rect.bottom + (i-1)*target_height;
 
 		p_res_manager->avatar_back.DrawImage(render_target, 
 			time_rect.left, now_avatar_back_up, 
-			avatar_width, avatar_height, 0, 0);
+			target_width, target_height, 0, 0);
 
 		p_res_manager->avatar.DrawImage(render_target, 
-			time_rect.left + 20, now_avatar_back_up + 20, 
-			p_res_manager->avatar.GetWidth(), p_res_manager->avatar.GetHeight(), 0, 0);
+			time_rect.left, now_avatar_back_up, 
+			avatar_width, avatar_height, 0, 0, 
+			target_width/avatar_width, target_height/avatar_height);
 
 		p_res_manager->userinfo_rect[i].DrawImage(render_target, 
-			time_rect.left + avatar_width, now_avatar_back_up,
+			time_rect.left + target_width, now_avatar_back_up,
 			p_res_manager->userinfo_rect[i].GetWidth(), p_res_manager->userinfo_rect[i].GetHeight(), 0,0);
 	}
 
 	////////Bottom Icons
-	int icon_width = p_res_manager->bottom_icon[1].GetWidth();
-	int icon_height = p_res_manager->bottom_icon[1].GetHeight();
+	float icon_width = p_res_manager->bottom_icon[1].GetWidth();
+	float icon_height = p_res_manager->bottom_icon[1].GetHeight();
+	target_width = icon_width;
+	target_height = icon_height;
 	int offset = 10;
 	int now_left = bottom_rect.left + 10;
 	for(i=1;i<=3;i++)
@@ -106,13 +112,14 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 	/////////Item Boxes
 	icon_width = p_res_manager->item_box.GetWidth();
 	icon_height = p_res_manager->item_box.GetHeight();
-	offset = 5;
-	now_left += 10;
+	offset = 10;
+	now_left += 70;
 	for(i=1;i<=MAX_ITEMS;i++)
 	{
 		p_res_manager->item_box.DrawImage(render_target,
-			now_left, bottom_rect.top + 10, icon_width, icon_height, 0,0);
-		now_left += icon_width + offset;
+			now_left, bottom_rect.top + 10, icon_width, icon_height, 0,0, 
+			target_width/icon_width, target_height/icon_height);
+		now_left += target_width + offset;
 	}
 
 	//Draw Map
@@ -256,7 +263,7 @@ GameState CGame::Update(float game_time)
 		PointF next_pos_pixel = player[i].TryMove(game_time);
 		CPoint next_pos_judge = GetJudgePoint(next_pos_pixel);
 		if((player[i].SpecialAccess().second == true && player[i].SpecialAccess().first == next_pos_judge)
-			|| game_map.VerifyPoint(next_pos_pixel, player[my_player].GetMovingDirection()))
+			|| game_map.VerifyPoint(next_pos_pixel, player[i].GetMovingDirection()))
 		{
 			//OutputDebugPrintf("%lf %lf\n", player[my_player].GetPosPixel().x, player[my_player].GetPosPixel().y);
 			player[i].Move(game_time);
@@ -267,6 +274,11 @@ GameState CGame::Update(float game_time)
 				player[i].ShutSpecialAccess();
 			}
 		}
+		/*else if(player[i].GetMovingDirection() != STOP)
+		{
+			PointF adjusted_point = game_map.AdjustPoint(next_pos_pixel, player[i].GetMovingDirection());
+			player[i].SetPosPixel(adjusted_point.x, adjusted_point.y);
+		}*/
 	}
 	
 	//update map
