@@ -6,8 +6,6 @@
 
 class CBomberManOnlineView : public CDirect2DMFCBase
 {
-
-
 	float last_time;
 	float now_time;
 

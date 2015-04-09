@@ -16,8 +16,6 @@ void CBomberManOnlineView::Init()
 
 	game_state = LOBBY;
 
-	render_timer_id = 12121;
-
 	return;
 }
 

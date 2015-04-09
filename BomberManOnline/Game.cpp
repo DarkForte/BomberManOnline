@@ -309,8 +309,7 @@ GameState CGame::Update(float game_time)
 			int now_power = 0;
 			CPoint now_point = now_bomb.GetPos();
 
-			while(0 <= now_point.x && now_point.x < GRIDNUM_WIDTH
-				&& 0<= now_point.y && now_point.y < GRIDNUM_HEIGHT 
+			while(game_map.InBound(now_point)
 				&& now_power + 1 <= now_bomb.GetPower() 
 				&& game_map.GridType(now_point.x, now_point.y) != MAP_ELEMENTS::OBSTACLE 
 				&& game_map.GridType(now_point.x, now_point.y) != MAP_ELEMENTS::DESTROYABLE
@@ -328,14 +327,19 @@ GameState CGame::Update(float game_time)
 				now_power++;
 			}
 
-			if(game_map.GridType(now_point.x, now_point.y) == MAP_ELEMENTS::DESTROYABLE)
+			if(game_map.InBound(now_point))
 			{
-				game_map.SetGrid(now_point.x, now_point.y, MAP_ELEMENTS::NONE);
+				if(game_map.GridType(now_point.x, now_point.y) == MAP_ELEMENTS::DESTROYABLE)
+				{
+					game_map.SetGrid(now_point.x, now_point.y, MAP_ELEMENTS::NONE);
+				}
+				else if(game_map.GridType(now_point.x, now_point.y) == MAP_ELEMENTS::BOMB)
+				{
+					int bomb_index = game_map.GetIndex(now_point.x, now_point.y);
+					bomb_manager.SuddenExplode(bomb_index);
+				}
 			}
-			else if(game_map.GridType(now_point.x, now_point.y) == MAP_ELEMENTS::BOMB)
-			{
-				//later
-			}
+			
 		}
 
 		int now_owner = now_bomb.Owner();

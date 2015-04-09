@@ -129,6 +129,20 @@ bool CGameMap::InBound( PointF next_point )
 	return true;
 }
 
+bool CGameMap::InBound( CPoint p )
+{
+	if(0 <= p.x && p.x <= GRIDNUM_WIDTH-1 && 0 <= p.y && p.y <= GRIDNUM_HEIGHT-1)
+		return true;
+	else
+		return false;
+	
+}
+
+int CGameMap::GetIndex( int x, int y )
+{
+	return grid[x][y].second;
+}
+
 /*PointF CGameMap::AdjustPoint( PointF next_point, int direction )
 {
 	if(VerifyPoint(next_point, direction) == true)
