@@ -1,32 +1,32 @@
 #include "stdafx.h"
-#include "Lobby.h"
+#include "Login.h"
 #include "D2D1Header.h"
 
 using namespace std;
 
-GameState ButtonDown_lobby_OK()
+GameState ButtonDown_Login_OK()
 {
-	return GameState::INGAME;
+	return GameState::LOBBY;
 }
 
-GameState ButtonDown_lobby_CLOSE()
+GameState ButtonDown_Login_CLOSE()
 {
 	PostMessage(NULL, WM_QUIT,0,0);
 	return GameState::LOBBY;
 }
 
-CLobby::CLobby(CResourceManager* p_res_manager)
+CLogin::CLogin(CResourceManager* p_res_manager)
 {
 	this->p_res_manager = p_res_manager;
 	button[1].Init(1150, 120, 130, 80, 1, 1, NULL);
 	button[2].Init(1150, 220, 130, 80, 1, 1, NULL);
 	button[3].Init(1150, 320, 130, 80, 1, 1, NULL);
 	button[4].Init(1150, 420, 130, 80, 1, 1, NULL);
-	button[5].Init(1150, 520, 130, 80, 1, 1, ButtonDown_lobby_CLOSE);
-	button[6].Init(738, 365, 90, 30, 1, 1, ButtonDown_lobby_OK);
+	button[5].Init(1150, 520, 130, 80, 1, 1, &ButtonDown_Login_CLOSE);
+	button[6].Init(738, 365, 90, 30, 1, 1, &ButtonDown_Login_OK);
 }
 
-GameState CLobby::HandleLButtonDown(CPoint point)
+GameState CLogin::HandleLButtonDown(CPoint point)
 {
 	for (int i = 1; i <= LOBBY_MAX_BUTTON; i++)
 	{
@@ -42,7 +42,7 @@ GameState CLobby::HandleLButtonDown(CPoint point)
 	return GameState::LOBBY;
 }
 
-GameState CLobby::HandleLButtonMove(CPoint point)
+GameState CLogin::HandleLButtonMove(CPoint point)
 {
 	for (int i = 1; i <= LOBBY_MAX_BUTTON; i++)
 	{
@@ -62,7 +62,7 @@ GameState CLobby::HandleLButtonMove(CPoint point)
 	return GameState::LOBBY;
 }
 
-GameState CLobby::HandleLButtonUp(CPoint point)
+GameState CLogin::HandleLButtonUp(CPoint point)
 {
 	GameState state = GameState::LOBBY;
 	for (int i = 1; i <= LOBBY_MAX_BUTTON; i++)
@@ -82,20 +82,20 @@ GameState CLobby::HandleLButtonUp(CPoint point)
 	return state;
 }
 
-void CLobby::RenderText(ID2D1HwndRenderTarget* render_target, wstring str, int x, int y,
-	IDWriteTextFormat* format, ID2D1SolidColorBrush* brush)
+void RenderText(ID2D1HwndRenderTarget* render_target, wstring str, int x, int y, 
+				IDWriteTextFormat* format, ID2D1SolidColorBrush* brush)
 {
 	int len = str.length();
 	D2D1_RECT_F rect = D2D1::RectF(x,y, x+format->GetFontSize()*len, y+format->GetFontSize()*len);
 	render_target->DrawText(str.c_str(), str.length(), format, rect, brush);
 }
 
-void CLobby::Render(ID2D1HwndRenderTarget* render_target)
+void CLogin::Render(ID2D1HwndRenderTarget* render_target)
 {
 	ID2D1SolidColorBrush* brush;
 	render_target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White), &brush);
 
-	p_res_manager->lobby_ui.DrawImage(render_target, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0);
+	p_res_manager->login_ui.DrawImage(render_target, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0);
 
 	for (int i = 1; i <= LOBBY_MAX_BUTTON; i++)
 	{
@@ -125,10 +125,10 @@ void CLobby::Render(ID2D1HwndRenderTarget* render_target)
 		}
 	}
 
-	//p_res_manager->lobby_icon_sprite[1].DrawImage(render_target, 315, 250, 150, 150, 0, 0);
-	//p_res_manager->lobby_icon_sprite[2].DrawImage(render_target, 315, 250, 150, 150, 0, 0, 2.34375, 2.34375);
+	p_res_manager->lobby_icon_sprite[1].DrawImage(render_target, 315, 250, 150, 150, 0, 0);
+	p_res_manager->lobby_icon_sprite[2].DrawImage(render_target, 315, 250, 150, 150, 0, 0, 2.34375, 2.34375);
 
-	/*SYSTEMTIME stTime;
+	SYSTEMTIME stTime;
 	GetLocalTime(&stTime);
 	wstring o_text;
 	CString text;
@@ -168,7 +168,7 @@ void CLobby::Render(ID2D1HwndRenderTarget* render_target)
 
 	text.Format(L"Password:");
 	o_text = text.GetString();
-	RenderText(render_target, o_text, 475, 325, p_res_manager->p_text_format_Arial_28_block, brush);*/
+	RenderText(render_target, o_text, 475, 325, p_res_manager->p_text_format_Arial_28_block, brush);
 
 	SafeRelease(&brush);
 	return;

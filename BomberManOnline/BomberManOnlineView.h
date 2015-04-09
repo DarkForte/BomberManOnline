@@ -1,5 +1,5 @@
 #include "Game.h"
-#include "Lobby.h"
+#include "Login.h"
 #include "GameState.h"
 #include "Direct2DMFCBase.h"
 #pragma once
@@ -16,7 +16,7 @@ class CBomberManOnlineView : public CDirect2DMFCBase
 	GameState game_state;
 
 	CGame *p_game;
-	CLobby *p_lobby;
+	CLogin *p_login;
 	CResourceManager *p_res_manager;
 
 	UINT render_timer_id;
@@ -34,6 +34,8 @@ public:
 
 public:
 	void OnLButtonDown(CPoint point);
+	void OnLButtonUp(CPoint point);
+	void OnLButtonMove(CPoint point);
 	void OnKeyDown(UINT nChar);
 	int OnCreate();
 	void OnTimer(UINT_PTR nIDEvent);

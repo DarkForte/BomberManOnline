@@ -4,18 +4,17 @@
 #include "D2D1Header.h"
 #include "Button.h"
 
-class CLobby : public CSceneBase
+class CLogin : public CSceneBase
 {
 	Button button[LOBBY_MAX_BUTTON + 1];
 public:
-	CLobby();
-	CLobby(CResourceManager* p_res_manager);
+	CLogin();
+	CLogin(CResourceManager* p_res_manager);
 	
 	GameState HandleLButtonDown(CPoint point);
 	GameState HandleLButtonUp(CPoint point);
 	GameState HandleLButtonMove(CPoint point);
 	void Render(ID2D1HwndRenderTarget* render_target);
-	void RenderText(ID2D1HwndRenderTarget* render_target, wstring str, int x, int y,
-		IDWriteTextFormat* format, ID2D1SolidColorBrush* brush);
+
 };
 

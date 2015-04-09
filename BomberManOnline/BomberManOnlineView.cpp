@@ -5,16 +5,16 @@
 #include "stdafx.h"
 #include "BomberManOnlineView.h"
 #include "Game.h"
-#include "Lobby.h"
+#include "Login.h"
 
 void CBomberManOnlineView::Init()
 {
 	p_res_manager = new CResourceManager();
 
 	p_game = new CGame(p_res_manager);
-	p_lobby = new CLobby(p_res_manager);
+	p_login = new CLogin(p_res_manager);
 
-	game_state = LOBBY;
+	game_state = LOGIN;
 
 	render_timer_id = 12121;
 
@@ -34,14 +34,33 @@ CBomberManOnlineView::~CBomberManOnlineView()
 void CBomberManOnlineView::OnLButtonDown(CPoint point)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
-	if(game_state == LOBBY)
+	if(game_state == LOGIN)
 	{
-		GameState next_state = p_lobby->HandleLButtonDown(point);
-		if(next_state == INGAME)
+		GameState next_state = p_login->HandleLButtonDown(point);
+	}
+}
+
+void CBomberManOnlineView::OnLButtonUp(CPoint point)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+	if (game_state == LOGIN)
+	{
+		GameState next_state = p_login->HandleLButtonUp(point);
+		if (next_state == INGAME)
 		{
 			p_game->Init(1);
+			game_state = INGAME;
 		}
-		game_state = INGAME;
+
+	}
+}
+
+void CBomberManOnlineView::OnLButtonMove(CPoint point)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+	if (game_state == LOGIN)
+	{
+		GameState next_state = p_login->HandleLButtonMove(point);
 	}
 }
 
@@ -91,9 +110,9 @@ HRESULT CBomberManOnlineView::OnRender()
 
 		D2D1_SIZE_F rtSize = render_target->GetSize();
 
-		if(game_state == GameState::LOBBY)
+		if(game_state == GameState::LOGIN)
 		{
-			p_lobby->Render(render_target);
+			p_login->Render(render_target);
 		}
 		else if(game_state == GameState::INGAME)
 		{
@@ -140,6 +159,6 @@ void CBomberManOnlineView::OnDestroy()
 	// TODO: 在此处添加消息处理程序代码
 
 	delete(p_res_manager);
-	delete(p_lobby);
+	delete(p_login);
 	delete(p_game);
 }

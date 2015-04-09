@@ -9,12 +9,14 @@
 #include "SceneBase.h"
 #include "D2D1Header.h"
 
+
 class CGame : public CSceneBase
 {
 public:
 	CRect map_area;
 
 	CPlayer player[MAX_PLAYER+1];
+	
 	int my_player;
 
 	CGameMap game_map;

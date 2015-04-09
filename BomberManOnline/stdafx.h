@@ -43,4 +43,12 @@ const float DEFAULT_BOMBTIME = 1000;
 const int DEFAULT_BOMBPOWER = 5;
 const int DEFAULT_FIRETIME = 300;
 
+const int LOBBY_MAX_BUTTON = 6;
+const int LOBBY_MAX_ICON = 2;
+const int MENU_HEIGHT = 0;
+const int MENU_WIDTH = 0;
+
+const int MAIN_VERSION = 1;
+const int MINOR_VERSION = 0;
+
 void OutputDebugPrintf(const char* strOutputString,...);

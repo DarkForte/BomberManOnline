@@ -19,7 +19,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>false</UseOfMfc>
     <UseOfAtl>Dynamic</UseOfAtl>
@@ -81,13 +81,15 @@
     <ClCompile Include="Bomb.cpp" />
     <ClCompile Include="BomberManOnlineView.cpp" />
     <ClCompile Include="BombManager.cpp" />
+    <ClCompile Include="Button.cpp" />
     <ClCompile Include="d2dimage.cpp" />
     <ClCompile Include="Direct2DMFCBase.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameMap.cpp" />
-    <ClCompile Include="Lobby.cpp" />
+    <ClCompile Include="Login.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
+    <ClCompile Include="Lobby.cpp" />
     <ClCompile Include="SceneBase.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="WinMain.cpp" />
@@ -96,17 +98,19 @@
     <ClInclude Include="Bomb.h" />
     <ClInclude Include="BomberManOnlineView.h" />
     <ClInclude Include="BombManager.h" />
+    <ClInclude Include="Button.h" />
     <ClInclude Include="D2D1Header.h" />
     <ClInclude Include="d2dimage.h" />
     <ClInclude Include="Direct2DMFCBase.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameMap.h" />
     <ClInclude Include="GameState.h" />
-    <ClInclude Include="Lobby.h" />
+    <ClInclude Include="Login.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PointF.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ResourceManager.h" />
+    <ClInclude Include="Lobby.h" />
     <ClInclude Include="SceneBase.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />

@@ -11,8 +11,17 @@ public:
 
 	CD2DImage player_sprite[MAX_PLAYER+1];
 
-	IDWriteTextFormat* p_text_format;
+	CD2DImage lobby_button_sprite[LOBBY_MAX_BUTTON + 1][3];
+	CD2DImage lobby_icon_sprite[LOBBY_MAX_ICON + 1];
+	CD2DImage login_ui;
+	CD2DImage lobby_ui;
+	CD2DImage room_ui;
 
+	IDWriteTextFormat* p_text_format;
+	IDWriteTextFormat* p_text_format_Arial_80;
+	IDWriteTextFormat* p_text_format_Arial_40_block;
+	IDWriteTextFormat* p_text_format_Arial_32;
+	IDWriteTextFormat* p_text_format_Arial_28_block;
 	
 public:
 	CResourceManager(void);
