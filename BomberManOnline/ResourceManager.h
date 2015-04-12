@@ -13,15 +13,27 @@ public:
 
 	CD2DImage lobby_button_sprite[LOBBY_MAX_BUTTON + 1][3];
 	CD2DImage lobby_icon_sprite[LOBBY_MAX_ICON + 1];
+	CD2DImage login_button_sprite[LOGIN_MAX_BUTTON + 1][3];
+	CD2DImage login_icon_sprite[LOGIN_MAX_ICON + 1];
+	CD2DImage room_button_sprite[ROOM_MAX_BUTTON + 1][3];
+	CD2DImage room_icon_sprite[ROOM_MAX_ICON + 1];
+
 	CD2DImage login_ui;
 	CD2DImage lobby_ui;
 	CD2DImage room_ui;
 
+	CD2DImage edit;
+	CD2DImage edit_focus;
+
 	IDWriteTextFormat* p_text_format;
+	IDWriteTextFormat* p_text_format_Stencil_120_bold;
 	IDWriteTextFormat* p_text_format_Arial_80;
-	IDWriteTextFormat* p_text_format_Arial_40_block;
+	IDWriteTextFormat* p_text_format_Arial_72_bold;
+	IDWriteTextFormat* p_text_format_Arial_40_bold;
 	IDWriteTextFormat* p_text_format_Arial_32;
-	IDWriteTextFormat* p_text_format_Arial_28_block;
+	IDWriteTextFormat* p_text_format_Arial_32_bold;
+	IDWriteTextFormat* p_text_format_Arial_28;
+	IDWriteTextFormat* p_text_format_Arial_28_bold;
 	
 public:
 	CResourceManager(void);

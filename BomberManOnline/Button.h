@@ -34,5 +34,4 @@ public:
 	BUTTON_STATUS GetStatus(){ return status; }
 	void SetStatus(BUTTON_STATUS _status){ status = _status; }
 	GameState(*ButtonDown)();
-	
 };

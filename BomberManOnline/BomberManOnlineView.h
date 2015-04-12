@@ -1,5 +1,7 @@
 #include "Game.h"
 #include "Login.h"
+#include "Lobby.h"
+#include "Room.h"
 #include "GameState.h"
 #include "Direct2DMFCBase.h"
 #pragma once
@@ -17,6 +19,8 @@ class CBomberManOnlineView : public CDirect2DMFCBase
 
 	CGame *p_game;
 	CLogin *p_login;
+	CLobby *p_lobby;
+	CRoom *p_room;
 	CResourceManager *p_res_manager;
 
 	UINT render_timer_id;

@@ -60,6 +60,12 @@
     <ClCompile Include="Lobby.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Room.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Edit.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -117,6 +123,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Lobby.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Room.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Edit.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

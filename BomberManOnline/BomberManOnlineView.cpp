@@ -13,7 +13,8 @@ void CBomberManOnlineView::Init()
 
 	p_game = new CGame(p_res_manager);
 	p_login = new CLogin(p_res_manager);
-
+	p_lobby = new CLobby(p_res_manager);
+	p_room = new CRoom(p_res_manager);
 	game_state = LOGIN;
 
 	render_timer_id = 12121;
@@ -38,6 +39,14 @@ void CBomberManOnlineView::OnLButtonDown(CPoint point)
 	{
 		GameState next_state = p_login->HandleLButtonDown(point);
 	}
+	else if (game_state == LOBBY)
+	{
+		GameState next_state = p_lobby->HandleLButtonDown(point);
+	}
+	else if (game_state == ROOM)
+	{
+		GameState next_state = p_room->HandleLButtonDown(point);
+	}
 }
 
 void CBomberManOnlineView::OnLButtonUp(CPoint point)
@@ -46,6 +55,25 @@ void CBomberManOnlineView::OnLButtonUp(CPoint point)
 	if (game_state == LOGIN)
 	{
 		GameState next_state = p_login->HandleLButtonUp(point);
+		if (next_state == LOBBY)
+		{
+			game_state = LOBBY;
+		}
+
+	}
+	else if (game_state == LOBBY)
+	{
+		GameState next_state = p_lobby->HandleLButtonUp(point);
+		if (next_state == ROOM)
+		{
+			p_game->Init(1);
+			game_state = ROOM;
+		}
+
+	}
+	else if (game_state == ROOM)
+	{
+		GameState next_state = p_room->HandleLButtonUp(point);
 		if (next_state == INGAME)
 		{
 			p_game->Init(1);
@@ -62,13 +90,33 @@ void CBomberManOnlineView::OnLButtonMove(CPoint point)
 	{
 		GameState next_state = p_login->HandleLButtonMove(point);
 	}
+	else if (game_state == LOBBY)
+	{
+		GameState next_state = p_lobby->HandleLButtonMove(point);
+	}
+	else if (game_state == ROOM)
+	{
+		GameState next_state = p_room->HandleLButtonMove(point);
+	}
 }
 
 
 void CBomberManOnlineView::OnKeyDown(UINT nChar)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
-	if(game_state == INGAME)
+	if (game_state == LOGIN)
+	{
+		p_login->HandleKeyDown(nChar);
+	}
+	else if (game_state == LOBBY)
+	{
+		p_lobby->HandleKeyDown(nChar);
+	}
+	else if (game_state == ROOM)
+	{
+		p_room->HandleKeyDown(nChar);
+	}
+	else if(game_state == INGAME)
 	{
 		p_game->HandleKeyDown(nChar);
 	}
@@ -114,9 +162,17 @@ HRESULT CBomberManOnlineView::OnRender()
 		{
 			p_login->Render(render_target);
 		}
+		else if (game_state == GameState::LOBBY)
+		{
+			p_lobby->Render(render_target);
+		}
 		else if(game_state == GameState::INGAME)
 		{
 			p_game->Render(render_target);
+		}
+		else if (game_state == GameState::ROOM)
+		{
+			p_room->Render(render_target);
 		}
 
 		hr = render_target->EndDraw();

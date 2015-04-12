@@ -71,7 +71,7 @@ int WINAPI WinMain( __in HINSTANCE hInstance, __in_opt HINSTANCE hPrevInstance, 
 	if(!RegisterClassEx(&wndclass))
 		return -1;
 
-	HWND hwnd = CreateWindow(L"wndclass", TAR_TITLE, WS_POPUP,
+	HWND hwnd = CreateWindow(L"wndclass", TAR_TITLE, WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, CW_USEDEFAULT, WINDOW_WIDTH + MENU_WIDTH, WINDOW_HEIGHT + MENU_HEIGHT, NULL, NULL, hInstance, NULL);//第三个参数控制了窗口的样式，合集为WS_OVERLAPPEDWINDOW
 
 	application = new CBomberManOnlineView();
@@ -81,8 +81,6 @@ int WINAPI WinMain( __in HINSTANCE hInstance, __in_opt HINSTANCE hPrevInstance, 
 	MoveWindow(hwnd, 250, 80, WINDOW_WIDTH + MENU_WIDTH, WINDOW_HEIGHT + MENU_HEIGHT, true);
 	ShowWindow(hwnd,nShowCmd);
 	UpdateWindow(hwnd);
-
-
 
 	MSG msg={0};
 	float now_time;

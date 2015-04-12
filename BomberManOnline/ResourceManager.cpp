@@ -38,12 +38,30 @@ void CResourceManager::LoadPics( IWICImagingFactory * pIWICFactory, ID2D1HwndRen
 		player_sprite[i].Load(pIWICFactory, render_target, buf);
 	}
 
+	for (int i = 1; i <= ROOM_MAX_BUTTON; i++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			WCHAR buf[60];
+			swprintf_s(buf, L"pic\\button2%d%d.png", i, j);
+			room_button_sprite[i][j].Load(pIWICFactory, render_target, buf);
+		}
+	}
+
+	for (int i = 1; i <= ROOM_MAX_ICON; i++)
+	{
+		WCHAR buf[60];
+		swprintf_s(buf, L"pic\\icon0%d.png", i);
+
+		room_icon_sprite[i].Load(pIWICFactory, render_target, buf);
+	}
+
 	for (int i = 1; i <= LOBBY_MAX_BUTTON; i++)
 	{
 		for (int j = 0; j < 3; j++)
 		{
 			WCHAR buf[60];
-			swprintf_s(buf, L"pic\\button0%d%d.png", i, j);
+			swprintf_s(buf, L"pic\\button1%d%d.png", i, j);
 			lobby_button_sprite[i][j].Load(pIWICFactory, render_target, buf);
 		}
 	}
@@ -56,12 +74,33 @@ void CResourceManager::LoadPics( IWICImagingFactory * pIWICFactory, ID2D1HwndRen
 		lobby_icon_sprite[i].Load(pIWICFactory, render_target, buf);
 	}
 
+	for (int i = 1; i <= LOGIN_MAX_BUTTON; i++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			WCHAR buf[60];
+			swprintf_s(buf, L"pic\\button0%d%d.png", i, j);
+			login_button_sprite[i][j].Load(pIWICFactory, render_target, buf);
+		}
+	}
+
+	for (int i = 1; i <= LOGIN_MAX_ICON; i++)
+	{
+		WCHAR buf[60];
+		swprintf_s(buf, L"pic\\icon0%d.png", i);
+
+		login_icon_sprite[i].Load(pIWICFactory, render_target, buf);
+	}
+
 	bomb_sprite.Load(pIWICFactory, render_target, L"pic\\bomb_sprite.png");
 	fire_sprite.Load(pIWICFactory, render_target, L"pic\\fire_sprite.png");
 
 	login_ui.Load(pIWICFactory, render_target, L"pic\\login_b.png");
 	lobby_ui.Load(pIWICFactory, render_target, L"pic\\lobby_b.png");
 	room_ui.Load(pIWICFactory, render_target, L"pic\\room_b.png");
+
+	edit.Load(pIWICFactory, render_target, L"pic\\edit.png");
+	edit_focus.Load(pIWICFactory, render_target, L"pic\\edit_focus.png");
 }
 
 void CResourceManager::InitTextFormat(IDWriteFactory* write_factory)
@@ -104,7 +143,7 @@ void CResourceManager::InitTextFormat(IDWriteFactory* write_factory)
 		 DWRITE_FONT_STRETCH_NORMAL,    // Stretch
 		 28.0f,                         // Size    
 		 L"en-us",                      // Local
-		 &p_text_format_Arial_28_block        // Pointer to receive the created object
+		 &p_text_format_Arial_28_bold        // Pointer to receive the created object
 		 );
 	 write_factory->CreateTextFormat(
 		 L"Arial",                   // Font family name
@@ -114,7 +153,47 @@ void CResourceManager::InitTextFormat(IDWriteFactory* write_factory)
 		 DWRITE_FONT_STRETCH_NORMAL,    // Stretch
 		 40.0f,                         // Size    
 		 L"en-us",                      // Local
-		 &p_text_format_Arial_40_block        // Pointer to receive the created object
+		 &p_text_format_Arial_40_bold        // Pointer to receive the created object
+		 );
+	 write_factory->CreateTextFormat(
+		 L"Arial",                   // Font family name
+		 NULL,                          // Font collection(NULL sets it to the system font collection)
+		 DWRITE_FONT_WEIGHT_BOLD,    // Weight
+		 DWRITE_FONT_STYLE_NORMAL,      // Style
+		 DWRITE_FONT_STRETCH_NORMAL,    // Stretch
+		 72.0f,                         // Size    
+		 L"en-us",                      // Local
+		 &p_text_format_Arial_72_bold        // Pointer to receive the created object
+		 );
+	 write_factory->CreateTextFormat(
+		 L"Arial",                   // Font family name
+		 NULL,                          // Font collection(NULL sets it to the system font collection)
+		 DWRITE_FONT_WEIGHT_BOLD,    // Weight
+		 DWRITE_FONT_STYLE_NORMAL,      // Style
+		 DWRITE_FONT_STRETCH_NORMAL,    // Stretch
+		 32.0f,                         // Size    
+		 L"en-us",                      // Local
+		 &p_text_format_Arial_32_bold        // Pointer to receive the created object
+		 );
+	 write_factory->CreateTextFormat(
+		 L"Arial",                   // Font family name
+		 NULL,                          // Font collection(NULL sets it to the system font collection)
+		 DWRITE_FONT_WEIGHT_REGULAR,    // Weight
+		 DWRITE_FONT_STYLE_NORMAL,      // Style
+		 DWRITE_FONT_STRETCH_NORMAL,    // Stretch
+		 28.0f,                         // Size    
+		 L"en-us",                      // Local
+		 &p_text_format_Arial_28        // Pointer to receive the created object
+		 );
+	 write_factory->CreateTextFormat(
+		 L"Stencil",                   // Font family name
+		 NULL,                          // Font collection(NULL sets it to the system font collection)
+		 DWRITE_FONT_WEIGHT_REGULAR,    // Weight
+		 DWRITE_FONT_STYLE_NORMAL,      // Style
+		 DWRITE_FONT_STRETCH_NORMAL,    // Stretch
+		 120.0f,                         // Size    
+		 L"en-us",                      // Local
+		 &p_text_format_Stencil_120_bold        // Pointer to receive the created object
 		 );
 }
 

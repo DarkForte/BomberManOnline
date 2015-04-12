@@ -12,23 +12,29 @@ GameState ButtonDown_Login_OK()
 GameState ButtonDown_Login_CLOSE()
 {
 	PostMessage(NULL, WM_QUIT,0,0);
-	return GameState::LOBBY;
+	return GameState::LOGIN;
 }
 
 CLogin::CLogin(CResourceManager* p_res_manager)
 {
 	this->p_res_manager = p_res_manager;
+
+	//init button
 	button[1].Init(1150, 120, 130, 80, 1, 1, NULL);
 	button[2].Init(1150, 220, 130, 80, 1, 1, NULL);
 	button[3].Init(1150, 320, 130, 80, 1, 1, NULL);
 	button[4].Init(1150, 420, 130, 80, 1, 1, NULL);
 	button[5].Init(1150, 520, 130, 80, 1, 1, &ButtonDown_Login_CLOSE);
 	button[6].Init(738, 365, 90, 30, 1, 1, &ButtonDown_Login_OK);
+
+	//init cedit
+	user_name.Init(PointF(628, 296), "user name", 200, 26, true, false, 10, false, 0);
+	user_password.Init(PointF(628, 331), "*****", 200, 26, false, true, 10, false, 0);
 }
 
 GameState CLogin::HandleLButtonDown(CPoint point)
 {
-	for (int i = 1; i <= LOBBY_MAX_BUTTON; i++)
+	for (int i = 1; i <= LOGIN_MAX_BUTTON; i++)
 	{
 		if (point.x >= button[i].GetXPixel()&&
 			point.x <= button[i].GetXPixel() + button[i].GetWidth() &&
@@ -39,12 +45,15 @@ GameState CLogin::HandleLButtonDown(CPoint point)
 		}
 	}
 	
-	return GameState::LOBBY;
+	user_name.HandleLButtonDown(point);
+	user_password.HandleLButtonDown(point);
+
+	return GameState::LOGIN;
 }
 
 GameState CLogin::HandleLButtonMove(CPoint point)
 {
-	for (int i = 1; i <= LOBBY_MAX_BUTTON; i++)
+	for (int i = 1; i <= LOGIN_MAX_BUTTON; i++)
 	{
 		if (point.x >= button[i].GetXPixel() &&
 			point.x <= button[i].GetXPixel() + button[i].GetWidth() &&
@@ -59,13 +68,13 @@ GameState CLogin::HandleLButtonMove(CPoint point)
 		}
 	}
 
-	return GameState::LOBBY;
+	return GameState::LOGIN;
 }
 
 GameState CLogin::HandleLButtonUp(CPoint point)
 {
-	GameState state = GameState::LOBBY;
-	for (int i = 1; i <= LOBBY_MAX_BUTTON; i++)
+	GameState state = GameState::LOGIN;
+	for (int i = 1; i <= LOGIN_MAX_BUTTON; i++)
 	{
 		if (point.x >= button[i].GetXPixel()&&
 			point.x <= button[i].GetXPixel() + button[i].GetWidth() &&
@@ -97,11 +106,11 @@ void CLogin::Render(ID2D1HwndRenderTarget* render_target)
 
 	p_res_manager->login_ui.DrawImage(render_target, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0);
 
-	for (int i = 1; i <= LOBBY_MAX_BUTTON; i++)
+	for (int i = 1; i <= LOGIN_MAX_BUTTON; i++)
 	{
 		if (button[i].GetStatus() == BUTTON_STATUS::IDLE)
 		{
-			p_res_manager->lobby_button_sprite[i][0].DrawImage(render_target,
+			p_res_manager->login_button_sprite[i][0].DrawImage(render_target,
 				button[i].GetXPixel(), button[i].GetYPixel(),
 				button[i].GetWidth(), button[i].GetHeight(),
 				0, 0,
@@ -109,7 +118,7 @@ void CLogin::Render(ID2D1HwndRenderTarget* render_target)
 		}
 		else if (button[i].GetStatus() == BUTTON_STATUS::MOUSE_ON)
 		{
-			p_res_manager->lobby_button_sprite[i][1].DrawImage(render_target,
+			p_res_manager->login_button_sprite[i][1].DrawImage(render_target,
 				button[i].GetXPixel(), button[i].GetYPixel(),
 				button[i].GetWidth(), button[i].GetHeight(),
 				0, 0,
@@ -117,7 +126,7 @@ void CLogin::Render(ID2D1HwndRenderTarget* render_target)
 		}
 		else if (button[i].GetStatus() == BUTTON_STATUS::MOUSE_DOWN)
 		{
-			p_res_manager->lobby_button_sprite[i][2].DrawImage(render_target,
+			p_res_manager->login_button_sprite[i][2].DrawImage(render_target,
 				button[i].GetXPixel(), button[i].GetYPixel(),
 				button[i].GetWidth(), button[i].GetHeight(),
 				0, 0,
@@ -125,8 +134,11 @@ void CLogin::Render(ID2D1HwndRenderTarget* render_target)
 		}
 	}
 
-	p_res_manager->lobby_icon_sprite[1].DrawImage(render_target, 315, 250, 150, 150, 0, 0);
-	p_res_manager->lobby_icon_sprite[2].DrawImage(render_target, 315, 250, 150, 150, 0, 0, 2.34375, 2.34375);
+	user_name.Draw(render_target, p_res_manager);
+	user_password.Draw(render_target, p_res_manager);
+
+	p_res_manager->login_icon_sprite[1].DrawImage(render_target, 315, 250, 150, 150, 0, 0);
+	p_res_manager->login_icon_sprite[2].DrawImage(render_target, 315, 250, 150, 150, 0, 0, 2.34375, 2.34375);
 
 	SYSTEMTIME stTime;
 	GetLocalTime(&stTime);
@@ -156,20 +168,33 @@ void CLogin::Render(ID2D1HwndRenderTarget* render_target)
 
 	text.Format(L"OK");
 	o_text = text.GetString();
-	RenderText(render_target, o_text, 762, 364, p_res_manager->p_text_format_Arial_28_block, brush_black);
+	RenderText(render_target, o_text, 762, 364, p_res_manager->p_text_format_Arial_28_bold, brush_black);
 
 	text.Format(L"Sign In");
 	o_text = text.GetString();
-	RenderText(render_target, o_text, 475, 250, p_res_manager->p_text_format_Arial_40_block, brush);
+	RenderText(render_target, o_text, 475, 250, p_res_manager->p_text_format_Arial_40_bold, brush);
 
 	text.Format(L"ID:");
 	o_text = text.GetString();
-	RenderText(render_target, o_text, 579, 292, p_res_manager->p_text_format_Arial_28_block, brush);
+	RenderText(render_target, o_text, 579, 292, p_res_manager->p_text_format_Arial_28_bold, brush);
 
 	text.Format(L"Password:");
 	o_text = text.GetString();
-	RenderText(render_target, o_text, 475, 325, p_res_manager->p_text_format_Arial_28_block, brush);
+	RenderText(render_target, o_text, 475, 325, p_res_manager->p_text_format_Arial_28_bold, brush);
+
+	ID2D1SolidColorBrush* brush_green;
+	render_target->CreateSolidColorBrush(D2D1::ColorF(295556), &brush_green);
+
+	text.Format(L"BOMBERMAN");
+	o_text = text.GetString();
+	RenderText(render_target, o_text, 204, 58, p_res_manager->p_text_format_Stencil_120_bold, brush_green);
 
 	SafeRelease(&brush);
 	return;
+}
+
+void CLogin::HandleKeyDown(UINT nchar)
+{
+	user_name.HandleKeyDown(nchar);
+	user_password.HandleKeyDown(nchar);
 }

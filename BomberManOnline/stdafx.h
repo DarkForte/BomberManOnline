@@ -43,12 +43,27 @@ const float DEFAULT_BOMBTIME = 1000;
 const int DEFAULT_BOMBPOWER = 5;
 const int DEFAULT_FIRETIME = 300;
 
-const int LOBBY_MAX_BUTTON = 6;
-const int LOBBY_MAX_ICON = 2;
-const int MENU_HEIGHT = 0;
-const int MENU_WIDTH = 0;
+const int LOGIN_MAX_BUTTON = 6;
+const int LOGIN_MAX_ICON = 3;
+
+const int LOBBY_MAX_BUTTON = 13;
+const int LOBBY_MAX_ICON = 3;
+
+const int ROOM_MAX_BUTTON = 11;
+const int ROOM_MAX_ICON = 3;
+
+const int GAME_MAX_BUTTON = 0;
+const int GAME_MAX_ICON = 0;
+
+const int MAX_BUTTON = 20;
+const int MAX_SCENE = 4;
+
+const int MENU_HEIGHT = 37;
+const int MENU_WIDTH = 17;
 
 const int MAIN_VERSION = 1;
 const int MINOR_VERSION = 0;
+
+const int MAX_CHAT_HISTORY = 50;
 
 void OutputDebugPrintf(const char* strOutputString,...);
