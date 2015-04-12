@@ -101,6 +101,36 @@ void CResourceManager::LoadPics( IWICImagingFactory * pIWICFactory, ID2D1HwndRen
 
 	edit.Load(pIWICFactory, render_target, L"pic\\edit.png");
 	edit_focus.Load(pIWICFactory, render_target, L"pic\\edit_focus.png");
+
+	/*Game UI*/
+
+	bottom_rect.Load(pIWICFactory, render_target, L"pic\\game_ui\\bottom_rect.png");
+	for(int i=1; i<=3; i++)
+	{
+		WCHAR buf[60];
+		swprintf_s(buf, L"pic\\game_ui\\bottom_icon%d.png", i);
+		bottom_icon[i].Load(pIWICFactory, render_target, buf);
+	}
+	item_box.Load(pIWICFactory, render_target, L"pic\\game_ui\\item_box.png");
+
+	avatar_back.Load(pIWICFactory, render_target, L"pic\\game_ui\\avatar_back.png");
+
+	exit_icon.Load(pIWICFactory, render_target, L"pic\\game_ui\\exit_icon.png");
+	help_icon.Load(pIWICFactory, render_target, L"pic\\game_ui\\help_icon.png");
+
+	timer_rect.Load(pIWICFactory, render_target, L"pic\\game_ui\\timer_rect.png");
+
+	panel_rect.Load(pIWICFactory, render_target, L"pic\\game_ui\\panel_rect.png");
+
+	avatar.Load(pIWICFactory, render_target, L"pic\\game_ui\\avatar.png");
+
+	for(int i=1; i<=MAX_PLAYER; i++)
+	{
+		WCHAR buf[60]={0};
+		swprintf_s(buf, L"pic\\game_ui\\user_back%d.png", i);
+		userinfo_rect[i].Load(pIWICFactory, render_target, buf);
+	}
+
 }
 
 void CResourceManager::InitTextFormat(IDWriteFactory* write_factory)

@@ -29,9 +29,10 @@ const int SPRITE_WIDTH = 32, SPRITE_HEIGHT = 32;
 const int MAP_WIDTH = GRID_WIDTH * GRIDNUM_WIDTH;
 const int MAP_HEIGHT = GRID_HEIGHT *GRIDNUM_HEIGHT;
 
-const int PADDING = 5;
+const int PADDING = 0;
 
 const int MAX_PLAYER = 4;
+const int MAX_ITEMS = 6;
 
 const int STOP=-1, DOWN=0, LEFT=1, RIGHT=2, UP=3;
 const CPoint DIRECT_VEC[]={CPoint(0,1), CPoint(-1,0), CPoint(1,0), CPoint(0,-1)};
