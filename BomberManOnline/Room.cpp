@@ -189,19 +189,19 @@ void CRoom::Render(ID2D1HwndRenderTarget* render_target)
 	RenderText(render_target, o_text, 551, 337, p_res_manager->p_text_format_Arial_32_bold, brush);
 
 	//player name text
-	text.Format(L"MAP NAME");
+	text.Format(L"PLAYER NAME");
 	o_text = text.GetString();
 	RenderText(render_target, o_text, 187, 222, p_res_manager->p_text_format_Arial_32_bold, brush);
 
-	text.Format(L"MAP NAME");
+	text.Format(L"PLAYER NAME");
 	o_text = text.GetString();
 	RenderText(render_target, o_text, 597, 222, p_res_manager->p_text_format_Arial_32_bold, brush);
 
-	text.Format(L"MAP NAME");
+	text.Format(L"PLAYER NAME");
 	o_text = text.GetString();
 	RenderText(render_target, o_text, 187, 337, p_res_manager->p_text_format_Arial_32_bold, brush);
 
-	text.Format(L"MAP NAME");
+	text.Format(L"PLAYER NAME");
 	o_text = text.GetString();
 	RenderText(render_target, o_text, 597, 337, p_res_manager->p_text_format_Arial_32_bold, brush);
 

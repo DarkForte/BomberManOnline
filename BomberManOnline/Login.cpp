@@ -138,7 +138,7 @@ void CLogin::Render(ID2D1HwndRenderTarget* render_target)
 	user_password.Draw(render_target, p_res_manager);
 
 	p_res_manager->login_icon_sprite[1].DrawImage(render_target, 315, 250, 150, 150, 0, 0);
-	p_res_manager->login_icon_sprite[2].DrawImage(render_target, 315, 250, 150, 150, 0, 0, 2.34375, 2.34375);
+	p_res_manager->login_icon_sprite[2].DrawImage(render_target, 315, 250, 150, 150, 0, 0);
 
 	SYSTEMTIME stTime;
 	GetLocalTime(&stTime);

@@ -218,35 +218,35 @@ void CLobby::Render(ID2D1HwndRenderTarget* render_target)
 	//room name text
 	text.Format(L"MAP NAME");
 	o_text = text.GetString();
-	RenderText(render_target, o_text, 222, 222, p_res_manager->p_text_format_Arial_32_bold, brush);
+	RenderText(render_target, o_text, 187, 222, p_res_manager->p_text_format_Arial_32_bold, brush);
 
 	text.Format(L"MAP NAME");
 	o_text = text.GetString();
-	RenderText(render_target, o_text, 618, 222, p_res_manager->p_text_format_Arial_32_bold, brush);
+	RenderText(render_target, o_text, 597, 222, p_res_manager->p_text_format_Arial_32_bold, brush);
 
 	text.Format(L"MAP NAME");
 	o_text = text.GetString();
-	RenderText(render_target, o_text, 222, 336, p_res_manager->p_text_format_Arial_32_bold, brush);
+	RenderText(render_target, o_text, 187, 336, p_res_manager->p_text_format_Arial_32_bold, brush);
 
 	text.Format(L"MAP NAME");
 	o_text = text.GetString();
-	RenderText(render_target, o_text, 618, 336, p_res_manager->p_text_format_Arial_32_bold, brush);
+	RenderText(render_target, o_text, 597, 336, p_res_manager->p_text_format_Arial_32_bold, brush);
 
 	text.Format(L"MAP NAME");
 	o_text = text.GetString();
-	RenderText(render_target, o_text, 208, 451, p_res_manager->p_text_format_Arial_32_bold, brush);
+	RenderText(render_target, o_text, 187, 451, p_res_manager->p_text_format_Arial_32_bold, brush);
 
 	text.Format(L"MAP NAME");
 	o_text = text.GetString();
-	RenderText(render_target, o_text, 618, 451, p_res_manager->p_text_format_Arial_32_bold, brush);
+	RenderText(render_target, o_text, 597, 451, p_res_manager->p_text_format_Arial_32_bold, brush);
 
 	text.Format(L"MAP NAME");
 	o_text = text.GetString();
-	RenderText(render_target, o_text, 208, 568, p_res_manager->p_text_format_Arial_32_bold, brush);
+	RenderText(render_target, o_text, 187, 568, p_res_manager->p_text_format_Arial_32_bold, brush);
 
 	text.Format(L"MAP NAME");
 	o_text = text.GetString();
-	RenderText(render_target, o_text, 618, 568, p_res_manager->p_text_format_Arial_32_bold, brush);
+	RenderText(render_target, o_text, 597, 568, p_res_manager->p_text_format_Arial_32_bold, brush);
 
 	//room detail
 	text.Format(L"1/4");
