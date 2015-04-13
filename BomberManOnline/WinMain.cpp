@@ -27,6 +27,19 @@ LRESULT CALLBACK WindProc(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam)
 		int yPos = GET_Y_LPARAM(lParam); 
 		application->OnLButtonDown(CPoint(xPos, yPos));
 	}
+	else if (message == WM_LBUTTONUP)
+	{
+		int xPos = GET_X_LPARAM(lParam);
+		int yPos = GET_Y_LPARAM(lParam);
+		application->OnLButtonUp(CPoint(xPos, yPos));
+	}
+	else if (message == WM_MOUSEMOVE)
+	{
+		int xPos = GET_X_LPARAM(lParam);
+		int yPos = GET_Y_LPARAM(lParam);
+		application->OnLButtonMove(CPoint(xPos, yPos));
+	}
+	
 	else if(message == WM_DESTROY)
 	{
 		PostQuitMessage(0);
@@ -58,18 +71,16 @@ int WINAPI WinMain( __in HINSTANCE hInstance, __in_opt HINSTANCE hPrevInstance, 
 	if(!RegisterClassEx(&wndclass))
 		return -1;
 
-	HWND hwnd=CreateWindow(L"wndclass", TAR_TITLE, WS_OVERLAPPED|WS_CAPTION|WS_SYSMENU|WS_MINIMIZEBOX,
-		CW_USEDEFAULT, CW_USEDEFAULT, WINDOW_WIDTH, WINDOW_HEIGHT, NULL,NULL, hInstance, NULL);//第三个参数控制了窗口的样式，合集为WS_OVERLAPPEDWINDOW
+	HWND hwnd = CreateWindow(L"wndclass", TAR_TITLE, WS_OVERLAPPEDWINDOW,
+		CW_USEDEFAULT, CW_USEDEFAULT, WINDOW_WIDTH + MENU_WIDTH, WINDOW_HEIGHT + MENU_HEIGHT, NULL, NULL, hInstance, NULL);//第三个参数控制了窗口的样式，合集为WS_OVERLAPPEDWINDOW
 
 	application = new CBomberManOnlineView();
 	application->SetHwnd(hwnd);
 	application->OnCreate();
 
-	MoveWindow(hwnd,250,80, WINDOW_WIDTH, WINDOW_HEIGHT, true);
+	MoveWindow(hwnd, 250, 80, WINDOW_WIDTH + MENU_WIDTH, WINDOW_HEIGHT + MENU_HEIGHT, true);
 	ShowWindow(hwnd,nShowCmd);
 	UpdateWindow(hwnd);
-
-
 
 	MSG msg={0};
 	float now_time;

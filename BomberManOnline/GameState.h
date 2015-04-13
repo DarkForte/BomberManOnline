@@ -2,5 +2,5 @@
 
 enum GameState
 {
-	LOBBY,INGAME
+	LOGIN,LOBBY,ROOM,INGAME
 };

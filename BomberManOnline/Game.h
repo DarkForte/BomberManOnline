@@ -9,6 +9,7 @@
 #include "SceneBase.h"
 #include "D2D1Header.h"
 
+
 class CGame : public CSceneBase
 {
 public:
@@ -20,6 +21,7 @@ public:
 	D2D1_RECT_F user_rect;
 
 	CPlayer player[MAX_PLAYER+1];
+	
 	int my_player;
 
 	CGameMap game_map;

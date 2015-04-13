@@ -348,7 +348,7 @@ GameState CGame::Update(float game_time)
 
 	if(player[my_player].Status() == PLAYER_STATUS::DEAD)
 	{
-		return LOBBY;
+		return LOGIN;
 	}
 
 	return INGAME;
