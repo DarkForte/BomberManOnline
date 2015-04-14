@@ -25,7 +25,7 @@ void SetD2D1Rect(D2D1_RECT_F *r, int left, int top, int right, int bottom)
 	r->bottom = bottom;
 }
 
-void CGame::Init(int player_num)
+void CGame::Init(int player_num, int map_num)
 {
 	SetD2D1Rect(&bottom_rect, PADDING, PADDING + MAP_HEIGHT, 
 		PADDING + MAP_WIDTH, WINDOW_HEIGHT - PADDING);
@@ -36,7 +36,7 @@ void CGame::Init(int player_num)
 
 	SetD2D1Rect(&map_area, PADDING, PADDING, MAP_WIDTH + PADDING, MAP_HEIGHT + PADDING);
 
-	game_map.Init();
+	game_map.Init(map_num);
 	bomb_manager.Init();
 
 	player[1].Init(0,0,0);
@@ -52,7 +52,7 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 {
 	int i,j;
 	
-	//Draw UI
+#pragma region Draw UI
 
 	using namespace D2D1;
 	ID2D1SolidColorBrush *brush;
@@ -122,8 +122,9 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 		now_left += target_width + offset;
 	}
 
-	//Draw Map
-	//p_res_manager->map_back.DrawImage(render_target, PADDING, PADDING, MAP_WIDTH, MAP_HEIGHT, 0, 0);
+#pragma endregion
+
+	//Draw Map, this draws the bottom panel of the map
 	for(i=0;i<GRIDNUM_WIDTH;i++)
 	{
 		for(j=0; j<GRIDNUM_HEIGHT; j++)
@@ -134,36 +135,11 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 				
 			p_res_manager->map_none.DrawImage(render_target,
 				target_x, target_y,
-				SPRITE_WIDTH, SPRITE_HEIGHT,
+				GRID_WIDTH, GRID_HEIGHT,
 				0, 0);
 		}
 	}
-	//Draw Map Elements
-	for(i=0;i<GRIDNUM_WIDTH;i++)
-	{
-		for(j=0; j<GRIDNUM_HEIGHT; j++)
-		{
-			MAP_ELEMENTS now_gridtype = game_map.GridType(i,j);
-			int target_x = i*GRID_WIDTH + PADDING;
-			int target_y = j*GRID_HEIGHT + PADDING;
-			if(now_gridtype == MAP_ELEMENTS::BOMB)
-			{
-				p_res_manager->bomb_sprite.DrawImage(render_target,
-				target_x, target_y,
-				SPRITE_WIDTH, SPRITE_HEIGHT,
-				SPRITE_WIDTH*9, 0);
-			}
-			else if(now_gridtype == MAP_ELEMENTS::FIRE)
-			{
-				p_res_manager->fire_sprite.DrawImage(render_target,
-				target_x,target_y,
-				SPRITE_WIDTH, SPRITE_HEIGHT,
-				SPRITE_WIDTH*9, 0);
-			}
-		}
-	}
 
-	
 	//Draw Players
 	for(i=1;i<=MAX_PLAYER;i++)
 	{
@@ -173,6 +149,38 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 				player[i].GetXPixel() + PADDING, player[i].GetYPixel()+PADDING,
 				SPRITE_WIDTH, SPRITE_HEIGHT, 
 				SPRITE_WIDTH * player[i].NowFrame(), SPRITE_HEIGHT * player[i].Facing());
+		}
+	}
+
+	//Draw Map Elements
+	for(i=0;i<GRIDNUM_WIDTH;i++)
+	{
+		for(j=0; j<GRIDNUM_HEIGHT; j++)
+		{
+			MAP_ELEMENTS now_gridtype = game_map.GridType(i,j);
+			int target_x = i*GRID_WIDTH + PADDING;
+			int target_y = j*GRID_HEIGHT + PADDING;
+			if(now_gridtype == MAP_ELEMENTS::OBSTACLE)
+			{
+				p_res_manager->map_obstacle.DrawImage(render_target,
+					target_x, target_y-GRID_HEIGHT,
+					GRID_WIDTH, GRID_HEIGHT*2,
+					0, 0);
+			}
+			else if(now_gridtype == MAP_ELEMENTS::BOMB)
+			{
+				p_res_manager->bomb_sprite.DrawImage(render_target,
+					target_x, target_y,
+					SPRITE_WIDTH, SPRITE_HEIGHT,
+					SPRITE_WIDTH*9, 0);
+			}
+			else if(now_gridtype == MAP_ELEMENTS::FIRE)
+			{
+				p_res_manager->fire_sprite.DrawImage(render_target,
+					target_x,target_y,
+					SPRITE_WIDTH, SPRITE_HEIGHT,
+					SPRITE_WIDTH*9, 0);
+			}
 		}
 	}
 
@@ -273,9 +281,8 @@ GameState CGame::Update(float game_time)
 	{
 		PointF next_pos_pixel = player[i].TryMove(game_time);
 		CPoint next_pos_judge = GetJudgePoint(next_pos_pixel);
-		if(game_map.InBound(next_pos_pixel) &&
-			 ( (player[i].SpecialAccess().second == true && player[i].SpecialAccess().first == next_pos_judge)
-			|| game_map.NoCollision(next_pos_pixel, player[i].GetMovingDirection()) ) )
+		if(game_map.InBound(next_pos_pixel) && 
+			game_map.NoCollision(next_pos_pixel, player[i].GetMovingDirection(), player[i].SpecialAccess() ) )
 		{
 			//OutputDebugPrintf("%lf %lf\n", player[my_player].GetPosPixel().x, player[my_player].GetPosPixel().y);
 			player[i].Move(game_time);

@@ -34,7 +34,7 @@ public:
 	~CGame(void);
 	CGame(CResourceManager *res_manager);
 
-	void Init(int player_num);
+	void Init(int player_num, int map_num);
 	void Render(ID2D1HwndRenderTarget* render_target);
 	void HandleKeyDown(UINT nchar);
 	void HandleKeyUp(UINT nchar);

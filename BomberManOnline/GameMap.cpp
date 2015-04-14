@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "GameMap.h"
-
+#include <fstream>
+using namespace std;
 
 CGameMap::CGameMap(void)
 {
@@ -21,14 +22,36 @@ void CGameMap::Init()
 
 }
 
+void CGameMap::Init( int map_number )
+{
+	Init();
+
+	char buf[20];
+	sprintf_s(buf, "data\\map%d.txt", map_number);
+	ifstream fin(buf);
+	
+	int nowx, nowy, type, index;
+	while(true)
+	{
+		fin>>nowx>>nowy>>type>>index;
+		if(nowx == -1)
+			break;
+		
+		grid[nowy][nowx].first = (MAP_ELEMENTS)type;
+		grid[nowy][nowx].second = index;
+	}
+}
+
 
 CGameMap::~CGameMap(void)
 {
 }
 
 
-bool CGameMap::NoCollision(PointF next_point, int direction)
+bool CGameMap::NoCollision(PointF next_point, int direction, pair<CPoint, bool> special_access)
 {
+	//No judge if I see the point is in special access.
+
 	int i,j;
 	PointF points[5];
 	points[1] = next_point;
@@ -39,7 +62,7 @@ bool CGameMap::NoCollision(PointF next_point, int direction)
 	//collision with obstacles
 	
 	//adjust, make character a little smaller in order to avoid stucking at the edge
-	const float fix=10;
+	const float fix=7;
 	//1:left up 2:right up 3:left down 4:right down
 	points[1] = points[1] + PointF(fix, fix);
 	points[2] = points[2] + PointF(-fix, fix);
@@ -53,9 +76,15 @@ bool CGameMap::NoCollision(PointF next_point, int direction)
 		int x = int(points[i].x / GRID_WIDTH);
 		int y = int(points[i].y / GRID_HEIGHT);
 
+		if(special_access.second==true && special_access.first == CPoint(x,y))
+		{
+			ok[i]=true;
+			continue;
+		}
+
 		if(grid[x][y].first == MAP_ELEMENTS::OBSTACLE || grid[x][y].first == MAP_ELEMENTS::DESTROYABLE || grid[x][y].first == MAP_ELEMENTS::BOMB)
 			ok[i] = false;
-		else 
+		else
 			ok[i] = true;
 	}
 

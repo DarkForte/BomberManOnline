@@ -18,7 +18,7 @@ public:
 	~CGameMap(void);
 
 	/*Verify whether next_point is ok to go*/
-	bool NoCollision(PointF next_point, int direction);
+	bool NoCollision(PointF next_point, int direction, pair<CPoint, bool> special_access);
 	bool InBound(PointF next_point);
 	bool InBound(CPoint p);
 
@@ -27,8 +27,9 @@ public:
 	MAP_ELEMENTS GridType(int x, int y);
 	int GetIndex(int x, int y);
 	void Update(float game_time);
+	
 	void Init();
-
+	void Init(int map_number);
 	//PointF AdjustPoint(PointF next_point, int direction);
 };
 

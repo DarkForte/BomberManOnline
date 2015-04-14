@@ -38,6 +38,10 @@ void CResourceManager::LoadPics( IWICImagingFactory * pIWICFactory, ID2D1HwndRen
 		player_sprite[i].Load(pIWICFactory, render_target, buf);
 	}
 
+	bomb_sprite.Load(pIWICFactory, render_target, L"pic\\bomb_sprite.png");
+	fire_sprite.Load(pIWICFactory, render_target, L"pic\\fire_sprite.png");
+
+#pragma region Lobby UI Loading
 	for (int i = 1; i <= ROOM_MAX_BUTTON; i++)
 	{
 		for (int j = 0; j < 3; j++)
@@ -65,7 +69,7 @@ void CResourceManager::LoadPics( IWICImagingFactory * pIWICFactory, ID2D1HwndRen
 			lobby_button_sprite[i][j].Load(pIWICFactory, render_target, buf);
 		}
 	}
-	
+
 	for (int i = 1; i <= LOBBY_MAX_ICON; i++)
 	{
 		WCHAR buf[60];
@@ -92,18 +96,15 @@ void CResourceManager::LoadPics( IWICImagingFactory * pIWICFactory, ID2D1HwndRen
 		login_icon_sprite[i].Load(pIWICFactory, render_target, buf);
 	}
 
-	bomb_sprite.Load(pIWICFactory, render_target, L"pic\\bomb_sprite.png");
-	fire_sprite.Load(pIWICFactory, render_target, L"pic\\fire_sprite.png");
-
 	login_ui.Load(pIWICFactory, render_target, L"pic\\login_b.png");
 	lobby_ui.Load(pIWICFactory, render_target, L"pic\\lobby_b.png");
 	room_ui.Load(pIWICFactory, render_target, L"pic\\room_b.png");
 
 	edit.Load(pIWICFactory, render_target, L"pic\\edit.png");
 	edit_focus.Load(pIWICFactory, render_target, L"pic\\edit_focus.png");
+#pragma endregion
 
-	/*Game UI*/
-
+#pragma region Game UI Loading
 	bottom_rect.Load(pIWICFactory, render_target, L"pic\\game_ui\\bottom_rect.png");
 	for(int i=1; i<=3; i++)
 	{
@@ -132,6 +133,11 @@ void CResourceManager::LoadPics( IWICImagingFactory * pIWICFactory, ID2D1HwndRen
 	}
 
 	map_none.Load(pIWICFactory, render_target, L"pic\\game_ui\\map_none.png");
+	map_obstacle.Load(pIWICFactory, render_target, L"pic\\game_ui\\map_obstacle.png");
+
+#pragma endregion
+
+	
 
 }
 
