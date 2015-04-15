@@ -159,6 +159,7 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 		for(j=0; j<GRIDNUM_HEIGHT; j++)
 		{
 			MAP_ELEMENTS now_gridtype = game_map.GridType(i,j);
+			int now_index = game_map.GetIndex(i,j);
 			int target_x = i*GRID_WIDTH + PADDING;
 			int target_y = j*GRID_HEIGHT + PADDING;
 			if(now_gridtype == MAP_ELEMENTS::OBSTACLE)
@@ -172,6 +173,14 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 			else if(now_gridtype == MAP_ELEMENTS::FIRE)
 			{
 				render_nodes.push_back(RenderNode(float(target_x), float(target_y), RenderType::MAPELE_FIRE));
+			}
+			else if(now_gridtype == MAP_ELEMENTS::DESTROYABLE)
+			{
+				render_nodes.push_back(RenderNode(float(target_x), float(target_y), RenderType::MAPELE_DESTROYABLE));
+			}
+			else if(now_gridtype == MAP_ELEMENTS::ITEM)
+			{
+				render_nodes.push_back(RenderNode(float(target_x), float(target_y), RenderType::MAPELE_ITEM, now_index));
 			}
 		}
 	}
@@ -188,7 +197,10 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 		}
 		else if(now.type == RenderType::MAPELE_DESTROYABLE)
 		{
-
+			p_res_manager->map_destroyable.DrawImage(render_target,
+				now.pos.x, now.pos.y-GRID_HEIGHT,
+				GRID_WIDTH, GRID_HEIGHT*2,
+				0, 0);
 		}
 		else if(now.type == RenderType::MAPELE_OBSTACLE)
 		{
@@ -203,6 +215,13 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 				now.pos.x, now.pos.y,
 				SPRITE_WIDTH, SPRITE_HEIGHT,
 				SPRITE_WIDTH*9, 0);
+		}
+		else if(now.type == RenderType::MAPELE_ITEM)
+		{
+			p_res_manager->icons.DrawImage(render_target,
+				now.pos.x, now.pos.y,
+				GRID_WIDTH, GRID_HEIGHT,
+				now.index%10*GRID_WIDTH, now.index/10*GRID_HEIGHT);
 		}
 		else if(now.type == RenderType::PLAYER)
 		{
@@ -291,11 +310,6 @@ void CGame::HandleKeyUp(UINT nchar)
 	}
 }
 
-void CGame::OperateBombs()
-{
-
-}
-
 CPoint GetJudgePoint(PointF point_pixel)
 {
 	float tmp_x = point_pixel.x/GRID_WIDTH;
@@ -321,6 +335,12 @@ GameState CGame::Update(float game_time)
 			if(now_judgegrid != player[i].SpecialAccess().first)
 			{
 				player[i].ShutSpecialAccess();
+			}
+
+			if(game_map.GridType(next_pos_judge.x, next_pos_judge.y) == MAP_ELEMENTS::ITEM)
+			{
+				TouchItem(i, game_map.GetIndex(now_judgegrid.x, now_judgegrid.y) );
+				game_map.SetGrid(now_judgegrid.x, now_judgegrid.y, MAP_ELEMENTS::NONE);
 			}
 		}
 		/*else if(player[i].GetMovingDirection() != STOP)
@@ -368,13 +388,22 @@ GameState CGame::Update(float game_time)
 			{
 				if(game_map.GridType(now_point.x, now_point.y) == MAP_ELEMENTS::DESTROYABLE)
 				{
-					game_map.SetGrid(now_point.x, now_point.y, MAP_ELEMENTS::NONE);
+					int bomb_result = CalcBombResult();
+					if(bomb_result == -1)
+					{
+						game_map.SetGrid(now_point.x, now_point.y, MAP_ELEMENTS::NONE);
+					}
+					else
+					{
+						game_map.SetGrid(now_point.x, now_point.y, MAP_ELEMENTS::ITEM, bomb_result);
+					}
 				}
 				else if(game_map.GridType(now_point.x, now_point.y) == MAP_ELEMENTS::BOMB)
 				{
 					int bomb_index = game_map.GetIndex(now_point.x, now_point.y);
 					bomb_manager.SuddenExplode(bomb_index);
 				}
+
 			}
 			
 		}
@@ -389,4 +418,53 @@ GameState CGame::Update(float game_time)
 	}
 
 	return INGAME;
+}
+
+int CGame::CalcBombResult()
+{
+	return rand()%3;
+}
+
+void CGame::TouchItem( int player_num, int item_index )
+{
+	if(item_index == int(Item::CAPACITY_UP))
+	{
+		if(player[player_num].BombCapacity() +1 <= player[player_num].MaxCapacity() )
+			player[player_num].SetBombCapacity(player[player_num].BombCapacity() +1);
+	}
+	else if(item_index == int(Item::POWER_UP))
+	{
+		if(player[player_num].GetBombPower() +1 <= player[player_num].MaxPower() )
+			player[player_num].SetBombPower(player[player_num].GetBombPower() +1);
+	}
+	else if(item_index == int(Item::SPEED_UP))
+	{
+		PointF now_speed = player[player_num].GetSpeed();
+		const float boost = 0.02;
+
+		if(now_speed.x + boost <= player[player_num].MaxSpeed() && now_speed.y + boost <= player[player_num].MaxSpeed() )
+			player[player_num].SetSpeed(now_speed.x + boost, now_speed.y + boost);
+		
+		OutputDebugPrintf("PlayerSpeed: %lf\n", player[player_num].GetXSpeed());
+	}
+	else if(item_index == int(Item::COIN_50))
+	{
+		money[player_num] += 50;
+	}
+	else if(item_index == int(Item::COIN_100))
+	{
+		money[player_num] += 100;
+	}
+	else if(item_index == int(Item::COIN_500))
+	{
+		money[player_num] += 500;
+	}
+	else if(item_index >= 10 && item_index < 20) //Disposable item
+	{
+
+	}
+	else if(item_index >= 20 && item_index < 30) //Transform
+	{
+
+	}
 }

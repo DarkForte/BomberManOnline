@@ -56,6 +56,9 @@ public:
 
 	CD2DImage map_none;
 	CD2DImage map_obstacle;
+	CD2DImage map_destroyable;
+
+	CD2DImage icons;
 #pragma endregion
 
 	

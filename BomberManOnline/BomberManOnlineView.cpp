@@ -6,6 +6,7 @@
 #include "BomberManOnlineView.h"
 #include "Game.h"
 #include "Login.h"
+#include <time.h>
 
 void CBomberManOnlineView::Init()
 {
@@ -16,6 +17,8 @@ void CBomberManOnlineView::Init()
 	p_lobby = new CLobby(p_res_manager);
 	p_room = new CRoom(p_res_manager);
 	game_state = LOGIN;
+
+	srand(unsigned(time(NULL)));
 
 	return;
 }

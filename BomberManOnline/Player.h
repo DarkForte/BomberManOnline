@@ -15,6 +15,10 @@ class CPlayer
 	int moving_state;
 	PLAYER_STATUS status;
 	
+	int max_capacity;
+	int max_power;
+	float max_speed;
+	
 	int bomb_capacity;
 	int bomb_power;
 	PointF speed;
@@ -99,5 +103,11 @@ public:
 	void ShutSpecialAccess();
 	void SetSpecialAccess(CPoint pos);
 
+	int MaxCapacity() const { return max_capacity; }
+	void SetMaxCapacity(int val) { max_capacity = val; }
+	int MaxPower() const { return max_power; }
+	void SetMaxPower(int val) { max_power = val; }
+	float MaxSpeed() const { return max_speed; }
+	void SetMaxSpeed(float val) { max_speed = val; }
 };
 

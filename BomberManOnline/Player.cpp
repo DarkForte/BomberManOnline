@@ -25,6 +25,12 @@ void CPlayer::Init(float x, float y, int type)
 {
 	pos.SetPoint(x,y);
 	this->type = type;
+	if(type == 0)
+	{
+		SetMaxCapacity(5);
+		SetMaxPower(10);
+		SetMaxSpeed(0.3);
+	}
 	
 	speed.SetPoint(0.2, 0.2);
 	hover = false;
@@ -260,4 +266,14 @@ void CPlayer::SetSpecialAccess( CPoint pos )
 {
 	special_access.first = pos;
 	special_access.second = true;
+}
+
+float CPlayer::GetXSpeed()
+{
+	return speed.x;
+}
+
+float CPlayer::GetYSpeed()
+{
+	return speed.y;
 }

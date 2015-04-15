@@ -8,13 +8,13 @@
 #include "GameState.h"
 #include "SceneBase.h"
 #include "D2D1Header.h"
-
+#include "Item.h"
 
 #pragma region RenderType Defination
 
 enum class RenderType
 {
-	MAPELE_DESTROYABLE, MAPELE_OBSTACLE, MAPELE_BOMB, MAPELE_FIRE, PLAYER
+	MAPELE_DESTROYABLE, MAPELE_OBSTACLE, MAPELE_BOMB, MAPELE_FIRE, MAPELE_ITEM, PLAYER
 };
 
 struct RenderNode
@@ -58,6 +58,8 @@ public:
 
 	CPlayer player[MAX_PLAYER+1];
 	
+	int money[MAX_PLAYER+1];
+
 	int my_player;
 
 	CGameMap game_map;
@@ -78,6 +80,7 @@ public:
 	GameState Update(float game_time);
 
 protected:
-	void OperateBombs();
+	int CalcBombResult();
+	void TouchItem(int player_num, int item_index);
 };
 

@@ -16,6 +16,13 @@ int main()
 		
 		cout<<x<<" "<<y<<" "<<1<<" 0"<<endl;
 	}
+	for(i=1; i<=30; i++)
+	{
+		int x=rand()%WIDTH;
+		int y=rand()%HEIGHT;
+		
+		cout<<x<<" "<<y<<" "<<2<<" 0"<<endl;
+	}
 	cout<<"-1 -1 -1 -1"<<endl;
 	return 0;
 }

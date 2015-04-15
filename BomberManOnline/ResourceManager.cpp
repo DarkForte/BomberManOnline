@@ -105,6 +105,7 @@ void CResourceManager::LoadPics( IWICImagingFactory * pIWICFactory, ID2D1HwndRen
 #pragma endregion
 
 #pragma region Game UI Loading
+
 	bottom_rect.Load(pIWICFactory, render_target, L"pic\\game_ui\\bottom_rect.png");
 	for(int i=1; i<=3; i++)
 	{
@@ -134,6 +135,8 @@ void CResourceManager::LoadPics( IWICImagingFactory * pIWICFactory, ID2D1HwndRen
 
 	map_none.Load(pIWICFactory, render_target, L"pic\\game_ui\\map_none.png");
 	map_obstacle.Load(pIWICFactory, render_target, L"pic\\game_ui\\map_obstacle.png");
+	map_destroyable.Load(pIWICFactory, render_target, L"pic\\game_ui\\map_destroyable.png");
+	icons.Load(pIWICFactory, render_target, L"pic\\icons.png");
 
 #pragma endregion
 
