@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Game.h"
+#include <algorithm>
 using namespace std;
 
 CGame::CGame(void)
@@ -47,6 +48,7 @@ void CGame::Init(int player_num, int map_num)
 	my_player = player_num;
 
 }
+
 
 void CGame::Render(ID2D1HwndRenderTarget* render_target)
 {
@@ -140,15 +142,14 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 		}
 	}
 
+	render_nodes.clear();
+
 	//Draw Players
 	for(i=1;i<=MAX_PLAYER;i++)
 	{
 		if(player[i].Status() == PLAYER_STATUS::NONE)
 		{
-			p_res_manager->player_sprite[i].DrawImage(render_target,
-				player[i].GetXPixel() + PADDING, player[i].GetYPixel()+PADDING,
-				SPRITE_WIDTH, SPRITE_HEIGHT, 
-				SPRITE_WIDTH * player[i].NowFrame(), SPRITE_HEIGHT * player[i].Facing());
+			render_nodes.push_back(RenderNode(player[i].GetPosPixel(), RenderType::PLAYER, i));
 		}
 	}
 
@@ -162,25 +163,54 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 			int target_y = j*GRID_HEIGHT + PADDING;
 			if(now_gridtype == MAP_ELEMENTS::OBSTACLE)
 			{
-				p_res_manager->map_obstacle.DrawImage(render_target,
-					target_x, target_y-GRID_HEIGHT,
-					GRID_WIDTH, GRID_HEIGHT*2,
-					0, 0);
+				render_nodes.push_back(RenderNode(float(target_x), float(target_y), RenderType::MAPELE_OBSTACLE) );
 			}
 			else if(now_gridtype == MAP_ELEMENTS::BOMB)
 			{
-				p_res_manager->bomb_sprite.DrawImage(render_target,
-					target_x, target_y,
-					SPRITE_WIDTH, SPRITE_HEIGHT,
-					SPRITE_WIDTH*9, 0);
+				render_nodes.push_back(RenderNode(float(target_x), float(target_y), RenderType::MAPELE_BOMB));
 			}
 			else if(now_gridtype == MAP_ELEMENTS::FIRE)
 			{
-				p_res_manager->fire_sprite.DrawImage(render_target,
-					target_x,target_y,
-					SPRITE_WIDTH, SPRITE_HEIGHT,
-					SPRITE_WIDTH*9, 0);
+				render_nodes.push_back(RenderNode(float(target_x), float(target_y), RenderType::MAPELE_FIRE));
 			}
+		}
+	}
+
+	sort(render_nodes.begin(), render_nodes.end());
+	for(RenderNode now : render_nodes)
+	{
+		if(now.type == RenderType::MAPELE_BOMB)
+		{
+			p_res_manager->bomb_sprite.DrawImage(render_target,
+				now.pos.x, now.pos.y,
+				SPRITE_WIDTH, SPRITE_HEIGHT,
+				SPRITE_WIDTH*9, 0);
+		}
+		else if(now.type == RenderType::MAPELE_DESTROYABLE)
+		{
+
+		}
+		else if(now.type == RenderType::MAPELE_OBSTACLE)
+		{
+			p_res_manager->map_obstacle.DrawImage(render_target,
+				now.pos.x, now.pos.y- GRID_HEIGHT,
+				GRID_WIDTH, GRID_HEIGHT*2,
+				0, 0);
+		}
+		else if(now.type == RenderType::MAPELE_FIRE)
+		{
+			p_res_manager->fire_sprite.DrawImage(render_target,
+				now.pos.x, now.pos.y,
+				SPRITE_WIDTH, SPRITE_HEIGHT,
+				SPRITE_WIDTH*9, 0);
+		}
+		else if(now.type == RenderType::PLAYER)
+		{
+			int now_i = now.index;
+			p_res_manager->player_sprite[now_i].DrawImage(render_target,
+				now.pos.x, now.pos.y,
+				SPRITE_WIDTH, SPRITE_HEIGHT, 
+				SPRITE_WIDTH * player[now_i].NowFrame(), SPRITE_HEIGHT * player[now_i].Facing());
 		}
 	}
 

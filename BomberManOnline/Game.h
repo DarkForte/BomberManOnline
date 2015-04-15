@@ -10,6 +10,42 @@
 #include "D2D1Header.h"
 
 
+#pragma region RenderType Defination
+
+enum class RenderType
+{
+	MAPELE_DESTROYABLE, MAPELE_OBSTACLE, MAPELE_BOMB, MAPELE_FIRE, PLAYER
+};
+
+struct RenderNode
+{
+	PointF pos;//pos: the bottom point
+	RenderType type;
+	int index;
+	RenderNode(PointF p, RenderType t, int i=0)
+	{
+		pos=p;
+		type=t;
+		index=i;
+	}
+	RenderNode(float x, float y, RenderType t, int i=0)
+	{
+		pos.x=x;
+		pos.y=y;
+		type=t;
+		index=i;
+	}
+
+	bool operator < (const RenderNode &b)const
+	{
+		return pos.y < b.pos.y;
+	}
+};
+
+
+
+#pragma endregion
+
 class CGame : public CSceneBase
 {
 public:
@@ -28,6 +64,7 @@ public:
 	CBombManager bomb_manager;
 
 	vector<CBomb> exploding_bombs;
+	vector<RenderNode> render_nodes;
 
 public:
 	CGame(void);
