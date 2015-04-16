@@ -82,5 +82,6 @@ public:
 protected:
 	int CalcBombResult();
 	void TouchItem(int player_num, int item_index);
+	void UseItem(int user, Item item);
 };
 

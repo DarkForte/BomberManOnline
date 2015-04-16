@@ -69,6 +69,9 @@
     <ClCompile Include="RenderText.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="MovingObjects.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -138,6 +141,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="RenderText.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MovingObjects.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

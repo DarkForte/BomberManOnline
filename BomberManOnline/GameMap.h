@@ -6,7 +6,7 @@ using namespace std;
 
 enum class MAP_ELEMENTS
 {
-	NONE, OBSTACLE, DESTROYABLE, ITEM, FIRE, BOMB, TRAP
+	NONE, OBSTACLE, DESTROYABLE, ITEM, FIRE, BOMB
 };
 
 class CGameMap

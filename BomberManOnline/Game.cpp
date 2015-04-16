@@ -142,10 +142,9 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 	RenderText(render_target, wstring(buf), now_left + 0.8*target_width, ICON_TOP + 0.8*target_height, 
 		p_res_manager->p_corner_number_format, black_brush);
 
-	OutputDebugPrintf("haha: %lf\n", DEFAULT_SPEED);
 
 	now_left += ICON_OFFSET + target_width;
-	swprintf_s(buf, L"%d",  int( (player[my_player].GetXSpeed() - DEFAULT_SPEED)/DELTA_SPEED +1));
+	swprintf_s(buf, L"%d",  int( (player[my_player].GetXSpeed() - DEFAULT_SPEED)/DELTA_SPEED +1 +1e-6));
 	RenderText(render_target, wstring(buf), now_left + 0.8*target_width, ICON_TOP + 0.8*target_height, 
 		p_res_manager->p_corner_number_format, black_brush);
 
@@ -313,6 +312,11 @@ void CGame::HandleKeyDown(UINT nchar)
 			player[my_player].SetSpecialAccess(player_pos);
 		}
 	}
+	if('1' <= nchar && nchar <= '6')
+	{
+		player[my_player].PopItem(nchar - '0');
+		
+	}
 }
 
 void CGame::HandleKeyUp(UINT nchar)
@@ -452,24 +456,26 @@ int CGame::CalcBombResult()
 
 void CGame::TouchItem( int num, int item_index )
 {
-	if(item_index == int(Item::CAPACITY_UP))
+	Item now_item = Item(item_index);
+
+	if(now_item == Item::CAPACITY_UP)
 	{
 		if(player[num].BombCapacity() +1 <= player[num].MaxCapacity() )
 			player[num].SetBombCapacity(player[num].BombCapacity() +1);
 	}
-	else if(item_index == int(Item::POWER_UP))
+	else if(now_item == Item::POWER_UP)
 	{
 		if(player[num].GetBombPower() +1 <= player[num].MaxPower() )
 			player[num].SetBombPower(player[num].GetBombPower() +1);
 	}
-	else if(item_index == int(Item::SPEED_UP))
+	else if(now_item == Item::SPEED_UP)
 	{
 		PointF now_speed = player[num].GetSpeed();
 
 		if(now_speed.x + DELTA_SPEED <= player[num].MaxSpeed() && now_speed.y + DELTA_SPEED <= player[num].MaxSpeed() )
 			player[num].SetSpeed(now_speed.x + DELTA_SPEED, now_speed.y + DELTA_SPEED);
 	}
-	else if(item_index == int(Item::RANDOM_EFFECT))
+	else if(now_item == Item::RANDOM_EFFECT)
 	{
 		int target = rand()%3;
 		int delta = rand()%2;
@@ -504,24 +510,50 @@ void CGame::TouchItem( int num, int item_index )
 			}
 		}
 	}
-	else if(item_index == int(Item::COIN_50))
+	else if(now_item == Item::COIN_50)
 	{
 		money[num] += 50;
 	}
-	else if(item_index == int(Item::COIN_100))
+	else if(now_item == Item::COIN_100)
 	{
 		money[num] += 100;
 	}
-	else if(item_index == int(Item::COIN_500))
+	else if(now_item == Item::COIN_500)
 	{
 		money[num] += 500;
 	}
-	else if(item_index >= 10 && item_index < 20) //Disposable item
+
+	//Disposable item
+	else if(item_index >= 10 && item_index < 20) 
+	{
+		if(now_item == Item::GLUE)
+		{
+			player[num].AddItem(Item::GLUE, 3);
+		}
+		else
+		{
+			player[num].AddItem(now_item);
+		}
+	}
+
+	//Transform
+	else if(item_index >= 20 && item_index < 30) 
 	{
 
 	}
-	else if(item_index >= 20 && item_index < 30) //Transform
+}
+
+void CGame::UseItem( int user, Item item )
+{
+	CPoint now_pos = player[user].GetPosJudgeGrid();
+	if(item == Item::BANANA)
+	{
+		game_map.SetGrid(now_pos.x, now_pos.y, MAP_ELEMENTS::ITEM, int(Item::TRAP_BANANA));
+		player[user].SetSpecialAccess(now_pos);
+	}
+	else if(item == Item::BOMB_INVIS)
 	{
 
 	}
+	
 }
