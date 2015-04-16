@@ -4,6 +4,7 @@
 #include "D2D1Header.h"
 #include "Button.h"
 #include "Edit.h"
+#include "RenderText.h"
 
 class CLogin : public CSceneBase
 {

@@ -37,12 +37,11 @@ const int MAX_ITEMS = 6;
 const int STOP=-1, DOWN=0, LEFT=1, RIGHT=2, UP=3;
 const CPoint DIRECT_VEC[]={CPoint(0,1), CPoint(-1,0), CPoint(1,0), CPoint(0,-1)};
 
-const int TIMER_RENDER=1;
-const int MAX_FPS = 1000;
-
 const float DEFAULT_BOMBTIME = 2000;
 const int DEFAULT_BOMBPOWER = 5;
 const int DEFAULT_FIRETIME = 300;
+const float DEFAULT_SPEED = 0.2f;
+const float DELTA_SPEED = 0.02f;
 
 const int LOGIN_MAX_BUTTON = 6;
 const int LOGIN_MAX_ICON = 3;

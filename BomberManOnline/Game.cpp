@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Game.h"
 #include <algorithm>
+#include "RenderText.h"
 using namespace std;
 
 CGame::CGame(void)
@@ -52,13 +53,15 @@ void CGame::Init(int player_num, int map_num)
 
 void CGame::Render(ID2D1HwndRenderTarget* render_target)
 {
-	int i,j;
 	
+
+	int i,j;
+    WCHAR buf[20];
 #pragma region Draw UI
 
 	using namespace D2D1;
-	ID2D1SolidColorBrush *brush;
-	render_target->CreateSolidColorBrush(ColorF(ColorF::Gainsboro), &brush);
+	ID2D1SolidColorBrush *black_brush;
+	render_target->CreateSolidColorBrush(ColorF(ColorF::Black), &black_brush);
 
 	ID2D1SolidColorBrush *stroke_brush;
 	render_target->CreateSolidColorBrush(ColorF(ColorF::DarkGray), &stroke_brush);
@@ -98,31 +101,53 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 	}
 
 	////////Bottom Icons
+	const int ICON_LEFT = bottom_rect.left + 20;
+	const int ICON_TOP = bottom_rect.top + 20;
+	const int ICON_OFFSET = 10;
+	const int ICON_BOX_DIS = 70;
+
 	float icon_width = p_res_manager->bottom_icon[1].GetWidth();
 	float icon_height = p_res_manager->bottom_icon[1].GetHeight();
 	target_width = icon_width;
 	target_height = icon_height;
-	int offset = 10;
-	int now_left = bottom_rect.left + 10;
+	int offset = ICON_OFFSET;
+	int now_left = ICON_LEFT;
 	for(i=1;i<=3;i++)
 	{
 		p_res_manager->bottom_icon[i].DrawImage(render_target,
-			now_left, bottom_rect.top + 10, icon_width, icon_height, 0,0);
+			now_left, ICON_TOP, icon_width, icon_height, 0,0);
 		now_left += icon_width + offset;
 	}
 
 	/////////Item Boxes
 	icon_width = p_res_manager->item_box.GetWidth();
 	icon_height = p_res_manager->item_box.GetHeight();
-	offset = 10;
-	now_left += 70;
+	now_left += ICON_BOX_DIS;
 	for(i=1;i<=MAX_ITEMS;i++)
 	{
 		p_res_manager->item_box.DrawImage(render_target,
-			now_left, bottom_rect.top + 10, icon_width, icon_height, 0,0, 
+			now_left, ICON_TOP, icon_width, icon_height, 0,0, 
 			target_width/icon_width, target_height/icon_height);
 		now_left += target_width + offset;
 	}
+
+	//////////Corner Numbers
+	now_left = ICON_LEFT;
+	swprintf_s(buf, L"%d", player[my_player].GetBombCapacity() );
+	RenderText(render_target, wstring(buf), now_left + 0.8*target_width, ICON_TOP + 0.8*target_height, 
+		p_res_manager->p_corner_number_format, black_brush);
+
+	now_left += ICON_OFFSET + target_width;
+	swprintf_s(buf, L"%d", player[my_player].GetBombPower() );
+	RenderText(render_target, wstring(buf), now_left + 0.8*target_width, ICON_TOP + 0.8*target_height, 
+		p_res_manager->p_corner_number_format, black_brush);
+
+	OutputDebugPrintf("haha: %lf\n", DEFAULT_SPEED);
+
+	now_left += ICON_OFFSET + target_width;
+	swprintf_s(buf, L"%d",  int( (player[my_player].GetXSpeed() - DEFAULT_SPEED)/DELTA_SPEED +1));
+	RenderText(render_target, wstring(buf), now_left + 0.8*target_width, ICON_TOP + 0.8*target_height, 
+		p_res_manager->p_corner_number_format, black_brush);
 
 #pragma endregion
 
@@ -236,7 +261,7 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 	//Draw Map Border
 	render_target->DrawRectangle(&map_area, stroke_brush, 1);
 
-	SafeRelease(&brush);
+	SafeRelease(&black_brush);
 	SafeRelease(&stroke_brush);
 }
 
@@ -422,42 +447,74 @@ GameState CGame::Update(float game_time)
 
 int CGame::CalcBombResult()
 {
-	return rand()%3;
+	return rand()%4;
 }
 
-void CGame::TouchItem( int player_num, int item_index )
+void CGame::TouchItem( int num, int item_index )
 {
 	if(item_index == int(Item::CAPACITY_UP))
 	{
-		if(player[player_num].BombCapacity() +1 <= player[player_num].MaxCapacity() )
-			player[player_num].SetBombCapacity(player[player_num].BombCapacity() +1);
+		if(player[num].BombCapacity() +1 <= player[num].MaxCapacity() )
+			player[num].SetBombCapacity(player[num].BombCapacity() +1);
 	}
 	else if(item_index == int(Item::POWER_UP))
 	{
-		if(player[player_num].GetBombPower() +1 <= player[player_num].MaxPower() )
-			player[player_num].SetBombPower(player[player_num].GetBombPower() +1);
+		if(player[num].GetBombPower() +1 <= player[num].MaxPower() )
+			player[num].SetBombPower(player[num].GetBombPower() +1);
 	}
 	else if(item_index == int(Item::SPEED_UP))
 	{
-		PointF now_speed = player[player_num].GetSpeed();
-		const float boost = 0.02;
+		PointF now_speed = player[num].GetSpeed();
 
-		if(now_speed.x + boost <= player[player_num].MaxSpeed() && now_speed.y + boost <= player[player_num].MaxSpeed() )
-			player[player_num].SetSpeed(now_speed.x + boost, now_speed.y + boost);
-		
-		OutputDebugPrintf("PlayerSpeed: %lf\n", player[player_num].GetXSpeed());
+		if(now_speed.x + DELTA_SPEED <= player[num].MaxSpeed() && now_speed.y + DELTA_SPEED <= player[num].MaxSpeed() )
+			player[num].SetSpeed(now_speed.x + DELTA_SPEED, now_speed.y + DELTA_SPEED);
+	}
+	else if(item_index == int(Item::RANDOM_EFFECT))
+	{
+		int target = rand()%3;
+		int delta = rand()%2;
+		if(delta == 0)
+			delta = -1;
+
+		if(target == 0)
+		{
+			if(player[num].BombCapacity() + delta >= 1 &&
+				player[num].BombCapacity() + delta <= player[num].MaxCapacity())
+			{
+				player[num].SetBombCapacity(player[num].BombCapacity() + delta);
+			}
+		}
+		else if(target == 1)
+		{
+			if(player[num].GetBombPower() + delta >= 1 &&
+				player[num].GetBombPower() + delta <= player[num].MaxPower())
+			{
+				player[num].SetBombPower(player[num].GetBombPower() + delta);
+			}
+		}
+		else if(target == 2)
+		{
+			float vx = player[num].GetXSpeed();
+			float vy = player[num].GetYSpeed();
+
+			if(vx + float(delta)*DELTA_SPEED >= DEFAULT_SPEED && vy + float(delta)*DELTA_SPEED >= DEFAULT_SPEED
+				&& vx + float(delta)*DELTA_SPEED <= player[num].MaxSpeed() && vy + float(delta)*DELTA_SPEED <=player[num].MaxSpeed())
+			{
+				player[num].SetSpeed(vx + float(delta)*DELTA_SPEED, vy + float(delta)*DELTA_SPEED);
+			}
+		}
 	}
 	else if(item_index == int(Item::COIN_50))
 	{
-		money[player_num] += 50;
+		money[num] += 50;
 	}
 	else if(item_index == int(Item::COIN_100))
 	{
-		money[player_num] += 100;
+		money[num] += 100;
 	}
 	else if(item_index == int(Item::COIN_500))
 	{
-		money[player_num] += 500;
+		money[num] += 500;
 	}
 	else if(item_index >= 10 && item_index < 20) //Disposable item
 	{

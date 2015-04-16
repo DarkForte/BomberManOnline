@@ -36,6 +36,7 @@ public:
 	IDWriteTextFormat* p_text_format_Arial_32_bold;
 	IDWriteTextFormat* p_text_format_Arial_28;
 	IDWriteTextFormat* p_text_format_Arial_28_bold;
+	IDWriteTextFormat* p_corner_number_format;
 #pragma endregion
 
 #pragma region Game UI Definations
