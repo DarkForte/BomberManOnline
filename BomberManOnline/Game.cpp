@@ -19,7 +19,7 @@ CGame::CGame(CResourceManager *res_manager)
 	p_res_manager = res_manager;
 }
 
-void SetD2D1Rect(D2D1_RECT_F *r, int left, int top, int right, int bottom)
+void SetD2D1Rect(D2D1_RECT_F *r, float left, float top, float right, float bottom)
 {
 	r->left = left;
 	r->top = top;
@@ -53,10 +53,9 @@ void CGame::Init(int player_num, int map_num)
 
 void CGame::Render(ID2D1HwndRenderTarget* render_target)
 {
-	
-
 	int i,j;
     WCHAR buf[20];
+
 #pragma region Draw UI
 
 	using namespace D2D1;
@@ -103,7 +102,7 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 	////////Bottom Icons
 	const int ICON_LEFT = bottom_rect.left + 20;
 	const int ICON_TOP = bottom_rect.top + 20;
-	const int ICON_OFFSET = 10;
+	const int ICON_OFFSET = 15;
 	const int ICON_BOX_DIS = 70;
 
 	float icon_width = p_res_manager->bottom_icon[1].GetWidth();
@@ -128,6 +127,18 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 		p_res_manager->item_box.DrawImage(render_target,
 			now_left, ICON_TOP, icon_width, icon_height, 0,0, 
 			target_width/icon_width, target_height/icon_height);
+		swprintf_s(buf, L"%d", i);
+		RenderText(render_target, buf, now_left+7, ICON_TOP+5,
+			p_res_manager->p_corner_number_format, black_brush);
+		
+		int now_item = int(player[my_player].PeekItem(i).first);
+		if(now_item != int(Item::NONE))
+		{
+			p_res_manager->icons.DrawImage(render_target,
+				now_left+15,ICON_TOP+15, ITEM_WIDTH, ITEM_HEIGHT, 
+				(now_item%10)*ITEM_WIDTH, (now_item/10)*ITEM_HEIGHT, 
+				0.6*target_width/ITEM_WIDTH, 0.6*target_height/ITEM_HEIGHT);
+		}
 		now_left += target_width + offset;
 	}
 
@@ -171,7 +182,7 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 	//Draw Players
 	for(i=1;i<=MAX_PLAYER;i++)
 	{
-		if(player[i].Status() == PLAYER_STATUS::NONE)
+		if(player[i].Status() != PLAYER_STATUS::DEAD)
 		{
 			render_nodes.push_back(RenderNode(player[i].GetPosPixel(), RenderType::PLAYER, i));
 		}
@@ -192,7 +203,16 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 			}
 			else if(now_gridtype == MAP_ELEMENTS::BOMB)
 			{
-				render_nodes.push_back(RenderNode(float(target_x), float(target_y), RenderType::MAPELE_BOMB));
+				int now_owner = bomb_manager.GetBomb(now_index).Owner();
+				if(player[now_owner].Status() == PLAYER_STATUS::BOMB_INVIS)
+				{
+					if(player[now_owner].Team() == player[my_player].Team())
+						render_nodes.push_back(RenderNode(float(target_x), float(target_y), RenderType::MAPELE_BOMB));
+				}
+				else
+				{
+					render_nodes.push_back(RenderNode(float(target_x), float(target_y), RenderType::MAPELE_BOMB));
+				}
 			}
 			else if(now_gridtype == MAP_ELEMENTS::FIRE)
 			{
@@ -245,7 +265,8 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 			p_res_manager->icons.DrawImage(render_target,
 				now.pos.x, now.pos.y,
 				GRID_WIDTH, GRID_HEIGHT,
-				now.index%10*GRID_WIDTH, now.index/10*GRID_HEIGHT);
+				now.index%10*ITEM_WIDTH, now.index/10*ITEM_HEIGHT,
+				GRID_WIDTH/ITEM_WIDTH, GRID_HEIGHT/ITEM_HEIGHT);
 		}
 		else if(now.type == RenderType::PLAYER)
 		{
@@ -314,7 +335,13 @@ void CGame::HandleKeyDown(UINT nchar)
 	}
 	if('1' <= nchar && nchar <= '6')
 	{
-		player[my_player].PopItem(nchar - '0');
+		int index = nchar-'0';
+		pair<Item, int> now_item = player[my_player].PeekItem(index);
+		if(now_item.first != Item::NONE)
+		{
+			UseItem(my_player, now_item.first);
+			player[my_player].PopItem(index);
+		}
 		
 	}
 }
@@ -348,10 +375,14 @@ CPoint GetJudgePoint(PointF point_pixel)
 
 GameState CGame::Update(float game_time)
 {
-	//move player
+	//update player
 	int i;
 	for(i=1; i<=MAX_PLAYER; i++)
 	{
+		player[i].Update(game_time);
+		if(player[i].Status() == PLAYER_STATUS::DEAD)
+			continue;
+
 		PointF next_pos_pixel = player[i].TryMove(game_time);
 		CPoint next_pos_judge = GetJudgePoint(next_pos_pixel);
 		if(game_map.InBound(next_pos_pixel) && 
@@ -366,17 +397,23 @@ GameState CGame::Update(float game_time)
 				player[i].ShutSpecialAccess();
 			}
 
-			if(game_map.GridType(next_pos_judge.x, next_pos_judge.y) == MAP_ELEMENTS::ITEM)
+			if(game_map.GridType(next_pos_judge.x, next_pos_judge.y) == MAP_ELEMENTS::ITEM 
+				&& (player[i].SpecialAccess().second==false || player[i].SpecialAccess().first != now_judgegrid))
 			{
 				TouchItem(i, game_map.GetIndex(now_judgegrid.x, now_judgegrid.y) );
 				game_map.SetGrid(now_judgegrid.x, now_judgegrid.y, MAP_ELEMENTS::NONE);
 			}
 		}
-		/*else if(player[i].GetMovingDirection() != STOP)
+		else if(player[i].GetMovingDirection() != STOP)
 		{
-			PointF adjusted_point = game_map.AdjustPoint(next_pos_pixel, player[i].GetMovingDirection());
-			player[i].SetPosPixel(adjusted_point.x, adjusted_point.y);
-		}*/
+			if(player[i].Status() == PLAYER_STATUS::FLIPPING)
+			{
+				player[i].SetStatus(PLAYER_STATUS::NONE);
+				player[i].ClearMovingState();
+			}
+			/*PointF adjusted_point = game_map.AdjustPoint(next_pos_pixel, player[i].GetMovingDirection());
+			player[i].SetPosPixel(adjusted_point.x, adjusted_point.y);*/
+		}
 	}
 	
 	//update map
@@ -406,7 +443,7 @@ GameState CGame::Update(float game_time)
 				{
 					if(player[i_player].GetPosJudgeGrid() == now_point)
 					{
-						player[i_player].SetStatus(PLAYER_STATUS::DEAD);
+						player[i_player].SetStatus(PLAYER_STATUS::WRAPPED, DEFAULT_WRAPTIME);
 					}
 				}
 				now_point += DIRECT_VEC[i_direct];
@@ -451,7 +488,7 @@ GameState CGame::Update(float game_time)
 
 int CGame::CalcBombResult()
 {
-	return rand()%4;
+	return int(Item::LASER);
 }
 
 void CGame::TouchItem( int num, int item_index )
@@ -541,19 +578,57 @@ void CGame::TouchItem( int num, int item_index )
 	{
 
 	}
+
+	//Trap item
+	else if(item_index >= 30 && item_index < 40)
+	{
+		if(now_item == Item::TRAP_BANANA)
+		{
+			player[num].SetStatus(PLAYER_STATUS::FLIPPING);
+		}
+		else if(now_item == Item::TRAP_GLUE)
+		{
+			player[num].SetStatus(PLAYER_STATUS::SLOW, 10000);
+		}
+		else if(now_item == Item::TRAP_LASER)
+		{
+			player[num].SetStatus(PLAYER_STATUS::WRAPPED, DEFAULT_WRAPTIME);
+		}
+	}
 }
 
 void CGame::UseItem( int user, Item item )
 {
 	CPoint now_pos = player[user].GetPosJudgeGrid();
-	if(item == Item::BANANA)
+	if(item == Item::BANANA || item == Item::GLUE || item == Item::LASER)
 	{
-		game_map.SetGrid(now_pos.x, now_pos.y, MAP_ELEMENTS::ITEM, int(Item::TRAP_BANANA));
+		game_map.SetGrid(now_pos.x, now_pos.y, MAP_ELEMENTS::ITEM, int(item)+20);
 		player[user].SetSpecialAccess(now_pos);
 	}
 	else if(item == Item::BOMB_INVIS)
 	{
+		player[user].SetStatus(PLAYER_STATUS::BOMB_INVIS, 10);
+	}
+	else if(item == Item::OXYGEN)
+	{
+		if(player[user].Status() == PLAYER_STATUS::WRAPPED)
+		{
+			player[user].SetStatus(PLAYER_STATUS::WRAPPED, player[user].StatusTime() + 1000);
+		}
+	}
+	else if(item == Item::DART)
+	{
 
 	}
-	
+	else if(item == Item::ESCAPE)
+	{
+		if(player[user].Status() == PLAYER_STATUS::WRAPPED)
+		{
+			player[user].SetStatus(PLAYER_STATUS::NONE);
+		}
+	}
+	else if(item == Item::CONTROLLER)
+	{
+		bomb_manager.ExplodeAllBy(user);
+	}
 }

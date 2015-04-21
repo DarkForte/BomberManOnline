@@ -6,17 +6,22 @@ using namespace std;
 
 enum class PLAYER_STATUS
 {
-	NONE, DEAD
+	NONE, WRAPPED, DEAD, FLIPPING, SLOW, BOMB_INVIS
+};
+
+enum class PLAYER_TRANSFORM
+{
+	NONE
 };
 
 class CPlayer : public CMovingObjects
 {
 	static float frame_time;
 	int now_frame;
-	int rest_frametime;
+	float rest_frametime;
 
 	int moving_state;
-	PLAYER_STATUS status;
+	pair<PLAYER_STATUS, float> status;
 	
 	int max_capacity;
 	int max_power;
@@ -25,15 +30,19 @@ class CPlayer : public CMovingObjects
 	int bomb_capacity;
 	int bomb_power;
 
+	/*PointF back_speed;
+	int back_capacity;
+	int back_power;*/
 
 	bool hover, reverse;
 	int type;
 
+	int team;
 	int now_bombs;
 	int facing;
 
 	pair<CPoint, bool> special_access;
-	pair<Item, int> items[7];
+	pair<Item, int> items[MAX_ITEMS+1];
 
 public:
 	CPlayer(void);
@@ -59,9 +68,9 @@ public:
 	void SetNowBombs(int bombs);
 	void CancelMovingState(int state);
 	
-	
-	PLAYER_STATUS Status() const { return status; }
-	void SetStatus(PLAYER_STATUS val) { status = val; }
+	PLAYER_STATUS Status() const { return status.first; }
+	float StatusTime() const {return status.second; }
+	void SetStatus(PLAYER_STATUS v1, float v2=0);
 	int Facing() const { return facing; }
 
 	pair<CPoint, bool> SpecialAccess() const { return special_access; }
@@ -83,5 +92,15 @@ public:
 
 	int GetMovingDirection();
 	void Move(float game_time);
+	PointF TryMove(float game_time);
+	void Update(float game_time);
+
+	int Team() const { return team; }
+	void Team(int val) { team = val; }
+
+	void ClearMovingState();
+protected:
+	/*void BackupStatus();
+	void RestoreStatus();*/
 };
 

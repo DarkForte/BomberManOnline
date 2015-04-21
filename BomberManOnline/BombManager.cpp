@@ -54,8 +54,27 @@ void CBombManager::Init()
 
 void CBombManager::SuddenExplode( int index )
 {
-	assert(index >= 0);
+	ASSERT(index >= 0);
 
 	bombs[index%MAX_BOMBS].first.SetRemainTime(0);
 	return;
+}
+
+void CBombManager::ExplodeAllBy( int user )
+{
+	int i;
+	for(i=p_bombs_start; i!=cnt_bombs; i=(i+1)%MAX_BOMBS)
+	{
+		if(bombs[i].second == true && bombs[i].first.Owner() == user)
+		{
+			SuddenExplode(i);
+		}
+	}
+}
+
+CBomb CBombManager::GetBomb( int index )
+{
+	ASSERT(index>=0 && bombs[index%MAX_BOMBS].second == true);
+
+	return bombs[index%MAX_BOMBS].first;
 }

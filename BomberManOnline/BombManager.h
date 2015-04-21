@@ -21,5 +21,7 @@ public:
 	int AddBomb(CBomb &p_bomb);
 	vector<CBomb> Update(float game_time);
 	void SuddenExplode(int index);
+	void ExplodeAllBy(int user);
+	CBomb GetBomb(int index);
 };
 
