@@ -9,6 +9,7 @@
 #include "SceneBase.h"
 #include "D2D1Header.h"
 #include "Item.h"
+#include <list>
 
 #pragma region RenderType Defination
 
@@ -67,6 +68,7 @@ public:
 
 	vector<CBomb> exploding_bombs;
 	vector<RenderNode> render_nodes;
+	list<CMovingObjects> darts;
 
 public:
 	CGame(void);

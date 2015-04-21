@@ -98,7 +98,7 @@ int WINAPI WinMain( __in HINSTANCE hInstance, __in_opt HINSTANCE hPrevInstance, 
 		now_time = timeGetTime();
 		if(now_time - last_time >= 1000/MAX_FPS)
 		{
-			OutputDebugPrintf("%lf\n", now_time - last_time);
+			//OutputDebugPrintf("%lf\n", now_time - last_time);
 			application->Update(now_time - last_time);
 			application->OnRender();
 			last_time = now_time;

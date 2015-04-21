@@ -14,6 +14,7 @@ protected:
 public:
 	CMovingObjects(void);
 	virtual ~CMovingObjects(void);
+	CMovingObjects(CPoint p, float s, int dir);
 
 	void SetPosPixel(float x, float y);
 
@@ -50,6 +51,6 @@ public:
 	virtual int GetMovingDirection(){return direction;}
 	virtual void Move(float game_time);
 	CPoint NextGrid(int direction);
-	PointF TryMove(float game_time);
+	virtual PointF TryMove(float game_time);
 };
 

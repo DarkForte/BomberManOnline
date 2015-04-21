@@ -172,16 +172,31 @@ int CGameMap::GetIndex( int x, int y )
 	return grid[x][y].second;
 }
 
-/*PointF CGameMap::AdjustPoint( PointF next_point, int direction )
+PointF CGameMap::RepelPoint( PointF next_point, int direction )
 {
-	if(VerifyPoint(next_point, direction) == true)
-		return next_point;
-
 	PointF points[5];
 	points[1] = next_point;
 	points[2] = next_point + PointF(SPRITE_WIDTH, 0);
 	points[3] = next_point + PointF(0, SPRITE_HEIGHT);
 	points[4] = next_point + PointF(SPRITE_WIDTH, SPRITE_HEIGHT);
 
-	
-}*/
+	if(direction == UP) // Repel to down
+	{
+		return PointF(points[1].x, ceil(points[1].y/GRID_HEIGHT)*GRID_HEIGHT);
+	}
+	else if(direction == DOWN) //Repel to up
+	{
+		points[3].y = floor(points[3].y/GRID_HEIGHT)*GRID_HEIGHT;
+		return points[3] + PointF(0, -SPRITE_HEIGHT);
+	}
+	else if(direction == LEFT) //Repel to right
+	{
+		points[1].x = ceil(points[1].x/GRID_WIDTH)*GRID_WIDTH;
+		return points[1];
+	}
+	else /*if (direction == RIGHT)*/
+	{
+		points[2].x = floor(points[2].x/GRID_WIDTH)*GRID_WIDTH;
+		return points[2] + PointF(-SPRITE_WIDTH, 0);
+	}
+}

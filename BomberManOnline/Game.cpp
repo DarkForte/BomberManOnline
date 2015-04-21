@@ -278,6 +278,16 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 		}
 	}
 
+	//Draw darts
+	for(CMovingObjects now_dart : darts)
+	{
+		PointF now_pos = now_dart.GetPosPixel();
+		p_res_manager->icons.DrawImage(render_target,
+			now_pos.x, now_pos.y, 
+			GRID_WIDTH, GRID_HEIGHT,
+			0, 4*ITEM_HEIGHT);
+	}
+
 	//Draw Map Border
 	render_target->DrawRectangle(&map_area, stroke_brush, 1);
 
@@ -385,8 +395,11 @@ GameState CGame::Update(float game_time)
 
 		PointF next_pos_pixel = player[i].TryMove(game_time);
 		CPoint next_pos_judge = GetJudgePoint(next_pos_pixel);
-		if(game_map.InBound(next_pos_pixel) && 
-			game_map.NoCollision(next_pos_pixel, player[i].GetMovingDirection(), player[i].SpecialAccess() ) )
+		int now_direction = player[i].GetMovingDirection();
+
+		bool no_collision = game_map.NoCollision(next_pos_pixel, now_direction, player[i].SpecialAccess());
+
+		if(game_map.InBound(next_pos_pixel) && no_collision )
 		{
 			//OutputDebugPrintf("%lf %lf\n", player[my_player].GetPosPixel().x, player[my_player].GetPosPixel().y);
 			player[i].Move(game_time);
@@ -404,15 +417,50 @@ GameState CGame::Update(float game_time)
 				game_map.SetGrid(now_judgegrid.x, now_judgegrid.y, MAP_ELEMENTS::NONE);
 			}
 		}
-		else if(player[i].GetMovingDirection() != STOP)
+		else if(now_direction != STOP)
 		{
 			if(player[i].Status() == PLAYER_STATUS::FLIPPING)
 			{
 				player[i].SetStatus(PLAYER_STATUS::NONE);
 				player[i].ClearMovingState();
 			}
-			/*PointF adjusted_point = game_map.AdjustPoint(next_pos_pixel, player[i].GetMovingDirection());
-			player[i].SetPosPixel(adjusted_point.x, adjusted_point.y);*/
+			if(no_collision)
+			{
+				PointF adjusted_point = game_map.RepelPoint(next_pos_pixel, now_direction);
+				player[i].SetPosPixel(adjusted_point.x, adjusted_point.y);
+			}
+		}
+	}
+
+	//update darts
+	for(list<CMovingObjects>::iterator it = darts.begin(); it!=darts.end(); )
+	{
+		PointF next_pos_pixel = it->TryMove(game_time);
+		CPoint next_pos_judge = GetJudgePoint(next_pos_pixel);
+		int now_direction = it->GetMovingDirection();
+
+		if(game_map.InBound(next_pos_pixel) && 
+			game_map.NoCollision(next_pos_pixel, now_direction ) )
+		{
+			//OutputDebugPrintf("%lf %lf\n", player[my_player].GetPosPixel().x, player[my_player].GetPosPixel().y);
+			it->Move(game_time);
+			it++;
+		}
+		else
+		{
+			next_pos_pixel = game_map.RepelPoint(next_pos_pixel, now_direction);
+			next_pos_judge = GetJudgePoint(next_pos_pixel) + DIRECT_VEC[now_direction];
+			if(game_map.InBound(next_pos_pixel) )
+			{
+				if(game_map.GridType(next_pos_judge.x, next_pos_judge.y) != MAP_ELEMENTS::BOMB)
+				{
+					next_pos_judge += DIRECT_VEC[it->GetMovingDirection()];
+				}
+
+				int index = game_map.GetIndex(next_pos_judge.x, next_pos_judge.y);
+				bomb_manager.SuddenExplode(index);
+			}
+			it=darts.erase(it);
 		}
 	}
 	
@@ -488,7 +536,7 @@ GameState CGame::Update(float game_time)
 
 int CGame::CalcBombResult()
 {
-	return int(Item::LASER);
+	return int(Item::DART);
 }
 
 void CGame::TouchItem( int num, int item_index )
@@ -618,7 +666,8 @@ void CGame::UseItem( int user, Item item )
 	}
 	else if(item == Item::DART)
 	{
-
+		CMovingObjects new_dart(player[user].GetPosJudgeGrid(), DART_SPEED, player[user].Facing());
+		darts.push_back(new_dart);
 	}
 	else if(item == Item::ESCAPE)
 	{

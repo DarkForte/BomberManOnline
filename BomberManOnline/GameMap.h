@@ -18,7 +18,7 @@ public:
 	~CGameMap(void);
 
 	/*Verify whether next_point is ok to go*/
-	bool NoCollision(PointF next_point, int direction, pair<CPoint, bool> special_access);
+	bool NoCollision(PointF next_point, int direction, pair<CPoint, bool> special_access = make_pair(CPoint(0,0), false));
 	bool InBound(PointF next_point);
 	bool InBound(CPoint p);
 
@@ -30,6 +30,6 @@ public:
 	
 	void Init();
 	void Init(int map_number);
-	//PointF AdjustPoint(PointF next_point, int direction);
+	PointF RepelPoint(PointF next_point, int direction);
 };
 

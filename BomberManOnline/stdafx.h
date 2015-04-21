@@ -46,6 +46,7 @@ const int DEFAULT_BOMBPOWER = 5;
 const int DEFAULT_FIRETIME = 300;
 const float DEFAULT_SPEED = 0.2f;
 const float DELTA_SPEED = 0.02f;
+const float DART_SPEED = 0.4;
 
 const int LOGIN_MAX_BUTTON = 6;
 const int LOGIN_MAX_ICON = 3;

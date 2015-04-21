@@ -5,6 +5,14 @@ CMovingObjects::CMovingObjects(void)
 {
 }
 
+CMovingObjects::CMovingObjects( CPoint p, float s, int dir )
+{
+	pos.x = float(p.x*GRID_WIDTH);
+	pos.y = float(p.y*GRID_HEIGHT);
+	speed.SetPoint(s,s);
+	direction = dir;
+}
+
 
 CMovingObjects::~CMovingObjects(void)
 {
