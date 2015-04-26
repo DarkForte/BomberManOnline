@@ -84,31 +84,38 @@ GameState CLogin::HandleLButtonUp(CPoint point)
 		{
 			if (button[i].ButtonDown != NULL)
 			{
-				if (i == 6)
+				if (i == 6 )
 				{
-					CMessage msg, recv_msg;
-					std::string strTemp;
-					CStringA temp;
-
-					msg.id = 0;
-					msg.type1 = MSG_SCENE;
-					msg.type2 = MSG_SCENE_LOGIN;
-					msg.x = 0;
-					msg.y = 0;
-
-					temp = user_name.getText().GetBuffer(0);
-					strTemp = temp.GetBuffer(0);
-					strncpy_s(msg.str1, sizeof(char) * 10, strTemp.c_str(), sizeof(char) * 10);
-
-					temp = user_password.getText().GetBuffer(0);
-					strTemp = temp.GetBuffer(0);
-					strncpy_s(msg.str2, sizeof(char) * 10, strTemp.c_str(), sizeof(char) * 10);
-
-					recv_msg = p_res_manager->m_Client._SendMessage(msg);
-
-					if (recv_msg.type1 == MSG_SCENE && recv_msg.type2 == MSG_SCENE_LOBBY)
+					if (p_res_manager->m_Client.state == ClientState::CONNECT)
 					{
-						state = button[i].ButtonDown();
+						CMessage msg, recv_msg;
+						std::string strTemp;
+						CStringA temp;
+
+						msg.id = 0;
+						msg.type1 = MSG_SCENE;
+						msg.type2 = MSG_SCENE_LOGIN;
+						msg.x = 0;
+						msg.y = 0;
+
+						temp = user_name.getText().GetBuffer(0);
+						strTemp = temp.GetBuffer(0);
+						strncpy_s(msg.str1, sizeof(char) * 10, strTemp.c_str(), sizeof(char) * 10);
+
+						temp = user_password.getText().GetBuffer(0);
+						strTemp = temp.GetBuffer(0);
+						strncpy_s(msg.str2, sizeof(char) * 10, strTemp.c_str(), sizeof(char) * 10);
+
+						recv_msg = p_res_manager->m_Client._SendMessage(msg);
+
+						if (recv_msg.type1 == MSG_SCENE && recv_msg.type2 == MSG_SCENE_LOBBY)
+						{
+							state = button[i].ButtonDown();
+						}
+					}
+					else
+					{
+						//提示连接失败
 					}
 				}
 				else

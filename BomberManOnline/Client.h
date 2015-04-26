@@ -1,28 +1,3 @@
-
-/*
-==========================================================================
-
-Purpose:
-
-* 这个类CClient是本代码的核心类，用于产生用于指定的并发线程向指定服务器发送
-  信息，测试服务器的响应及资源占用率情况，并使用了MFC对话框程序来进行说明
-
-Notes:
-
-* 客户端使用的是最简单的多线程阻塞式Socket，而且每个线程只发送一次数据
-  如果需要可以修改成发送多次数据的情况
-
-Author:
-
-* PiggyXP【小猪】
-
-Date:
-
-* 2009/10/04
-
-==========================================================================
-*/
-
 #pragma once
 
 #include "Message.h"
@@ -35,7 +10,6 @@ Date:
 #define DEFAULT_PORT          12345                      // 默认端口
 #define DEFAULT_IP            _T("127.0.0.1")            // 默认IP地址
 #define DEFAULT_THREADS       1                          // 默认并发线程数
-#define DEFAULT_MESSAGE       _T("Hello!")   // 默认的发送信息
 
 class CClient;
 
@@ -56,6 +30,10 @@ typedef struct _tagThreadParams_CONNECTION
 
 } THREADPARAMS_CONNECTION,*PTHREADPARAM_CONNECTION; 
 
+enum ClientState
+{
+	DISCONNECT, CONNECT
+};
 
 class CClient
 {
@@ -67,12 +45,12 @@ public:
 
 	// 加载Socket库
 	bool LoadSocketLib();
-	// 卸载Socket库，彻底完事
+	// 卸载Socket库
 	void UnloadSocketLib() { WSACleanup(); }
 
-	// 开始测试
+	// 开始
 	bool Start();
-	//	停止测试
+	//	停止
 	void Stop();
 
 	// 获得本机的IP地址
@@ -87,6 +65,8 @@ public:
 
 	CMessage _SendMessage(CMessage msg);
 
+	ClientState state;
+
 private:
 
 	// 建立连接
@@ -95,10 +75,6 @@ private:
 	bool ConnetToServer( SOCKET *pSocket, CString strServer, int nPort );
 	// 用于建立连接的线程
 	static DWORD WINAPI _ConnectionThread(LPVOID lpParam);
-	// 用于发送信息的线程
-	static DWORD WINAPI _WorkerThread(LPVOID lpParam);
-
-	
 
 	// 释放资源
 	void CleanUp();
@@ -107,7 +83,6 @@ private:
 
 	CString   m_strServerIP;                                // 服务器端的IP地址
 	CString   m_strLocalIP;                                 // 本机IP地址
-	CString   m_strMessage;                                 // 发给服务器的信息
 	int       m_nPort;                                      // 监听端口
 	int       m_nThreads;                                   // 并发线程数量
 
