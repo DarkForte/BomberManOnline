@@ -11,6 +11,7 @@
 #define _WIN32_WINNT 0x0502
 
 //#include <afxwin.h>
+#include <winsock2.h>
 #include <windows.h>
 #include <windowsx.h>
 #include <atlimage.h>
@@ -19,7 +20,12 @@
 #include <SDKDDKVer.h>
 #include "mmsystem.h"
 
+#include <stdlib.h>
+
+
 #pragma comment(lib, "winmm.lib")
+#pragma comment(lib,"ws2_32.lib")
+
 
 const int WINDOW_WIDTH = 1280, WINDOW_HEIGHT = 720;
 const int GRID_WIDTH=30, GRID_HEIGHT=30;

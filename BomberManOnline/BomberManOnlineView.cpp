@@ -194,6 +194,7 @@ HRESULT CBomberManOnlineView::CreateDeviceResources()
 
 	p_res_manager->LoadPics(CDirect2DMFCBase::GetWICImagingFactory(), CDirect2DMFCBase::GetRenderTarget());
 	p_res_manager->InitTextFormat(GetWriteFactory());
+	p_res_manager->InitClient();
 
 	return hr;
 }

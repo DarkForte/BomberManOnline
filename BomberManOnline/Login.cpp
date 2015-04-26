@@ -30,6 +30,7 @@ CLogin::CLogin(CResourceManager* p_res_manager)
 	//init cedit
 	user_name.Init(PointF(628, 296), "user name", 200, 26, true, false, 10, false, 0);
 	user_password.Init(PointF(628, 331), "*****", 200, 26, false, true, 10, false, 0);
+
 }
 
 GameState CLogin::HandleLButtonDown(CPoint point)
@@ -83,7 +84,37 @@ GameState CLogin::HandleLButtonUp(CPoint point)
 		{
 			if (button[i].ButtonDown != NULL)
 			{
-				state = button[i].ButtonDown();
+				if (i == 6)
+				{
+					CMessage msg, recv_msg;
+					std::string strTemp;
+					CStringA temp;
+
+					msg.id = 0;
+					msg.type1 = MSG_SCENE;
+					msg.type2 = MSG_SCENE_LOGIN;
+					msg.x = 0;
+					msg.y = 0;
+
+					temp = user_name.getText().GetBuffer(0);
+					strTemp = temp.GetBuffer(0);
+					strncpy_s(msg.str1, sizeof(char) * 10, strTemp.c_str(), sizeof(char) * 10);
+
+					temp = user_password.getText().GetBuffer(0);
+					strTemp = temp.GetBuffer(0);
+					strncpy_s(msg.str2, sizeof(char) * 10, strTemp.c_str(), sizeof(char) * 10);
+
+					recv_msg = p_res_manager->m_Client._SendMessage(msg);
+
+					if (recv_msg.type1 == MSG_SCENE && recv_msg.type2 == MSG_SCENE_LOBBY)
+					{
+						state = button[i].ButtonDown();
+					}
+				}
+				else
+				{
+					state = button[i].ButtonDown();
+				}
 			}
 		}
 	}

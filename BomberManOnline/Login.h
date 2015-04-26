@@ -4,6 +4,8 @@
 #include "D2D1Header.h"
 #include "Button.h"
 #include "Edit.h"
+#include "Client.h"
+#pragma comment(lib,"ws2_32.lib")
 
 class CLogin : public CSceneBase
 {

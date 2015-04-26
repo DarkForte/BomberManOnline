@@ -23,7 +23,8 @@ CResourceManager::CResourceManager(void)
 
 CResourceManager::~CResourceManager(void)
 {
-	
+	m_Client.Stop();
+	m_Client.UnloadSocketLib();
 }
 
 
@@ -227,3 +228,24 @@ void CResourceManager::InitTextFormat(IDWriteFactory* write_factory)
 		 );
 }
 
+bool CResourceManager::InitClient()
+{
+	int nPort = DEFAULT_PORT;
+	int nThreads = DEFAULT_THREADS;
+	CString strIP;
+	strIP = DEFAULT_IP;
+
+	// 给CClient设置参数
+	m_Client.LoadSocketLib();
+	m_Client.SetIP(strIP);
+	m_Client.SetPort(nPort);
+	m_Client.SetThreads(nThreads);
+
+	// 开始
+	if (!m_Client.Start())
+	{
+		return false;
+	}
+	
+	return true;
+}

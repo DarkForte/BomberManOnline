@@ -1,6 +1,7 @@
 #pragma once
 #include "d2dimage.h"
 #include "D2D1Header.h"
+#include "Client.h"
 class CResourceManager
 {
 public:
@@ -49,11 +50,14 @@ public:
 	CD2DImage avatar;
 	CD2DImage userinfo_rect[MAX_PLAYER +1]; 
 	
+	CClient m_Client;
+
 public:
 	CResourceManager(void);
 	~CResourceManager(void);
 
 	void LoadPics(IWICImagingFactory * pIWICFactory, ID2D1HwndRenderTarget* render_target);
 	void InitTextFormat(IDWriteFactory* write_factory);
+	bool InitClient();
 };
 
