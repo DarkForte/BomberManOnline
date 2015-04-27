@@ -11,7 +11,8 @@ enum class PLAYER_STATUS
 
 enum class PLAYER_TRANSFORM
 {
-	NONE
+	GHOST=20, FLY=21, QUICK=22, UBW=23, PANDA=24, DEMON=25, CRAB=26, KILLER=27,
+	NONE=0, TRANS_START=1, TRANS_END=2
 };
 
 class CPlayer : public CMovingObjects
@@ -22,6 +23,8 @@ class CPlayer : public CMovingObjects
 
 	int moving_state;
 	pair<PLAYER_STATUS, float> status;
+	pair<PLAYER_TRANSFORM, float> trans;
+	PLAYER_TRANSFORM target_transform;
 	
 	int max_capacity;
 	int max_power;
@@ -30,11 +33,6 @@ class CPlayer : public CMovingObjects
 	int bomb_capacity;
 	int bomb_power;
 
-	/*PointF back_speed;
-	int back_capacity;
-	int back_power;*/
-
-	bool hover, reverse;
 	int type;
 
 	int team;
@@ -42,7 +40,7 @@ class CPlayer : public CMovingObjects
 	int facing;
 
 	pair<CPoint, bool> special_access;
-	pair<Item, int> items[MAX_ITEMS+1];
+	pair<Item, int> items[MAX_ITEMS+1+1];
 
 public:
 	CPlayer(void);
@@ -58,9 +56,6 @@ public:
 	int Type();
 	int NowBombs();
 	int BombCapacity();
-	
-	void SetHover(bool x);
-	void SetReverse(bool x);
 
 	void SetBombPower(int r);
 	void SetBombCapacity(int r);
@@ -71,6 +66,11 @@ public:
 	PLAYER_STATUS Status() const { return status.first; }
 	float StatusTime() const {return status.second; }
 	void SetStatus(PLAYER_STATUS v1, float v2=0);
+	
+	PLAYER_TRANSFORM Trans() const {return trans.first; }
+	float TransTime() const {return trans.second;}
+	void SetTrans(PLAYER_TRANSFORM v1, float v2, PLAYER_TRANSFORM next_transform);
+	
 	int Facing() const { return facing; }
 
 	pair<CPoint, bool> SpecialAccess() const { return special_access; }
@@ -89,6 +89,7 @@ public:
 	void AddItem(Item item, int number = 1);
 	Item PopItem(int index);
 	pair<Item, int> PeekItem(int index);
+	void SetSpecialItem(Item item, int number=1);
 
 	int GetMovingDirection();
 	void Move(float game_time);
@@ -99,8 +100,8 @@ public:
 	void Team(int val) { team = val; }
 
 	void ClearMovingState();
+
 protected:
-	/*void BackupStatus();
-	void RestoreStatus();*/
+	PointF CalcRealSpeed();
 };
 

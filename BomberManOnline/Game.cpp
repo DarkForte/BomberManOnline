@@ -103,7 +103,7 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 	const int ICON_LEFT = bottom_rect.left + 20;
 	const int ICON_TOP = bottom_rect.top + 20;
 	const int ICON_OFFSET = 15;
-	const int ICON_BOX_DIS = 70;
+	const int ICON_BOX_DIS = 50;
 
 	float icon_width = p_res_manager->bottom_icon[1].GetWidth();
 	float icon_height = p_res_manager->bottom_icon[1].GetHeight();
@@ -122,12 +122,16 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 	icon_width = p_res_manager->item_box.GetWidth();
 	icon_height = p_res_manager->item_box.GetHeight();
 	now_left += ICON_BOX_DIS;
-	for(i=1;i<=MAX_ITEMS;i++)
+	for(i=1;i<=MAX_ITEMS+1;i++)
 	{
 		p_res_manager->item_box.DrawImage(render_target,
 			now_left, ICON_TOP, icon_width, icon_height, 0,0, 
 			target_width/icon_width, target_height/icon_height);
-		swprintf_s(buf, L"%d", i);
+
+		if(i<=MAX_ITEMS)
+			swprintf_s(buf, L"%d", i);
+		else 
+			swprintf_s(buf, L"Q");
 		RenderText(render_target, buf, now_left+7, ICON_TOP+5,
 			p_res_manager->p_corner_number_format, black_brush);
 		
@@ -138,11 +142,21 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 				now_left+15,ICON_TOP+15, ITEM_WIDTH, ITEM_HEIGHT, 
 				(now_item%10)*ITEM_WIDTH, (now_item/10)*ITEM_HEIGHT, 
 				0.6*target_width/ITEM_WIDTH, 0.6*target_height/ITEM_HEIGHT);
+
+			int now_amount = player[my_player].PeekItem(i).second;
+			if(now_amount >= 1)
+			{
+				swprintf_s(buf, L"x %d", now_amount);
+				RenderText(render_target, buf, now_left + target_width -10, ICON_TOP + target_height-5,
+					p_res_manager->p_corner_number_format, black_brush);
+			}
 		}
 		now_left += target_width + offset;
+		if(i==MAX_ITEMS)
+			now_left += offset;
 	}
 
-	//////////Corner Numbers
+	//////////Ability Corner Numbers
 	now_left = ICON_LEFT;
 	swprintf_s(buf, L"%d", player[my_player].GetBombCapacity() );
 	RenderText(render_target, wstring(buf), now_left + 0.8*target_width, ICON_TOP + 0.8*target_height, 
@@ -343,16 +357,15 @@ void CGame::HandleKeyDown(UINT nchar)
 			player[my_player].SetSpecialAccess(player_pos);
 		}
 	}
-	if('1' <= nchar && nchar <= '6')
+	if('1' <= nchar && nchar <= '6' || nchar == 'Q')
 	{
-		int index = nchar-'0';
+		int index = (nchar == 'Q')? MAX_ITEMS+1 : nchar-'0';
 		pair<Item, int> now_item = player[my_player].PeekItem(index);
 		if(now_item.first != Item::NONE)
 		{
 			UseItem(my_player, now_item.first);
 			player[my_player].PopItem(index);
 		}
-		
 	}
 }
 
@@ -450,6 +463,8 @@ GameState CGame::Update(float game_time)
 		{
 			next_pos_pixel = game_map.RepelPoint(next_pos_pixel, now_direction);
 			next_pos_judge = GetJudgePoint(next_pos_pixel) + DIRECT_VEC[now_direction];
+			next_pos_pixel.x = next_pos_judge.x*GRID_WIDTH;
+			next_pos_pixel.y = next_pos_judge.y*GRID_HEIGHT;
 			if(game_map.InBound(next_pos_pixel) )
 			{
 				if(game_map.GridType(next_pos_judge.x, next_pos_judge.y) != MAP_ELEMENTS::BOMB)
@@ -536,7 +551,7 @@ GameState CGame::Update(float game_time)
 
 int CGame::CalcBombResult()
 {
-	return int(Item::DART);
+	return int(Item::KILLER);
 }
 
 void CGame::TouchItem( int num, int item_index )
@@ -624,7 +639,10 @@ void CGame::TouchItem( int num, int item_index )
 	//Transform
 	else if(item_index >= 20 && item_index < 30) 
 	{
-
+		if(player[num].Trans() == PLAYER_TRANSFORM::NONE)
+		{
+			player[num].SetTrans(PLAYER_TRANSFORM::TRANS_START, TRANS_BEGINTIME, PLAYER_TRANSFORM(item_index));
+		}
 	}
 
 	//Trap item

@@ -33,13 +33,11 @@ void CPlayer::Init(float x, float y, int type)
 	}
 	
 	speed.SetPoint(0.2, 0.2);
-	hover = false;
-	reverse=false;
 
 	bomb_capacity = 3;
 	bomb_power = DEFAULT_BOMBPOWER;
-	status.first = PLAYER_STATUS::NONE;
-	status.second = 0;
+	SetStatus(PLAYER_STATUS::NONE);
+	SetTrans(PLAYER_TRANSFORM::NONE, 0, PLAYER_TRANSFORM::NONE);
 	moving_state = 0;
 	team=1;
 
@@ -51,7 +49,7 @@ void CPlayer::Init(float x, float y, int type)
 
 	special_access = make_pair(CPoint(0,0), false);
 
-	for (int i=1; i<=MAX_ITEMS; i++)
+	for (int i=1; i<=MAX_ITEMS+1; i++)
 	{
 		items[i].first = Item::NONE;
 		items[i].second = 0;
@@ -68,48 +66,46 @@ int CPlayer::GetBombCapacity()
 	return bomb_capacity;
 }
 
-
-
-bool CPlayer::Hover()
+PointF CPlayer::CalcRealSpeed()
 {
-	return hover;
-}
-
-bool CPlayer::Reverse()
-{
-	return reverse;
-}
-
-int CPlayer::Type()
-{
-	return type;
-}
-
-void CPlayer::SetHover(bool x)
-{
-	hover = x;
-}
-void CPlayer::SetReverse(bool x)
-{
-	reverse = x;
-}
-
-void CPlayer::Move(float game_time)
-{
-	direction = GetMovingDirection();
-
 	PointF real_speed = speed;
 
 	PLAYER_STATUS now_status = Status();
+	PLAYER_TRANSFORM now_trans = Trans();
+
+	//Trans first
+	if(now_trans == PLAYER_TRANSFORM::QUICK || now_trans == PLAYER_TRANSFORM::DEMON)
+	{
+		real_speed.SetPoint(QUICK_SPEED, QUICK_SPEED);
+	}
+	else if(now_trans == PLAYER_TRANSFORM::CRAB)
+	{
+		real_speed.SetPoint(SLOW_SPEED, QUICK_SPEED);
+	}
+	else if(now_trans == PLAYER_TRANSFORM::TRANS_START || now_trans == PLAYER_TRANSFORM::TRANS_END)
+	{
+		real_speed.SetPoint(0,0);
+	}
 
 	if(now_status == PLAYER_STATUS::SLOW)
 	{
-		real_speed.SetPoint(0.15, 0.15);
+		real_speed.SetPoint(SLOW_SPEED, SLOW_SPEED);
 	}
 	else if(now_status == PLAYER_STATUS::WRAPPED)
 	{
 		real_speed.SetPoint(0,0);
 	}
+
+	return real_speed;
+}
+
+
+void CPlayer::Move(float game_time)
+{
+	direction = GetMovingDirection();
+
+	PointF real_speed = CalcRealSpeed();
+	PLAYER_STATUS now_status = Status();
 
 	if(direction != STOP)
 	{
@@ -175,7 +171,11 @@ int CPlayer::GetMovingDirection()
 		now*=2;
 		ret++;
 	}
-	return ret-1;
+	ret--;
+
+	if(Trans() == PLAYER_TRANSFORM::DEMON)
+		ret = 3-ret;
+	return ret;
 }
 
 int CPlayer::NowBombs()
@@ -221,6 +221,8 @@ void CPlayer::AddItem( Item item, int number )
 
 Item CPlayer::PopItem( int index )
 {
+	ASSERT(index <= MAX_ITEMS+1);
+
 	if(items[index].first == Item::NONE)
 		return Item::NONE;
 
@@ -235,6 +237,8 @@ Item CPlayer::PopItem( int index )
 
 pair<Item, int> CPlayer::PeekItem( int index )
 {
+	ASSERT(index <= MAX_ITEMS+1);
+
 	return items[index];
 }
 
@@ -257,6 +261,31 @@ void CPlayer::Update( float game_time )
 		}
 	}
 
+	if(trans.first != PLAYER_TRANSFORM::NONE)
+	{
+		trans.second -= game_time;
+		if(trans.second <= 0)
+		{
+			if(trans.first == PLAYER_TRANSFORM::TRANS_END)
+			{
+				SetTrans(PLAYER_TRANSFORM::NONE, 0, PLAYER_TRANSFORM::NONE);
+			}
+			else if(trans.first == PLAYER_TRANSFORM::TRANS_START)
+			{
+				if(target_transform == PLAYER_TRANSFORM::KILLER)
+				{
+					SetSpecialItem(Item::DART, 9);
+				}
+				SetTrans(target_transform, DEFAULT_TRANSTIME, PLAYER_TRANSFORM::TRANS_END);
+			}
+			else //Trans ends
+			{
+				SetTrans(PLAYER_TRANSFORM::TRANS_END, TRANS_ENDTIME, PLAYER_TRANSFORM::NONE);
+				SetSpecialItem(Item::NONE, 0);
+			}
+		}
+	}
+
 	return;
 }
 
@@ -266,23 +295,13 @@ void CPlayer::SetStatus( PLAYER_STATUS v1, float v2 )
 	status.second = v2;
 	return;
 }
+
 PointF CPlayer::TryMove( float game_time )
 {
 	PointF ret = pos;
 	direction = GetMovingDirection();
 
-	PointF real_speed = speed;
-
-	PLAYER_STATUS now_status = Status();
-
-	if(now_status == PLAYER_STATUS::SLOW)
-	{
-		real_speed.SetPoint(0.15, 0.15);
-	}
-	else if(now_status == PLAYER_STATUS::WRAPPED)
-	{
-		real_speed.SetPoint(0,0);
-	}
+	PointF real_speed = CalcRealSpeed();
 
 	if(direction != STOP)
 	{
@@ -297,16 +316,18 @@ void CPlayer::ClearMovingState()
 	moving_state = 0;
 }
 
-/*void CPlayer::BackupStatus()
+void CPlayer::SetTrans( PLAYER_TRANSFORM v1, float v2, PLAYER_TRANSFORM next_transform)
 {
-	back_speed = speed;
-	back_capacity = bomb_capacity;
-	back_power = bomb_power;
+	SetStatus(PLAYER_STATUS::NONE);
+	trans.first = v1;
+	trans.second = v2;
+	target_transform = next_transform;
+	return;
 }
 
-void CPlayer::RestoreStatus()
+void CPlayer::SetSpecialItem( Item item, int number/*=1*/ )
 {
-	speed = back_speed;
-	bomb_capacity = back_capacity;
-	bomb_power = back_power;
-}*/
+	items[MAX_ITEMS+1].first = item;
+	items[MAX_ITEMS+1].second = number;
+}
+

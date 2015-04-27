@@ -47,6 +47,13 @@ const int DEFAULT_FIRETIME = 300;
 const float DEFAULT_SPEED = 0.2f;
 const float DELTA_SPEED = 0.02f;
 const float DART_SPEED = 0.4;
+const float SLOW_SPEED = 0.1;
+const float DEFAULT_TRANSTIME=10000;
+const float TRANS_BEGINTIME=200;
+const float TRANS_ENDTIME = 800;
+
+const float QUICK_SPEED = 0.35;
+
 
 const int LOGIN_MAX_BUTTON = 6;
 const int LOGIN_MAX_ICON = 3;
