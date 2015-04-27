@@ -47,6 +47,26 @@ struct RenderNode
 
 #pragma endregion
 
+struct FlyingBomb
+{
+	CPoint start;
+	CPoint end;
+	int bomb_index;
+	float total_time;
+	float rest_time;
+	
+	FlyingBomb(){}
+	FlyingBomb(CPoint s, CPoint e, int index, float total_t)
+	{
+		start=s;
+		end=e;
+		bomb_index = index;
+		total_time = total_t;
+		rest_time = total_t;
+	}
+	
+};
+
 class CGame : public CSceneBase
 {
 public:
@@ -69,6 +89,7 @@ public:
 	vector<CBomb> exploding_bombs;
 	vector<RenderNode> render_nodes;
 	list<CMovingObjects> darts;
+	list<FlyingBomb> flying_bombs;
 
 public:
 	CGame(void);
@@ -85,5 +106,6 @@ protected:
 	int CalcBombResult();
 	void TouchItem(int player_num, int item_index);
 	void UseItem(int user, Item item);
+	void KickBomb(int index, int direction);
 };
 

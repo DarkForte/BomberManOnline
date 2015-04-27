@@ -29,7 +29,7 @@ public:
 
 	void SetX(int x);
 	void SetY(int y);
-	void SetPos(int x, int y);
+	void SetPos(int x, int y){pos.x = x; pos.y=y;};
 	void SetPower(int p);
 
 	int Owner() const { return owner; }

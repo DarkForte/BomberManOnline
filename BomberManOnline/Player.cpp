@@ -80,11 +80,7 @@ PointF CPlayer::CalcRealSpeed()
 	}
 	else if(now_trans == PLAYER_TRANSFORM::CRAB)
 	{
-		real_speed.SetPoint(SLOW_SPEED, QUICK_SPEED);
-	}
-	else if(now_trans == PLAYER_TRANSFORM::TRANS_START || now_trans == PLAYER_TRANSFORM::TRANS_END)
-	{
-		real_speed.SetPoint(0,0);
+		real_speed.SetPoint(QUICK_SPEED, SLOW_SPEED);
 	}
 
 	if(now_status == PLAYER_STATUS::SLOW)
@@ -173,7 +169,7 @@ int CPlayer::GetMovingDirection()
 	}
 	ret--;
 
-	if(Trans() == PLAYER_TRANSFORM::DEMON)
+	if(Trans() == PLAYER_TRANSFORM::DEMON && ret != STOP)
 		ret = 3-ret;
 	return ret;
 }
@@ -190,7 +186,7 @@ int CPlayer::BombCapacity()
 
 void CPlayer::SetNowBombs(int bombs)
 {
-	now_bombs = bombs;
+	now_bombs = max(0,bombs);
 }
 
 void CPlayer::ShutSpecialAccess()
@@ -280,6 +276,8 @@ void CPlayer::Update( float game_time )
 			}
 			else //Trans ends
 			{
+				if(Trans() == PLAYER_TRANSFORM::FLY)
+					SetSpecialAccess(GetPosJudgeGrid());
 				SetTrans(PLAYER_TRANSFORM::TRANS_END, TRANS_ENDTIME, PLAYER_TRANSFORM::NONE);
 				SetSpecialItem(Item::NONE, 0);
 			}

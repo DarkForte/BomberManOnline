@@ -53,7 +53,8 @@ const float TRANS_BEGINTIME=200;
 const float TRANS_ENDTIME = 800;
 
 const float QUICK_SPEED = 0.35;
-
+const int KICK_DISTANCE=10;
+const float KICK_SINGLEFLYTIME=50;
 
 const int LOGIN_MAX_BUTTON = 6;
 const int LOGIN_MAX_ICON = 3;

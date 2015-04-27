@@ -7,10 +7,15 @@ using namespace std;
 
 const int MAX_BOMBS = GRIDNUM_HEIGHT * GRIDNUM_WIDTH;
 
+enum class BOMB_STATUS
+{
+	COUNTING, EXPLODED, PAUSE
+};
+
 class CBombManager
 {
 	int cnt_bombs;
-	pair<CBomb, bool> bombs[MAX_BOMBS];
+	pair<CBomb, BOMB_STATUS> bombs[MAX_BOMBS];
 	int p_bombs_start;
 
 public:
@@ -23,5 +28,8 @@ public:
 	void SuddenExplode(int index);
 	void ExplodeAllBy(int user);
 	CBomb GetBomb(int index);
+	void PauseBomb(int index);
+	void ActivateBomb(int index);
+	void SetBombPos(int index, CPoint pos);
 };
 

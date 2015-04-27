@@ -27,6 +27,20 @@ void SetD2D1Rect(D2D1_RECT_F *r, float left, float top, float right, float botto
 	r->bottom = bottom;
 }
 
+CPoint GetJudgePoint(PointF point_pixel)
+{
+	float tmp_x = point_pixel.x/GRID_WIDTH;
+	float tmp_y = point_pixel.y/GRID_HEIGHT;
+	return CPoint(int(tmp_x+0.5), int(tmp_y+0.5));
+}
+
+PointF GetPixelPoint(CPoint point_judge)
+{
+	float tmp_x = float(point_judge.x) * GRID_WIDTH;
+	float tmp_y = float(point_judge.y) * GRID_HEIGHT;
+	return PointF(tmp_x, tmp_y);
+}
+
 void CGame::Init(int player_num, int map_num)
 {
 	SetD2D1Rect(&bottom_rect, PADDING, PADDING + MAP_HEIGHT, 
@@ -196,7 +210,7 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 	//Draw Players
 	for(i=1;i<=MAX_PLAYER;i++)
 	{
-		if(player[i].Status() != PLAYER_STATUS::DEAD)
+		if(player[i].Status() != PLAYER_STATUS::DEAD && player[i].Trans()!=PLAYER_TRANSFORM::FLY)
 		{
 			render_nodes.push_back(RenderNode(player[i].GetPosPixel(), RenderType::PLAYER, i));
 		}
@@ -302,6 +316,31 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 			0, 4*ITEM_HEIGHT);
 	}
 
+	//Draw flying bombs
+	for(FlyingBomb now_bomb : flying_bombs)
+	{
+		PointF startF = GetPixelPoint(now_bomb.start);
+		PointF endF = GetPixelPoint(now_bomb.end);
+		float past_time = now_bomb.total_time - now_bomb.rest_time;
+		float now_x = startF.x + (endF.x - startF.x)/now_bomb.total_time * past_time;
+		float now_y = startF.y + (endF.y - startF.y)/now_bomb.total_time * past_time;
+
+		p_res_manager->bomb_sprite.DrawImage(render_target,
+			now_x, now_y, SPRITE_WIDTH, SPRITE_HEIGHT, SPRITE_WIDTH*9, 0);
+	}
+
+	//Draw Flying Players
+	for(i=1; i<=MAX_PLAYER; i++)
+	{
+		if(player[i].Trans() == PLAYER_TRANSFORM::FLY)
+		{
+			p_res_manager->player_sprite[i].DrawImage(render_target,
+				player[i].GetXPixel(), player[i].GetYPixel(),
+				SPRITE_WIDTH, SPRITE_HEIGHT, 
+				SPRITE_WIDTH * player[i].NowFrame(), SPRITE_HEIGHT * player[i].Facing());
+		}
+	}
+
 	//Draw Map Border
 	render_target->DrawRectangle(&map_area, stroke_brush, 1);
 
@@ -344,6 +383,9 @@ void CGame::HandleKeyDown(UINT nchar)
 	if(nchar == VK_SPACE)
 	{
 		int now_bombs = player[my_player].NowBombs();
+		if(player[my_player].Trans() == PLAYER_TRANSFORM::DEMON || player[my_player].Trans() == PLAYER_TRANSFORM::UBW)
+			now_bombs = 0;
+
 		CPoint player_pos = player[my_player].GetPosJudgeGrid();
 
 		if(now_bombs < player[my_player].BombCapacity() && game_map.GridType(player_pos.x, player_pos.y) == MAP_ELEMENTS::NONE)
@@ -359,13 +401,26 @@ void CGame::HandleKeyDown(UINT nchar)
 	}
 	if('1' <= nchar && nchar <= '6' || nchar == 'Q')
 	{
-		int index = (nchar == 'Q')? MAX_ITEMS+1 : nchar-'0';
-		pair<Item, int> now_item = player[my_player].PeekItem(index);
-		if(now_item.first != Item::NONE)
+		if(player[my_player].Trans() == PLAYER_TRANSFORM::PANDA && nchar == 'Q')
 		{
-			UseItem(my_player, now_item.first);
-			player[my_player].PopItem(index);
+			CPoint next_point = player[my_player].GetPosJudgeGrid() + DIRECT_VEC[player[my_player].Facing()];
+			if(game_map.GridType(next_point.x, next_point.y) == MAP_ELEMENTS::BOMB)
+			{
+				int index = game_map.GetIndex(next_point.x, next_point.y);
+				KickBomb(index, player[my_player].Facing());
+			}
 		}
+		else
+		{
+			int index = (nchar == 'Q')? MAX_ITEMS+1 : nchar-'0';
+			pair<Item, int> now_item = player[my_player].PeekItem(index);
+			if(now_item.first != Item::NONE)
+			{
+				UseItem(my_player, now_item.first);
+				player[my_player].PopItem(index);
+			}
+		}
+		
 	}
 }
 
@@ -389,13 +444,6 @@ void CGame::HandleKeyUp(UINT nchar)
 	}
 }
 
-CPoint GetJudgePoint(PointF point_pixel)
-{
-	float tmp_x = point_pixel.x/GRID_WIDTH;
-	float tmp_y = point_pixel.y/GRID_HEIGHT;
-	return CPoint(int(tmp_x+0.5), int(tmp_y+0.5));
-}
-
 GameState CGame::Update(float game_time)
 {
 	//update player
@@ -411,6 +459,8 @@ GameState CGame::Update(float game_time)
 		int now_direction = player[i].GetMovingDirection();
 
 		bool no_collision = game_map.NoCollision(next_pos_pixel, now_direction, player[i].SpecialAccess());
+		if(player[i].Trans() == PLAYER_TRANSFORM::FLY)
+			no_collision = true;
 
 		if(game_map.InBound(next_pos_pixel) && no_collision )
 		{
@@ -423,7 +473,8 @@ GameState CGame::Update(float game_time)
 				player[i].ShutSpecialAccess();
 			}
 
-			if(game_map.GridType(next_pos_judge.x, next_pos_judge.y) == MAP_ELEMENTS::ITEM 
+			if( player[i].Trans() != PLAYER_TRANSFORM::FLY
+				&& game_map.GridType(next_pos_judge.x, next_pos_judge.y) == MAP_ELEMENTS::ITEM 
 				&& (player[i].SpecialAccess().second==false || player[i].SpecialAccess().first != now_judgegrid))
 			{
 				TouchItem(i, game_map.GetIndex(now_judgegrid.x, now_judgegrid.y) );
@@ -478,6 +529,36 @@ GameState CGame::Update(float game_time)
 			it=darts.erase(it);
 		}
 	}
+
+	//update flying bombs
+	for(list<FlyingBomb>::iterator it = flying_bombs.begin(); it!=flying_bombs.end();)
+	{
+		it->rest_time -= game_time;
+		if(it->rest_time <= 0)
+		{
+			MAP_ELEMENTS grid_type = game_map.GridType(it->end.x, it->end.y);
+			if(grid_type == MAP_ELEMENTS::BOMB || grid_type == MAP_ELEMENTS::FIRE)
+			{
+				bomb_manager.SuddenExplode(it->bomb_index);
+			}
+			else
+			{
+				game_map.SetGrid(it->end.x, it->end.y, MAP_ELEMENTS::BOMB, it->bomb_index);
+				int i;
+				for(i=1;i<=MAX_PLAYER; i++)
+				{
+					if(player[i].GetPosJudgeGrid() == it->end)
+						player[i].SetSpecialAccess(it->end);
+				}
+				bomb_manager.ActivateBomb(it->bomb_index);
+			}
+			it = flying_bombs.erase(it);
+		}
+		else
+		{
+			it++;
+		}
+	}
 	
 	//update map
 	game_map.Update(game_time);
@@ -504,7 +585,8 @@ GameState CGame::Update(float game_time)
 				game_map.SetGrid(now_point.x, now_point.y, MAP_ELEMENTS::FIRE, DEFAULT_FIRETIME);
 				for(int i_player=1; i_player<=MAX_PLAYER; i_player++)
 				{
-					if(player[i_player].GetPosJudgeGrid() == now_point)
+					if(player[i_player].GetPosJudgeGrid() == now_point 
+						&& player[i_player].Trans() != PLAYER_TRANSFORM::TRANS_END && player[i_player].Trans() != PLAYER_TRANSFORM::TRANS_START)
 					{
 						player[i_player].SetStatus(PLAYER_STATUS::WRAPPED, DEFAULT_WRAPTIME);
 					}
@@ -551,7 +633,7 @@ GameState CGame::Update(float game_time)
 
 int CGame::CalcBombResult()
 {
-	return int(Item::KILLER);
+	return int(Item::PANDA);
 }
 
 void CGame::TouchItem( int num, int item_index )
@@ -698,4 +780,29 @@ void CGame::UseItem( int user, Item item )
 	{
 		bomb_manager.ExplodeAllBy(user);
 	}
+}
+
+void CGame::KickBomb( int index, int direction )
+{
+	bomb_manager.PauseBomb(index);
+	CBomb now_bomb = bomb_manager.GetBomb(index);
+	CPoint now_pos = now_bomb.GetPos();
+	CPoint end_pos = now_pos;
+	game_map.SetGrid(now_pos.x, now_pos.y, MAP_ELEMENTS::NONE);
+	
+	end_pos.x = (end_pos.x + DIRECT_VEC[direction].x * KICK_DISTANCE + GRIDNUM_WIDTH) % GRIDNUM_WIDTH;
+	end_pos.y = (end_pos.y + DIRECT_VEC[direction].y * KICK_DISTANCE + GRIDNUM_HEIGHT) % GRIDNUM_HEIGHT;
+	float flying_time = KICK_DISTANCE * KICK_SINGLEFLYTIME;
+	while(true)
+	{
+		if(game_map.GridType(end_pos.x, end_pos.y) == MAP_ELEMENTS::NONE)
+			break;
+		end_pos.x = (end_pos.x + DIRECT_VEC[direction].x + GRIDNUM_WIDTH)%GRIDNUM_WIDTH;
+		end_pos.y = (end_pos.y + DIRECT_VEC[direction].y + GRIDNUM_HEIGHT)%GRIDNUM_HEIGHT;
+		flying_time += KICK_SINGLEFLYTIME;
+	}
+	bomb_manager.SetBombPos(index, end_pos);
+
+	FlyingBomb now_flyingbomb(now_pos, end_pos, index, flying_time);
+	flying_bombs.push_back(now_flyingbomb);
 }
