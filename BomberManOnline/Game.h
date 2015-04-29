@@ -54,15 +54,17 @@ struct FlyingBomb
 	int bomb_index;
 	float total_time;
 	float rest_time;
+	int direction;
 	
 	FlyingBomb(){}
-	FlyingBomb(CPoint s, CPoint e, int index, float total_t)
+	FlyingBomb(CPoint s, CPoint e, int index, float total_t, int direct)
 	{
 		start=s;
 		end=e;
 		bomb_index = index;
 		total_time = total_t;
 		rest_time = total_t;
+		direction = direct;
 	}
 	
 };

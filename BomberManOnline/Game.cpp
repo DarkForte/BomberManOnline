@@ -34,6 +34,11 @@ CPoint GetJudgePoint(PointF point_pixel)
 	return CPoint(int(tmp_x+0.5), int(tmp_y+0.5));
 }
 
+int operator * (const CPoint &a, const CPoint &b)
+{
+	return a.x * b.x + a.y *b.y;
+}
+
 PointF GetPixelPoint(CPoint point_judge)
 {
 	float tmp_x = float(point_judge.x) * GRID_WIDTH;
@@ -318,12 +323,22 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 
 	//Draw flying bombs
 	for(FlyingBomb now_bomb : flying_bombs)
-	{
+	{	
 		PointF startF = GetPixelPoint(now_bomb.start);
 		PointF endF = GetPixelPoint(now_bomb.end);
+		
 		float past_time = now_bomb.total_time - now_bomb.rest_time;
 		float now_x = startF.x + (endF.x - startF.x)/now_bomb.total_time * past_time;
+		if(now_x>MAP_WIDTH) 
+			now_x -= MAP_WIDTH;
+		else if(now_x < 0)
+			now_x += MAP_WIDTH;
+
 		float now_y = startF.y + (endF.y - startF.y)/now_bomb.total_time * past_time;
+		if(now_y > MAP_HEIGHT) 
+			now_y -= MAP_HEIGHT;
+		else if(now_y < 0)
+			now_y += MAP_HEIGHT;
 
 		p_res_manager->bomb_sprite.DrawImage(render_target,
 			now_x, now_y, SPRITE_WIDTH, SPRITE_HEIGHT, SPRITE_WIDTH*9, 0);
@@ -536,19 +551,21 @@ GameState CGame::Update(float game_time)
 		it->rest_time -= game_time;
 		if(it->rest_time <= 0)
 		{
-			MAP_ELEMENTS grid_type = game_map.GridType(it->end.x, it->end.y);
+			CPoint map_pos;
+			map_pos.SetPoint((it->end.x + GRIDNUM_WIDTH) % GRIDNUM_WIDTH, (it->end.y + GRIDNUM_HEIGHT) % GRIDNUM_HEIGHT);
+			MAP_ELEMENTS grid_type = game_map.GridType(map_pos.x, map_pos.y);
 			if(grid_type == MAP_ELEMENTS::BOMB || grid_type == MAP_ELEMENTS::FIRE)
 			{
 				bomb_manager.SuddenExplode(it->bomb_index);
 			}
 			else
 			{
-				game_map.SetGrid(it->end.x, it->end.y, MAP_ELEMENTS::BOMB, it->bomb_index);
+				game_map.SetGrid(map_pos.x, map_pos.y, MAP_ELEMENTS::BOMB, it->bomb_index);
 				int i;
 				for(i=1;i<=MAX_PLAYER; i++)
 				{
-					if(player[i].GetPosJudgeGrid() == it->end)
-						player[i].SetSpecialAccess(it->end);
+					if(player[i].GetPosJudgeGrid() == map_pos)
+						player[i].SetSpecialAccess(map_pos);
 				}
 				bomb_manager.ActivateBomb(it->bomb_index);
 			}
@@ -790,19 +807,22 @@ void CGame::KickBomb( int index, int direction )
 	CPoint end_pos = now_pos;
 	game_map.SetGrid(now_pos.x, now_pos.y, MAP_ELEMENTS::NONE);
 	
-	end_pos.x = (end_pos.x + DIRECT_VEC[direction].x * KICK_DISTANCE + GRIDNUM_WIDTH) % GRIDNUM_WIDTH;
-	end_pos.y = (end_pos.y + DIRECT_VEC[direction].y * KICK_DISTANCE + GRIDNUM_HEIGHT) % GRIDNUM_HEIGHT;
+	end_pos.x = end_pos.x + DIRECT_VEC[direction].x * KICK_DISTANCE ;
+	end_pos.y = end_pos.y + DIRECT_VEC[direction].y * KICK_DISTANCE ;
 	float flying_time = KICK_DISTANCE * KICK_SINGLEFLYTIME;
+	CPoint map_pos;
 	while(true)
 	{
-		if(game_map.GridType(end_pos.x, end_pos.y) == MAP_ELEMENTS::NONE)
+		map_pos.x = (end_pos.x + GRIDNUM_WIDTH) % GRIDNUM_WIDTH;
+		map_pos.y = (end_pos.y + GRIDNUM_HEIGHT) % GRIDNUM_HEIGHT;
+		if(game_map.GridType(map_pos.x, map_pos.y) == MAP_ELEMENTS::NONE)
 			break;
-		end_pos.x = (end_pos.x + DIRECT_VEC[direction].x + GRIDNUM_WIDTH)%GRIDNUM_WIDTH;
-		end_pos.y = (end_pos.y + DIRECT_VEC[direction].y + GRIDNUM_HEIGHT)%GRIDNUM_HEIGHT;
+		end_pos.x = end_pos.x + DIRECT_VEC[direction].x ;
+		end_pos.y = end_pos.y + DIRECT_VEC[direction].y ;
 		flying_time += KICK_SINGLEFLYTIME;
 	}
-	bomb_manager.SetBombPos(index, end_pos);
+	bomb_manager.SetBombPos(index, map_pos);
 
-	FlyingBomb now_flyingbomb(now_pos, end_pos, index, flying_time);
+	FlyingBomb now_flyingbomb(now_pos, end_pos, index, flying_time, direction);
 	flying_bombs.push_back(now_flyingbomb);
 }
