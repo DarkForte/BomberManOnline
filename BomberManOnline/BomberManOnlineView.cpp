@@ -17,8 +17,6 @@ void CBomberManOnlineView::Init()
 	p_room = new CRoom(p_res_manager);
 	game_state = LOGIN;
 
-	render_timer_id = 12121;
-
 	return;
 }
 

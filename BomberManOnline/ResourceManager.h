@@ -50,9 +50,10 @@ public:
 	CD2DImage avatar;
 	CD2DImage userinfo_rect[MAX_PLAYER +1]; 
 	
+
 	CClient m_Client;
 
-	//CIOCPModel m_IOCP;
+	CD2DImage map_none;
 
 public:
 	CResourceManager(void);

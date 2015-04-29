@@ -123,9 +123,21 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 	}
 
 	//Draw Map
-
-	p_res_manager->map_back.DrawImage(render_target, PADDING, PADDING, MAP_WIDTH, MAP_HEIGHT, 0, 0);
-
+	//p_res_manager->map_back.DrawImage(render_target, PADDING, PADDING, MAP_WIDTH, MAP_HEIGHT, 0, 0);
+	for(i=0;i<GRIDNUM_WIDTH;i++)
+	{
+		for(j=0; j<GRIDNUM_HEIGHT; j++)
+		{
+			MAP_ELEMENTS now_gridtype = game_map.GridType(i,j);
+			int target_x = i*GRID_WIDTH + PADDING;
+			int target_y = j*GRID_HEIGHT + PADDING;
+				
+			p_res_manager->map_none.DrawImage(render_target,
+				target_x, target_y,
+				SPRITE_WIDTH, SPRITE_HEIGHT,
+				0, 0);
+		}
+	}
 	//Draw Map Elements
 	for(i=0;i<GRIDNUM_WIDTH;i++)
 	{
@@ -134,24 +146,24 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 			MAP_ELEMENTS now_gridtype = game_map.GridType(i,j);
 			int target_x = i*GRID_WIDTH + PADDING;
 			int target_y = j*GRID_HEIGHT + PADDING;
-
 			if(now_gridtype == MAP_ELEMENTS::BOMB)
 			{
 				p_res_manager->bomb_sprite.DrawImage(render_target,
-					target_x, target_y,
-					SPRITE_WIDTH, SPRITE_HEIGHT,
-					SPRITE_WIDTH*9, 0);
+				target_x, target_y,
+				SPRITE_WIDTH, SPRITE_HEIGHT,
+				SPRITE_WIDTH*9, 0);
 			}
 			else if(now_gridtype == MAP_ELEMENTS::FIRE)
 			{
 				p_res_manager->fire_sprite.DrawImage(render_target,
-					target_x,target_y,
-					SPRITE_WIDTH, SPRITE_HEIGHT,
-					SPRITE_WIDTH*9, 0);
+				target_x,target_y,
+				SPRITE_WIDTH, SPRITE_HEIGHT,
+				SPRITE_WIDTH*9, 0);
 			}
 		}
 	}
 
+	
 	//Draw Players
 	for(i=1;i<=MAX_PLAYER;i++)
 	{
@@ -216,8 +228,7 @@ void CGame::HandleKeyDown(UINT nchar)
 			int bomb_index = bomb_manager.AddBomb(bomb);
 			game_map.SetGrid(player_pos.x, player_pos.y, MAP_ELEMENTS::BOMB, bomb_index);
 
-			if(CheckSpecialOk(player_pos, player[my_player].GetMovingDirection() ))
-				player[my_player].SetSpecialAccess(player_pos);
+			player[my_player].SetSpecialAccess(player_pos);
 		}
 	}
 }
@@ -262,8 +273,9 @@ GameState CGame::Update(float game_time)
 	{
 		PointF next_pos_pixel = player[i].TryMove(game_time);
 		CPoint next_pos_judge = GetJudgePoint(next_pos_pixel);
-		if((player[i].SpecialAccess().second == true && player[i].SpecialAccess().first == next_pos_judge)
-			|| game_map.VerifyPoint(next_pos_pixel, player[i].GetMovingDirection()))
+		if(game_map.InBound(next_pos_pixel) &&
+			 ( (player[i].SpecialAccess().second == true && player[i].SpecialAccess().first == next_pos_judge)
+			|| game_map.NoCollision(next_pos_pixel, player[i].GetMovingDirection()) ) )
 		{
 			//OutputDebugPrintf("%lf %lf\n", player[my_player].GetPosPixel().x, player[my_player].GetPosPixel().y);
 			player[i].Move(game_time);
@@ -297,8 +309,7 @@ GameState CGame::Update(float game_time)
 			int now_power = 0;
 			CPoint now_point = now_bomb.GetPos();
 
-			while(0 <= now_point.x && now_point.x < GRIDNUM_WIDTH
-				&& 0<= now_point.y && now_point.y < GRIDNUM_HEIGHT 
+			while(game_map.InBound(now_point)
 				&& now_power + 1 <= now_bomb.GetPower() 
 				&& game_map.GridType(now_point.x, now_point.y) != MAP_ELEMENTS::OBSTACLE 
 				&& game_map.GridType(now_point.x, now_point.y) != MAP_ELEMENTS::DESTROYABLE
@@ -316,14 +327,19 @@ GameState CGame::Update(float game_time)
 				now_power++;
 			}
 
-			if(game_map.GridType(now_point.x, now_point.y) == MAP_ELEMENTS::DESTROYABLE)
+			if(game_map.InBound(now_point))
 			{
-				game_map.SetGrid(now_point.x, now_point.y, MAP_ELEMENTS::NONE);
+				if(game_map.GridType(now_point.x, now_point.y) == MAP_ELEMENTS::DESTROYABLE)
+				{
+					game_map.SetGrid(now_point.x, now_point.y, MAP_ELEMENTS::NONE);
+				}
+				else if(game_map.GridType(now_point.x, now_point.y) == MAP_ELEMENTS::BOMB)
+				{
+					int bomb_index = game_map.GetIndex(now_point.x, now_point.y);
+					bomb_manager.SuddenExplode(bomb_index);
+				}
 			}
-			else if(game_map.GridType(now_point.x, now_point.y) == MAP_ELEMENTS::BOMB)
-			{
-				//later
-			}
+			
 		}
 
 		int now_owner = now_bomb.Owner();

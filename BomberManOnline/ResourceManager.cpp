@@ -132,6 +132,8 @@ void CResourceManager::LoadPics( IWICImagingFactory * pIWICFactory, ID2D1HwndRen
 		userinfo_rect[i].Load(pIWICFactory, render_target, buf);
 	}
 
+	map_none.Load(pIWICFactory, render_target, L"pic\\game_ui\\map_none.png");
+
 }
 
 void CResourceManager::InitTextFormat(IDWriteFactory* write_factory)
@@ -146,6 +148,7 @@ void CResourceManager::InitTextFormat(IDWriteFactory* write_factory)
 		L"en-us",                      // Local
 		&p_text_format                 // Pointer to receive the created object
 		);
+		
 	 write_factory->CreateTextFormat(
 		 L"Arial",                   // Font family name
 		 NULL,                          // Font collection(NULL sets it to the system font collection)
@@ -226,6 +229,7 @@ void CResourceManager::InitTextFormat(IDWriteFactory* write_factory)
 		 L"en-us",                      // Local
 		 &p_text_format_Stencil_120_bold        // Pointer to receive the created object
 		 );
+
 }
 
 bool CResourceManager::InitClient()

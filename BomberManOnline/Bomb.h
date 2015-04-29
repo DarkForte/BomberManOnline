@@ -1,5 +1,5 @@
 #pragma once
-#include<stdio.h>
+#include "stdafx.h"
 using namespace std;
 
 class CBomb
@@ -8,6 +8,7 @@ class CBomb
 	
 	CPoint pos;
 	double remain_time;
+	
 	int power;
 
 public:
@@ -20,15 +21,15 @@ public:
 	CPoint GetPos();
 	int GetX();
 	int GetY();
-	/*Get remain time, in ms*/
-	double GetRemainTime();
 
 	int GetPower();
+
+	double GetRemainTime() const { return remain_time; }
+	void SetRemainTime(double val) { remain_time = val; }
 
 	void SetX(int x);
 	void SetY(int y);
 	void SetPos(int x, int y);
-	void SetRemainRime(int r);
 	void SetPower(int p);
 
 	int Owner() const { return owner; }

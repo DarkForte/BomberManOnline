@@ -39,11 +39,6 @@ int CBomb::GetPower()
 	return power;
 }
 
-double CBomb::GetRemainTime()
-{
-	return remain_time;
-}
-
 void CBomb::DropTime(float game_time)
 {
 	remain_time -= game_time;

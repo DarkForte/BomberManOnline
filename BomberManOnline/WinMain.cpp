@@ -108,5 +108,6 @@ int WINAPI WinMain( __in HINSTANCE hInstance, __in_opt HINSTANCE hPrevInstance, 
 
 	UnregisterClass(L"wndclass",wndclass.hInstance);
 
+	//delete application;
 	return 0;
 }

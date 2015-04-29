@@ -13,12 +13,12 @@ CBombManager::~CBombManager(void)
 {
 }
 
-int CBombManager::AddBomb(CBomb &p_bomb)
+int CBombManager::AddBomb(CBomb &new_bomb)
 {
-	bombs[cnt_bombs % MAX_BOMBS].first = p_bomb;
+	bombs[cnt_bombs % MAX_BOMBS].first = new_bomb;
 	bombs[cnt_bombs % MAX_BOMBS].second = true;
-	cnt_bombs++;;
-	return cnt_bombs;
+	cnt_bombs++;
+	return cnt_bombs-1;
 }
 
 vector<CBomb> CBombManager::Update(float game_time)
@@ -41,7 +41,7 @@ vector<CBomb> CBombManager::Update(float game_time)
 		}
 	}
 	//OutputDebugPrintf("Pbombstart: %d\n", p_bombs_start);
-	//OutputDebugPrintf("BombingSize: %d\n", ret.size());
+	//OutputDebugPrintf("Cnt: %d\n", cnt_bombs);
 
 	return ret;
 }
@@ -50,4 +50,12 @@ void CBombManager::Init()
 {
 	cnt_bombs = 0; 
 	p_bombs_start = 0;
+}
+
+void CBombManager::SuddenExplode( int index )
+{
+	assert(index >= 0);
+
+	bombs[index%MAX_BOMBS].first.SetRemainTime(0);
+	return;
 }
