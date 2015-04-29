@@ -52,6 +52,8 @@ public:
 	
 	CClient m_Client;
 
+	//CIOCPModel m_IOCP;
+
 public:
 	CResourceManager(void);
 	~CResourceManager(void);

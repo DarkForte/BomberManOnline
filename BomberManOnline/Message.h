@@ -9,15 +9,14 @@
 #define MSG_BOMB 0x04
 #define MSG_STATUS 0x05
 
-
 class CMessage
 {
 public:
 	unsigned short type1;
 	unsigned short type2;
-	unsigned short id;
-	unsigned short x;
-	unsigned short y;
-	char str1[10];
-	char str2[10];
+	char str1[20];
+	char str2[20];
+	int para1;
+	int para2;
+	char msg[100];
 };

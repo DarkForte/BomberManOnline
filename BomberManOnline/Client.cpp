@@ -101,6 +101,10 @@ bool  CClient::EstablishConnections()
 		m_pParamsWorker[i].pClient = this;
 		//m_phWorkerThreads[i] = CreateThread(0, 0, _WorkerThread, (void *)(&m_pParamsWorker[i]), 0, &nThreadID);
 		
+		CMessage msg, recv_msg;
+		msg.type1 = MSG_NULL;
+		recv_msg = _SendMessage(msg);
+
 	}
 
 	return true;

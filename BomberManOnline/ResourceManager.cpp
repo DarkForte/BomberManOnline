@@ -247,5 +247,6 @@ bool CResourceManager::InitClient()
 		return false;
 	}
 	
+
 	return true;
 }

@@ -88,25 +88,31 @@ GameState CLogin::HandleLButtonUp(CPoint point)
 				{
 					if (p_res_manager->m_Client.state == ClientState::CONNECT)
 					{
+						//定义发送消息/接收消息
 						CMessage msg, recv_msg;
+
+						//读取字符串的中间变量
 						std::string strTemp;
 						CStringA temp;
 
-						msg.id = 0;
+						//初始化消息类型
 						msg.type1 = MSG_SCENE;
 						msg.type2 = MSG_SCENE_LOGIN;
-						msg.x = 0;
-						msg.y = 0;
 
+						//设置参数
 						temp = user_name.getText().GetBuffer(0);
 						strTemp = temp.GetBuffer(0);
-						strncpy_s(msg.str1, sizeof(char) * 10, strTemp.c_str(), sizeof(char) * 10);
+						strcpy_s(msg.str1, strTemp.c_str());
 
 						temp = user_password.getText().GetBuffer(0);
 						strTemp = temp.GetBuffer(0);
-						strncpy_s(msg.str2, sizeof(char) * 10, strTemp.c_str(), sizeof(char) * 10);
+						
+						strcpy_s(msg.str2, strTemp.c_str());
 
+						//发送消息
+						//OutputDebugPrintf("%d\n",timeGetTime());
 						recv_msg = p_res_manager->m_Client._SendMessage(msg);
+						//OutputDebugPrintf("%d\n", timeGetTime());
 
 						if (recv_msg.type1 == MSG_SCENE && recv_msg.type2 == MSG_SCENE_LOBBY)
 						{
