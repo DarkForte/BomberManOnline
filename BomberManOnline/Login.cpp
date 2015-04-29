@@ -96,8 +96,7 @@ GameState CLogin::HandleLButtonUp(CPoint point)
 						CStringA temp;
 
 						//初始化消息类型
-						msg.type1 = MSG_SCENE;
-						msg.type2 = MSG_SCENE_LOGIN;
+						msg.type1 = MSG_LOGIN;
 
 						//设置参数
 						temp = user_name.getText().GetBuffer(0);

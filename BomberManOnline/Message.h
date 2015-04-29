@@ -4,10 +4,8 @@
 #define MSG_SCENE_LOBBY 0x02
 #define MSG_SCENE_ROOM 0x03
 #define MSG_SCENE_GAME 0x04
-#define MSG_MOVE 0x02
-#define MSG_TOOL 0x03
-#define MSG_BOMB 0x04
-#define MSG_STATUS 0x05
+#define MSG_LOGIN 0x02
+#define MSG_GAME 0x03
 
 class CMessage
 {
