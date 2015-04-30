@@ -272,6 +272,10 @@ void CPlayer::Update( float game_time )
 				{
 					SetSpecialItem(Item::DART, 9);
 				}
+				else if(target_transform == PLAYER_TRANSFORM::PANDA)
+				{
+					SetSpecialItem(Item::KICK, INF);
+				}
 				SetTrans(target_transform, DEFAULT_TRANSTIME, PLAYER_TRANSFORM::TRANS_END);
 			}
 			else //Trans ends

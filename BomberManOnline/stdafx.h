@@ -22,6 +22,7 @@
 #pragma comment(lib, "winmm.lib")
 
 #define ASSERT(x) {if(!(x)) _asm{int 0x03}}
+const int INF = 1<<30;
 
 const float WINDOW_WIDTH = 1280, WINDOW_HEIGHT = 720;
 const float GRID_WIDTH=30, GRID_HEIGHT=30;

@@ -9,14 +9,14 @@ int main()
 	freopen("map1.txt","w",stdout);
 	int i;
 	srand(unsigned(time(0)));
-	for(i=1;i<=30;i++)
+	for(i=1;i<=40;i++)
 	{
 		int x=rand()%WIDTH;
 		int y=rand()%HEIGHT;
 		
 		cout<<x<<" "<<y<<" "<<1<<" 0"<<endl;
 	}
-	for(i=1; i<=30; i++)
+	for(i=1; i<=50; i++)
 	{
 		int x=rand()%WIDTH;
 		int y=rand()%HEIGHT;

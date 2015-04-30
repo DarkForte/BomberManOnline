@@ -153,7 +153,7 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 			swprintf_s(buf, L"Q");
 		RenderText(render_target, buf, now_left+7, ICON_TOP+5,
 			p_res_manager->p_corner_number_format, black_brush);
-		
+
 		int now_item = int(player[my_player].PeekItem(i).first);
 		if(now_item != int(Item::NONE))
 		{
@@ -163,12 +163,16 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 				0.6*target_width/ITEM_WIDTH, 0.6*target_height/ITEM_HEIGHT);
 
 			int now_amount = player[my_player].PeekItem(i).second;
-			if(now_amount >= 1)
+			if(now_amount >= 1 && now_amount <= 10000)
 			{
 				swprintf_s(buf, L"x %d", now_amount);
-				RenderText(render_target, buf, now_left + target_width -10, ICON_TOP + target_height-5,
-					p_res_manager->p_corner_number_format, black_brush);
 			}
+			else
+			{
+				memset(buf,0,sizeof(buf));
+			}
+			RenderText(render_target, buf, now_left + target_width -10, ICON_TOP + target_height-5,
+				p_res_manager->p_corner_number_format, black_brush);
 		}
 		now_left += target_width + offset;
 		if(i==MAX_ITEMS)
@@ -304,10 +308,29 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 		else if(now.type == RenderType::PLAYER)
 		{
 			int now_i = now.index;
-			p_res_manager->player_sprite[now_i].DrawImage(render_target,
-				now.pos.x, now.pos.y,
-				SPRITE_WIDTH, SPRITE_HEIGHT, 
-				SPRITE_WIDTH * player[now_i].NowFrame(), SPRITE_HEIGHT * player[now_i].Facing());
+			PLAYER_TRANSFORM now_trans = player[now_i].Trans();
+			if(now_trans == PLAYER_TRANSFORM::NONE)
+			{
+				p_res_manager->player_sprite[now_i].DrawImage(render_target,
+					now.pos.x, now.pos.y,
+					SPRITE_WIDTH, SPRITE_HEIGHT, 
+					SPRITE_WIDTH * player[now_i].NowFrame(), SPRITE_HEIGHT * player[now_i].Facing());
+			}
+			else if(now_trans == PLAYER_TRANSFORM::TRANS_START || now_trans == PLAYER_TRANSFORM::TRANS_END)
+			{
+				p_res_manager->player_sprite[now_i].DrawImage(render_target,
+					now.pos.x, now.pos.y,
+					SPRITE_WIDTH, SPRITE_HEIGHT, 
+					SPRITE_WIDTH * player[now_i].NowFrame(), SPRITE_HEIGHT * player[now_i].Facing(),
+					1, 1, (sin(player[now_i].TransTime()/50)+1)/2);
+			}
+			else
+			{
+				p_res_manager->player_sprite[now_i].DrawImage(render_target,
+					now.pos.x, now.pos.y,
+					SPRITE_WIDTH, SPRITE_HEIGHT, 
+					SPRITE_WIDTH * player[now_i].NowFrame(), SPRITE_HEIGHT * player[now_i].Facing());
+			}
 		}
 	}
 
@@ -651,6 +674,26 @@ GameState CGame::Update(float game_time)
 int CGame::CalcBombResult()
 {
 	return int(Item::PANDA);
+	/*50% rate of dropping an item*/
+	int r = rand()%100;
+	if(r>=50)
+		return int(Item::NONE);
+	
+	/*40% - 40% - 20% rate of dropping 3 kinds of items*/
+	r = rand()%100;
+	if(r<40)
+	{
+		r = rand()%7;
+	}
+	else if(r<80)
+	{
+		r = 10 + rand()%8;
+	}
+	else
+	{
+		r = 20 + rand()%8;
+	}
+	return r;
 }
 
 void CGame::TouchItem( int num, int item_index )

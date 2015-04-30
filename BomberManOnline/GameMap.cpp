@@ -37,8 +37,8 @@ void CGameMap::Init( int map_number )
 		if(nowx == -1)
 			break;
 		
-		grid[nowy][nowx].first = (MAP_ELEMENTS)type;
-		grid[nowy][nowx].second = index;
+		grid[nowx][nowy].first = (MAP_ELEMENTS)type;
+		grid[nowx][nowy].second = index;
 	}
 }
 
