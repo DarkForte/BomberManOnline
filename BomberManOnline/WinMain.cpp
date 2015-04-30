@@ -82,6 +82,8 @@ int WINAPI WinMain( __in HINSTANCE hInstance, __in_opt HINSTANCE hPrevInstance, 
 	ShowWindow(hwnd,nShowCmd);
 	UpdateWindow(hwnd);
 
+	const int MAX_FPS = 60;
+	
 	MSG msg={0};
 	float now_time;
 	float last_time = timeGetTime();

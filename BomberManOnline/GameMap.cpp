@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "GameMap.h"
-
+#include <fstream>
+using namespace std;
 
 CGameMap::CGameMap(void)
 {
@@ -21,14 +22,36 @@ void CGameMap::Init()
 
 }
 
+void CGameMap::Init( int map_number )
+{
+	Init();
+
+	char buf[20];
+	sprintf_s(buf, "data\\map%d.txt", map_number);
+	ifstream fin(buf);
+	
+	int nowx, nowy, type, index;
+	while(true)
+	{
+		fin>>nowx>>nowy>>type>>index;
+		if(nowx == -1)
+			break;
+		
+		grid[nowx][nowy].first = (MAP_ELEMENTS)type;
+		grid[nowx][nowy].second = index;
+	}
+}
+
 
 CGameMap::~CGameMap(void)
 {
 }
 
 
-bool CGameMap::NoCollision(PointF next_point, int direction)
+bool CGameMap::NoCollision(PointF next_point, int direction, pair<CPoint, bool> special_access)
 {
+	//No judge if I see the point is in special access.
+
 	int i,j;
 	PointF points[5];
 	points[1] = next_point;
@@ -53,9 +76,15 @@ bool CGameMap::NoCollision(PointF next_point, int direction)
 		int x = int(points[i].x / GRID_WIDTH);
 		int y = int(points[i].y / GRID_HEIGHT);
 
+		if(special_access.second==true && special_access.first == CPoint(x,y))
+		{
+			ok[i]=true;
+			continue;
+		}
+
 		if(grid[x][y].first == MAP_ELEMENTS::OBSTACLE || grid[x][y].first == MAP_ELEMENTS::DESTROYABLE || grid[x][y].first == MAP_ELEMENTS::BOMB)
 			ok[i] = false;
-		else 
+		else
 			ok[i] = true;
 	}
 
@@ -143,16 +172,31 @@ int CGameMap::GetIndex( int x, int y )
 	return grid[x][y].second;
 }
 
-/*PointF CGameMap::AdjustPoint( PointF next_point, int direction )
+PointF CGameMap::RepelPoint( PointF next_point, int direction )
 {
-	if(VerifyPoint(next_point, direction) == true)
-		return next_point;
-
 	PointF points[5];
 	points[1] = next_point;
 	points[2] = next_point + PointF(SPRITE_WIDTH, 0);
 	points[3] = next_point + PointF(0, SPRITE_HEIGHT);
 	points[4] = next_point + PointF(SPRITE_WIDTH, SPRITE_HEIGHT);
 
-	
-}*/
+	if(direction == UP) // Repel to down
+	{
+		return PointF(points[1].x, ceil(points[1].y/GRID_HEIGHT)*GRID_HEIGHT);
+	}
+	else if(direction == DOWN) //Repel to up
+	{
+		points[3].y = floor(points[3].y/GRID_HEIGHT)*GRID_HEIGHT;
+		return points[3] + PointF(0, -SPRITE_HEIGHT);
+	}
+	else if(direction == LEFT) //Repel to right
+	{
+		points[1].x = ceil(points[1].x/GRID_WIDTH)*GRID_WIDTH;
+		return points[1];
+	}
+	else /*if (direction == RIGHT)*/
+	{
+		points[2].x = floor(points[2].x/GRID_WIDTH)*GRID_WIDTH;
+		return points[2] + PointF(-SPRITE_WIDTH, 0);
+	}
+}

@@ -6,6 +6,7 @@
 #include "BomberManOnlineView.h"
 #include "Game.h"
 #include "Login.h"
+#include <time.h>
 
 void CBomberManOnlineView::Init()
 {
@@ -16,6 +17,8 @@ void CBomberManOnlineView::Init()
 	p_lobby = new CLobby(p_res_manager);
 	p_room = new CRoom(p_res_manager);
 	game_state = LOGIN;
+
+	srand(unsigned(time(NULL)));
 
 	return;
 }
@@ -64,7 +67,6 @@ void CBomberManOnlineView::OnLButtonUp(CPoint point)
 		GameState next_state = p_lobby->HandleLButtonUp(point);
 		if (next_state == ROOM)
 		{
-			p_game->Init(1);
 			game_state = ROOM;
 		}
 
@@ -74,7 +76,7 @@ void CBomberManOnlineView::OnLButtonUp(CPoint point)
 		GameState next_state = p_room->HandleLButtonUp(point);
 		if (next_state == INGAME)
 		{
-			p_game->Init(1);
+			p_game->Init(1,1);
 			game_state = INGAME;
 		}
 

@@ -28,13 +28,17 @@
 #pragma comment(lib,"ws2_32.lib")
 
 
-const int WINDOW_WIDTH = 1280, WINDOW_HEIGHT = 720;
-const int GRID_WIDTH=30, GRID_HEIGHT=30;
-const int GRIDNUM_WIDTH = 30, GRIDNUM_HEIGHT = 20;
-const int SPRITE_WIDTH = 32, SPRITE_HEIGHT = 32;
+#define ASSERT(x) {if(!(x)) _asm{int 0x03}}
+const int INF = 1<<30;
 
-const int MAP_WIDTH = GRID_WIDTH * GRIDNUM_WIDTH;
-const int MAP_HEIGHT = GRID_HEIGHT *GRIDNUM_HEIGHT;
+const float WINDOW_WIDTH = 1280, WINDOW_HEIGHT = 720;
+const float GRID_WIDTH=30, GRID_HEIGHT=30;
+const int GRIDNUM_WIDTH = 30, GRIDNUM_HEIGHT = 20;
+const float SPRITE_WIDTH = 32, SPRITE_HEIGHT = 32;
+const float ITEM_WIDTH = 30, ITEM_HEIGHT = 30;
+
+const float MAP_WIDTH = GRID_WIDTH * GRIDNUM_WIDTH;
+const float MAP_HEIGHT = GRID_HEIGHT *GRIDNUM_HEIGHT;
 
 const int PADDING = 0;
 
@@ -44,12 +48,21 @@ const int MAX_ITEMS = 6;
 const int STOP=-1, DOWN=0, LEFT=1, RIGHT=2, UP=3;
 const CPoint DIRECT_VEC[]={CPoint(0,1), CPoint(-1,0), CPoint(1,0), CPoint(0,-1)};
 
-const int TIMER_RENDER=1;
-const int MAX_FPS = 1000;
-
+const float DEFAULT_WRAPTIME = 3000;
 const float DEFAULT_BOMBTIME = 2000;
 const int DEFAULT_BOMBPOWER = 5;
 const int DEFAULT_FIRETIME = 300;
+const float DEFAULT_SPEED = 0.2f;
+const float DELTA_SPEED = 0.02f;
+const float DART_SPEED = 0.4;
+const float SLOW_SPEED = 0.1;
+const float DEFAULT_TRANSTIME=10000;
+const float TRANS_BEGINTIME=200;
+const float TRANS_ENDTIME = 800;
+
+const float QUICK_SPEED = 0.35;
+const int KICK_DISTANCE=10;
+const float KICK_SINGLEFLYTIME=50;
 
 const int LOGIN_MAX_BUTTON = 6;
 const int LOGIN_MAX_ICON = 3;
