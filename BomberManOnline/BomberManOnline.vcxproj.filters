@@ -67,6 +67,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Client.cpp">
+	  <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderText.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MovingObjects.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -138,6 +144,15 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Message.h">
+	  <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Item.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderText.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MovingObjects.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="ButtonState.h">

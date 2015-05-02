@@ -8,7 +8,66 @@
 #include "GameState.h"
 #include "SceneBase.h"
 #include "D2D1Header.h"
+#include "Item.h"
+#include <list>
 
+#pragma region RenderType Defination
+
+enum class RenderType
+{
+	MAPELE_DESTROYABLE, MAPELE_OBSTACLE, MAPELE_BOMB, MAPELE_FIRE, MAPELE_ITEM, PLAYER
+};
+
+struct RenderNode
+{
+	PointF pos;//pos: the bottom point
+	RenderType type;
+	int index;
+	RenderNode(PointF p, RenderType t, int i=0)
+	{
+		pos=p;
+		type=t;
+		index=i;
+	}
+	RenderNode(float x, float y, RenderType t, int i=0)
+	{
+		pos.x=x;
+		pos.y=y;
+		type=t;
+		index=i;
+	}
+
+	bool operator < (const RenderNode &b)const
+	{
+		return pos.y < b.pos.y;
+	}
+};
+
+
+
+#pragma endregion
+
+struct FlyingBomb
+{
+	CPoint start;
+	CPoint end;
+	int bomb_index;
+	float total_time;
+	float rest_time;
+	int direction;
+	
+	FlyingBomb(){}
+	FlyingBomb(CPoint s, CPoint e, int index, float total_t, int direct)
+	{
+		start=s;
+		end=e;
+		bomb_index = index;
+		total_time = total_t;
+		rest_time = total_t;
+		direction = direct;
+	}
+	
+};
 
 class CGame : public CSceneBase
 {
@@ -22,25 +81,33 @@ public:
 
 	CPlayer player[MAX_PLAYER+1];
 	
+	int money[MAX_PLAYER+1];
+
 	int my_player;
 
 	CGameMap game_map;
 	CBombManager bomb_manager;
 
 	vector<CBomb> exploding_bombs;
+	vector<RenderNode> render_nodes;
+	list<CMovingObjects> darts;
+	list<FlyingBomb> flying_bombs;
 
 public:
 	CGame(void);
 	~CGame(void);
 	CGame(CResourceManager *res_manager);
 
-	void Init(int player_num);
+	void Init(int player_num, int map_num);
 	void Render(ID2D1HwndRenderTarget* render_target);
 	void HandleKeyDown(UINT nchar);
 	void HandleKeyUp(UINT nchar);
 	GameState Update(float game_time);
 
 protected:
-	void OperateBombs();
+	int CalcBombResult();
+	void TouchItem(int player_num, int item_index);
+	void UseItem(int user, Item item);
+	void KickBomb(int index, int direction);
 };
 

@@ -78,13 +78,17 @@ HRESULT CDirect2DMFCBase::CreateDeviceResources()
 
 		D2D1_SIZE_U size = D2D1::SizeU(rc.right - rc.left, rc.bottom - rc.top);
 
-		// Create a Direct2D render target.
-		hr = m_pDirect2dFactory->CreateHwndRenderTarget(
-			D2D1::RenderTargetProperties(),
-			D2D1::HwndRenderTargetProperties(m_hwnd, size),
-			&m_pRenderTarget
-			);
+		D2D1_HWND_RENDER_TARGET_PROPERTIES hrtprops;
+		hrtprops.hwnd = m_hwnd;
+		hrtprops.presentOptions = D2D1_PRESENT_OPTIONS_IMMEDIATELY;
+		hrtprops.pixelSize = size;
 
+		// Create a Direct2D render target.
+		hr = m_pDirect2dFactory->CreateHwndRenderTarget( 
+			D2D1::RenderTargetProperties(), hrtprops, &m_pRenderTarget);
+
+		//hr = m_pDirect2dFactory->CreateHwndRenderTarget( 
+			//D2D1::RenderTargetProperties(), D2D1::HwndRenderTargetProperties(m_hwnd, size), &m_pRenderTarget);
 	}
 
 	return hr;

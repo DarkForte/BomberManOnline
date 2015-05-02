@@ -42,7 +42,7 @@ void CResourceManager::LoadPics( IWICImagingFactory * pIWICFactory, ID2D1HwndRen
 	bomb_sprite.Load(pIWICFactory, render_target, L"pic\\bomb_sprite.png");
 	fire_sprite.Load(pIWICFactory, render_target, L"pic\\fire_sprite.png");
 
-	//scene ui
+#pragma region Lobby UI Loading
 
 	for (int i = 1; i <= ROOM_MAX_BUTTON; i++)
 	{
@@ -71,7 +71,7 @@ void CResourceManager::LoadPics( IWICImagingFactory * pIWICFactory, ID2D1HwndRen
 			lobby_button_sprite[i][j].Load(pIWICFactory, render_target, buf);
 		}
 	}
-	
+
 	for (int i = 1; i <= LOBBY_MAX_ICON; i++)
 	{
 		WCHAR buf[60];
@@ -98,8 +98,6 @@ void CResourceManager::LoadPics( IWICImagingFactory * pIWICFactory, ID2D1HwndRen
 		login_icon_sprite[i].Load(pIWICFactory, render_target, buf);
 	}
 
-
-
 	login_ui.Load(pIWICFactory, render_target, L"pic\\scene_ui\\login_b.png");
 	lobby_ui.Load(pIWICFactory, render_target, L"pic\\scene_ui\\lobby_b.png");
 	room_ui.Load(pIWICFactory, render_target, L"pic\\scene_ui\\room_b.png");
@@ -109,7 +107,9 @@ void CResourceManager::LoadPics( IWICImagingFactory * pIWICFactory, ID2D1HwndRen
 
 	message_bg.Load(pIWICFactory, render_target, L"pic\\scene_ui\\message_bg.png");
 
-	/*Game UI*/
+#pragma endregion
+
+#pragma region Game UI Loading
 
 	bottom_rect.Load(pIWICFactory, render_target, L"pic\\game_ui\\bottom_rect.png");
 	for(int i=1; i<=3; i++)
@@ -139,6 +139,11 @@ void CResourceManager::LoadPics( IWICImagingFactory * pIWICFactory, ID2D1HwndRen
 	}
 
 	map_none.Load(pIWICFactory, render_target, L"pic\\game_ui\\map_none.png");
+	map_obstacle.Load(pIWICFactory, render_target, L"pic\\game_ui\\map_obstacle.png");
+	map_destroyable.Load(pIWICFactory, render_target, L"pic\\game_ui\\map_destroyable.png");
+	icons.Load(pIWICFactory, render_target, L"pic\\icons.png");
+
+#pragma endregion
 
 }
 
@@ -235,7 +240,16 @@ void CResourceManager::InitTextFormat(IDWriteFactory* write_factory)
 		 L"en-us",                      // Local
 		 &p_text_format_Stencil_120_bold        // Pointer to receive the created object
 		 );
-
+	 write_factory->CreateTextFormat(
+		 L"Arial",                   // Font family name
+		 NULL,                          // Font collection(NULL sets it to the system font collection)
+		 DWRITE_FONT_WEIGHT_REGULAR,    // Weight
+		 DWRITE_FONT_STYLE_NORMAL,      // Style
+		 DWRITE_FONT_STRETCH_NORMAL,    // Stretch
+		 20.0f,                         // Size    
+		 L"en-us",                      // Local
+		 &p_corner_number_format        // Pointer to receive the created object
+		 );
 }
 
 bool CResourceManager::InitClient()

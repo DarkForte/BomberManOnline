@@ -6,6 +6,7 @@
 #include "Edit.h"
 #include "Client.h"
 #pragma comment(lib,"ws2_32.lib")
+#include "RenderText.h"
 
 class CLogin : public CSceneBase
 {

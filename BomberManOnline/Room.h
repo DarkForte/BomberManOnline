@@ -4,6 +4,7 @@
 #include "D2D1Header.h"
 #include "Button.h"
 #include "Edit.h"
+#include "RenderText.h"
 
 class CRoom : public CSceneBase
 {
@@ -17,8 +18,7 @@ public:
 	GameState HandleLButtonUp(CPoint point);
 	GameState HandleLButtonMove(CPoint point);
 	void Render(ID2D1HwndRenderTarget* render_target);
-	void RenderText(ID2D1HwndRenderTarget* render_target, wstring str, int x, int y,
-		IDWriteTextFormat* format, ID2D1SolidColorBrush* brush);
+	
 	void HandleKeyDown(UINT nchar);
 };
 

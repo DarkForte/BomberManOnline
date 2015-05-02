@@ -89,7 +89,9 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameMap.cpp" />
     <ClCompile Include="Login.cpp" />
+    <ClCompile Include="MovingObjects.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="RenderText.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Lobby.cpp" />
     <ClCompile Include="Room.cpp" />
@@ -112,10 +114,13 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameMap.h" />
     <ClInclude Include="GameState.h" />
+    <ClInclude Include="Item.h" />
     <ClInclude Include="Login.h" />
     <ClInclude Include="Message.h" />
+    <ClInclude Include="MovingObjects.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PointF.h" />
+    <ClInclude Include="RenderText.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Lobby.h" />

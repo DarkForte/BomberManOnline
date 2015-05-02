@@ -199,8 +199,6 @@ GameState CLogin::HandleLButtonUp(CPoint point)
 	return state;
 }
 
-
-
 void CLogin::Render(ID2D1HwndRenderTarget* render_target)
 {
 	ID2D1SolidColorBrush* brush;
