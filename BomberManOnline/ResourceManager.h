@@ -2,6 +2,7 @@
 #include "d2dimage.h"
 #include "D2D1Header.h"
 #include "Client.h"
+#include "Account.h"
 class CResourceManager
 {
 public:
@@ -55,6 +56,9 @@ public:
 
 	CD2DImage map_none;
 
+	CD2DImage message_bg;
+
+	CAccount account;
 public:
 	CResourceManager(void);
 	~CResourceManager(void);

@@ -39,12 +39,17 @@ void CResourceManager::LoadPics( IWICImagingFactory * pIWICFactory, ID2D1HwndRen
 		player_sprite[i].Load(pIWICFactory, render_target, buf);
 	}
 
+	bomb_sprite.Load(pIWICFactory, render_target, L"pic\\bomb_sprite.png");
+	fire_sprite.Load(pIWICFactory, render_target, L"pic\\fire_sprite.png");
+
+	//scene ui
+
 	for (int i = 1; i <= ROOM_MAX_BUTTON; i++)
 	{
 		for (int j = 0; j < 3; j++)
 		{
 			WCHAR buf[60];
-			swprintf_s(buf, L"pic\\button2%d%d.png", i, j);
+			swprintf_s(buf, L"pic\\scene_ui\\button2%d%d.png", i, j);
 			room_button_sprite[i][j].Load(pIWICFactory, render_target, buf);
 		}
 	}
@@ -52,7 +57,7 @@ void CResourceManager::LoadPics( IWICImagingFactory * pIWICFactory, ID2D1HwndRen
 	for (int i = 1; i <= ROOM_MAX_ICON; i++)
 	{
 		WCHAR buf[60];
-		swprintf_s(buf, L"pic\\icon0%d.png", i);
+		swprintf_s(buf, L"pic\\scene_ui\\icon0%d.png", i);
 
 		room_icon_sprite[i].Load(pIWICFactory, render_target, buf);
 	}
@@ -62,7 +67,7 @@ void CResourceManager::LoadPics( IWICImagingFactory * pIWICFactory, ID2D1HwndRen
 		for (int j = 0; j < 3; j++)
 		{
 			WCHAR buf[60];
-			swprintf_s(buf, L"pic\\button1%d%d.png", i, j);
+			swprintf_s(buf, L"pic\\scene_ui\\button1%d%d.png", i, j);
 			lobby_button_sprite[i][j].Load(pIWICFactory, render_target, buf);
 		}
 	}
@@ -70,7 +75,7 @@ void CResourceManager::LoadPics( IWICImagingFactory * pIWICFactory, ID2D1HwndRen
 	for (int i = 1; i <= LOBBY_MAX_ICON; i++)
 	{
 		WCHAR buf[60];
-		swprintf_s(buf, L"pic\\icon0%d.png", i);
+		swprintf_s(buf, L"pic\\scene_ui\\icon0%d.png", i);
 
 		lobby_icon_sprite[i].Load(pIWICFactory, render_target, buf);
 	}
@@ -80,7 +85,7 @@ void CResourceManager::LoadPics( IWICImagingFactory * pIWICFactory, ID2D1HwndRen
 		for (int j = 0; j < 3; j++)
 		{
 			WCHAR buf[60];
-			swprintf_s(buf, L"pic\\button0%d%d.png", i, j);
+			swprintf_s(buf, L"pic\\scene_ui\\button0%d%d.png", i, j);
 			login_button_sprite[i][j].Load(pIWICFactory, render_target, buf);
 		}
 	}
@@ -88,20 +93,21 @@ void CResourceManager::LoadPics( IWICImagingFactory * pIWICFactory, ID2D1HwndRen
 	for (int i = 1; i <= LOGIN_MAX_ICON; i++)
 	{
 		WCHAR buf[60];
-		swprintf_s(buf, L"pic\\icon0%d.png", i);
+		swprintf_s(buf, L"pic\\scene_ui\\icon0%d.png", i);
 
 		login_icon_sprite[i].Load(pIWICFactory, render_target, buf);
 	}
 
-	bomb_sprite.Load(pIWICFactory, render_target, L"pic\\bomb_sprite.png");
-	fire_sprite.Load(pIWICFactory, render_target, L"pic\\fire_sprite.png");
 
-	login_ui.Load(pIWICFactory, render_target, L"pic\\login_b.png");
-	lobby_ui.Load(pIWICFactory, render_target, L"pic\\lobby_b.png");
-	room_ui.Load(pIWICFactory, render_target, L"pic\\room_b.png");
 
-	edit.Load(pIWICFactory, render_target, L"pic\\edit.png");
-	edit_focus.Load(pIWICFactory, render_target, L"pic\\edit_focus.png");
+	login_ui.Load(pIWICFactory, render_target, L"pic\\scene_ui\\login_b.png");
+	lobby_ui.Load(pIWICFactory, render_target, L"pic\\scene_ui\\lobby_b.png");
+	room_ui.Load(pIWICFactory, render_target, L"pic\\scene_ui\\room_b.png");
+
+	edit.Load(pIWICFactory, render_target, L"pic\\scene_ui\\edit.png");
+	edit_focus.Load(pIWICFactory, render_target, L"pic\\scene_ui\\edit_focus.png");
+
+	message_bg.Load(pIWICFactory, render_target, L"pic\\scene_ui\\message_bg.png");
 
 	/*Game UI*/
 

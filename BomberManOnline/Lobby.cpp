@@ -33,63 +33,112 @@ CLobby::CLobby(CResourceManager* p_res_manager)
 	button[13].Init(435, 557, 400, 105, 1, 1, ButtonDown_lobby_ROOM);
 
 	chat.Init(PointF(885, 635), "message", 245, 26, true, false, 10,true,424);
+
+	isMessage = false;
+	msg_button.Init(838, 365, 90, 30, 1, 1, NULL);
 }
 
 GameState CLobby::HandleLButtonDown(CPoint point)
 {
-	for (int i = 1; i <= LOBBY_MAX_BUTTON; i++)
+	if (isMessage)
 	{
-		if (point.x >= button[i].GetXPixel()&&
-			point.x <= button[i].GetXPixel() + button[i].GetWidth() &&
-			point.y >= button[i].GetYPixel() &&
-			point.y <= button[i].GetYPixel() + button[i].GetHeight())
+		if (point.x >= msg_button.GetXPixel() &&
+			point.x <= msg_button.GetXPixel() + msg_button.GetWidth() &&
+			point.y >= msg_button.GetYPixel() &&
+			point.y <= msg_button.GetYPixel() + msg_button.GetHeight())
 		{
-			button[i].SetStatus(BUTTON_STATUS::MOUSE_DOWN);
+			msg_button.SetStatus(BUTTON_STATUS::MOUSE_DOWN);
 		}
 	}
-	
-	chat.HandleLButtonDown(point);
+	else
+	{
+		for (int i = 1; i <= LOBBY_MAX_BUTTON; i++)
+		{
+			if (point.x >= button[i].GetXPixel() &&
+				point.x <= button[i].GetXPixel() + button[i].GetWidth() &&
+				point.y >= button[i].GetYPixel() &&
+				point.y <= button[i].GetYPixel() + button[i].GetHeight())
+			{
+				button[i].SetStatus(BUTTON_STATUS::MOUSE_DOWN);
+			}
+		}
 
+		chat.HandleLButtonDown(point);
+	}
 	return GameState::LOBBY;
 }
 
 GameState CLobby::HandleLButtonMove(CPoint point)
 {
-	for (int i = 1; i <= LOBBY_MAX_BUTTON; i++)
+	if (isMessage)
 	{
-		if (point.x >= button[i].GetXPixel() &&
-			point.x <= button[i].GetXPixel() + button[i].GetWidth() &&
-			point.y >= button[i].GetYPixel() &&
-			point.y <= button[i].GetYPixel() + button[i].GetHeight())
+		if (point.x >= msg_button.GetXPixel() &&
+			point.x <= msg_button.GetXPixel() + msg_button.GetWidth() &&
+			point.y >= msg_button.GetYPixel() &&
+			point.y <= msg_button.GetYPixel() + msg_button.GetHeight())
 		{
-			button[i].SetStatus(BUTTON_STATUS::MOUSE_ON);
+			msg_button.SetStatus(BUTTON_STATUS::MOUSE_ON);
 		}
 		else
 		{
-			button[i].SetStatus(BUTTON_STATUS::IDLE);
+			msg_button.SetStatus(BUTTON_STATUS::IDLE);
 		}
 	}
-
+	else
+	{
+		for (int i = 1; i <= LOBBY_MAX_BUTTON; i++)
+		{
+			if (point.x >= button[i].GetXPixel() &&
+				point.x <= button[i].GetXPixel() + button[i].GetWidth() &&
+				point.y >= button[i].GetYPixel() &&
+				point.y <= button[i].GetYPixel() + button[i].GetHeight())
+			{
+				button[i].SetStatus(BUTTON_STATUS::MOUSE_ON);
+			}
+			else
+			{
+				button[i].SetStatus(BUTTON_STATUS::IDLE);
+			}
+		}
+	}
 	return GameState::LOBBY;
 }
 
 GameState CLobby::HandleLButtonUp(CPoint point)
 {
 	GameState state = GameState::LOBBY;
-	for (int i = 1; i <= LOBBY_MAX_BUTTON; i++)
+
+	if (isMessage)
 	{
-		if (point.x >= button[i].GetXPixel()&&
-			point.x <= button[i].GetXPixel() + button[i].GetWidth() &&
-			point.y >= button[i].GetYPixel()&&
-			point.y <= button[i].GetYPixel() + button[i].GetHeight())
+		if (point.x >= msg_button.GetXPixel() &&
+			point.x <= msg_button.GetXPixel() + msg_button.GetWidth() &&
+			point.y >= msg_button.GetYPixel() &&
+			point.y <= msg_button.GetYPixel() + msg_button.GetHeight())
 		{
-			if (button[i].ButtonDown != NULL)
+			isMessage = false;
+		}
+	}
+	else
+	{
+		for (int i = 1; i <= LOBBY_MAX_BUTTON; i++)
+		{
+			if (point.x >= button[i].GetXPixel() &&
+				point.x <= button[i].GetXPixel() + button[i].GetWidth() &&
+				point.y >= button[i].GetYPixel() &&
+				point.y <= button[i].GetYPixel() + button[i].GetHeight())
 			{
-				state = button[i].ButtonDown();
+				if (i == 4)
+				{
+					isMessage = true;
+					msg_string = "Help Message";
+				}
+				else if (button[i].ButtonDown != NULL && isMessage == false)
+				{
+					state = button[i].ButtonDown();
+				}
 			}
 		}
 	}
-
 	return state;
 }
 
@@ -97,7 +146,7 @@ void CLobby::RenderText(ID2D1HwndRenderTarget* render_target, wstring str, int x
 	IDWriteTextFormat* format, ID2D1SolidColorBrush* brush)
 {
 	int len = str.length();
-	D2D1_RECT_F rect = D2D1::RectF(x,y, x+format->GetFontSize()*len, y+format->GetFontSize()*len);
+	D2D1_RECT_F rect = D2D1::RectF(x, y, x + format->GetFontSize()*len, y + format->GetFontSize()*len);
 	render_target->DrawText(str.c_str(), str.length(), format, rect, brush);
 }
 
@@ -282,6 +331,12 @@ void CLobby::Render(ID2D1HwndRenderTarget* render_target)
 	RenderText(render_target, o_text, 765, 611, p_res_manager->p_text_format_Arial_32_bold, brush);
 
 	SafeRelease(&brush);
+	
+	if (isMessage)
+	{
+		RenderMessage(render_target);
+	}
+	
 	return;
 }
 

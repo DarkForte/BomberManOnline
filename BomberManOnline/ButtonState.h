@@ -1,0 +1,4 @@
+enum class BUTTON_STATUS
+{
+	IDLE, MOUSE_ON, MOUSE_DOWN
+};

@@ -31,41 +31,73 @@ CLogin::CLogin(CResourceManager* p_res_manager)
 	user_name.Init(PointF(628, 296), "user name", 200, 26, true, false, 10, false, 0);
 	user_password.Init(PointF(628, 331), "*****", 200, 26, false, true, 10, false, 0);
 
+	isMessage = false;
+	msg_button.Init(838, 365, 90, 30, 1, 1, NULL);
 }
 
 GameState CLogin::HandleLButtonDown(CPoint point)
 {
-	for (int i = 1; i <= LOGIN_MAX_BUTTON; i++)
+	if (isMessage)
 	{
-		if (point.x >= button[i].GetXPixel()&&
-			point.x <= button[i].GetXPixel() + button[i].GetWidth() &&
-			point.y >= button[i].GetYPixel() &&
-			point.y <= button[i].GetYPixel() + button[i].GetHeight())
+		if (point.x >= msg_button.GetXPixel() &&
+			point.x <= msg_button.GetXPixel() + msg_button.GetWidth() &&
+			point.y >= msg_button.GetYPixel() &&
+			point.y <= msg_button.GetYPixel() + msg_button.GetHeight())
 		{
-			button[i].SetStatus(BUTTON_STATUS::MOUSE_DOWN);
+			msg_button.SetStatus(BUTTON_STATUS::MOUSE_DOWN);
 		}
 	}
-	
-	user_name.HandleLButtonDown(point);
-	user_password.HandleLButtonDown(point);
+	else
+	{
+		for (int i = 1; i <= LOGIN_MAX_BUTTON; i++)
+		{
+			if (point.x >= button[i].GetXPixel() &&
+				point.x <= button[i].GetXPixel() + button[i].GetWidth() &&
+				point.y >= button[i].GetYPixel() &&
+				point.y <= button[i].GetYPixel() + button[i].GetHeight())
+			{
+				button[i].SetStatus(BUTTON_STATUS::MOUSE_DOWN);
+			}
+		}
 
+		user_name.HandleLButtonDown(point);
+		user_password.HandleLButtonDown(point);
+	}
+	
 	return GameState::LOGIN;
 }
 
 GameState CLogin::HandleLButtonMove(CPoint point)
 {
-	for (int i = 1; i <= LOGIN_MAX_BUTTON; i++)
+	if (isMessage)
 	{
-		if (point.x >= button[i].GetXPixel() &&
-			point.x <= button[i].GetXPixel() + button[i].GetWidth() &&
-			point.y >= button[i].GetYPixel() &&
-			point.y <= button[i].GetYPixel() + button[i].GetHeight())
+		if (point.x >= msg_button.GetXPixel() &&
+			point.x <= msg_button.GetXPixel() + msg_button.GetWidth() &&
+			point.y >= msg_button.GetYPixel() &&
+			point.y <= msg_button.GetYPixel() + msg_button.GetHeight())
 		{
-			button[i].SetStatus(BUTTON_STATUS::MOUSE_ON);
+			msg_button.SetStatus(BUTTON_STATUS::MOUSE_ON);
 		}
 		else
 		{
-			button[i].SetStatus(BUTTON_STATUS::IDLE);
+			msg_button.SetStatus(BUTTON_STATUS::IDLE);
+		}
+	}
+	else
+	{
+		for (int i = 1; i <= LOGIN_MAX_BUTTON; i++)
+		{
+			if (point.x >= button[i].GetXPixel() &&
+				point.x <= button[i].GetXPixel() + button[i].GetWidth() &&
+				point.y >= button[i].GetYPixel() &&
+				point.y <= button[i].GetYPixel() + button[i].GetHeight())
+			{
+				button[i].SetStatus(BUTTON_STATUS::MOUSE_ON);
+			}
+			else
+			{
+				button[i].SetStatus(BUTTON_STATUS::IDLE);
+			}
 		}
 	}
 
@@ -75,72 +107,99 @@ GameState CLogin::HandleLButtonMove(CPoint point)
 GameState CLogin::HandleLButtonUp(CPoint point)
 {
 	GameState state = GameState::LOGIN;
-	for (int i = 1; i <= LOGIN_MAX_BUTTON; i++)
+
+	if (isMessage)
 	{
-		if (point.x >= button[i].GetXPixel()&&
-			point.x <= button[i].GetXPixel() + button[i].GetWidth() &&
-			point.y >= button[i].GetYPixel()&&
-			point.y <= button[i].GetYPixel() + button[i].GetHeight())
+		if (point.x >= msg_button.GetXPixel() &&
+			point.x <= msg_button.GetXPixel() + msg_button.GetWidth() &&
+			point.y >= msg_button.GetYPixel() &&
+			point.y <= msg_button.GetYPixel() + msg_button.GetHeight())
 		{
-			if (button[i].ButtonDown != NULL)
+			isMessage = false;
+		}
+	}
+	else
+	{
+		for (int i = 1; i <= LOGIN_MAX_BUTTON; i++)
+		{
+			if (point.x >= button[i].GetXPixel() &&
+				point.x <= button[i].GetXPixel() + button[i].GetWidth() &&
+				point.y >= button[i].GetYPixel() &&
+				point.y <= button[i].GetYPixel() + button[i].GetHeight())
 			{
-				if (i == 6 )
+				if (i == 4)
 				{
-					if (p_res_manager->m_Client.state == ClientState::CONNECT)
+					isMessage = true;
+					msg_string = "Help Message";
+				}
+				else if (button[i].ButtonDown != NULL)
+				{
+					if (i == 6)
 					{
-						//定义发送消息/接收消息
-						CMessage msg, recv_msg;
-
-						//读取字符串的中间变量
-						std::string strTemp;
-						CStringA temp;
-
-						//初始化消息类型
-						msg.type1 = MSG_LOGIN;
-
-						//设置参数
-						temp = user_name.getText().GetBuffer(0);
-						strTemp = temp.GetBuffer(0);
-						strcpy_s(msg.str1, strTemp.c_str());
-
-						temp = user_password.getText().GetBuffer(0);
-						strTemp = temp.GetBuffer(0);
-						
-						strcpy_s(msg.str2, strTemp.c_str());
-
-						//发送消息
-						//OutputDebugPrintf("%d\n",timeGetTime());
-						recv_msg = p_res_manager->m_Client._SendMessage(msg);
-						//OutputDebugPrintf("%d\n", timeGetTime());
-
-						if (recv_msg.type1 == MSG_SCENE && recv_msg.type2 == MSG_SCENE_LOBBY)
+						//state = button[i].ButtonDown();
+						if (p_res_manager->m_Client.state == ClientState::CONNECT)
 						{
-							state = button[i].ButtonDown();
+							//定义发送消息/接收消息
+							CMessage msg, recv_msg;
+
+							//读取字符串的中间变量
+							std::string strTemp;
+							CStringA temp;
+
+							//初始化消息类型
+							msg.type1 = MSG_LOGIN;
+							msg.type2 = MSG_LOGIN_CKECK;
+
+							//设置参数
+							temp = user_name.getText().GetBuffer(0);
+							strTemp = temp.GetBuffer(0);
+							strcpy_s(msg.str1, strTemp.c_str());
+
+							temp = user_password.getText().GetBuffer(0);
+							strTemp = temp.GetBuffer(0);
+
+							strcpy_s(msg.str2, strTemp.c_str());
+
+							//发送消息
+							//OutputDebugPrintf("%d\n",timeGetTime());
+							recv_msg = p_res_manager->m_Client._SendMessage(msg);
+							//OutputDebugPrintf("%d\n", timeGetTime());
+
+							if (recv_msg.type1 == MSG_LOGIN && recv_msg.type2 == MSG_LOGIN_CONFIRM)
+							{
+								state = button[i].ButtonDown();
+								p_res_manager->account.user_id = recv_msg.para1;
+								p_res_manager->account.user_name = user_name.getText();
+							}
+							else if (recv_msg.type1 == MSG_LOGIN && recv_msg.type2 == MSG_LOGIN_DENY)
+							{
+								isMessage = true;
+								msg_string = "Invaild User Name or Password!";
+							}
+							else
+							{
+								isMessage = true;
+								msg_string = "Undefined Error!";
+							}
+						}
+						else
+						{
+							isMessage = true;
+							msg_string = "Can not connect Server!";
 						}
 					}
 					else
 					{
-						//提示连接失败
+						state = button[i].ButtonDown();
 					}
-				}
-				else
-				{
-					state = button[i].ButtonDown();
 				}
 			}
 		}
 	}
-
 	return state;
 }
 
-void RenderText(ID2D1HwndRenderTarget* render_target, wstring str, int x, int y, 
-				IDWriteTextFormat* format, ID2D1SolidColorBrush* brush)
-{
-	int len = str.length();
-	D2D1_RECT_F rect = D2D1::RectF(x,y, x+format->GetFontSize()*len, y+format->GetFontSize()*len);
-	render_target->DrawText(str.c_str(), str.length(), format, rect, brush);
-}
+
 
 void CLogin::Render(ID2D1HwndRenderTarget* render_target)
 {
@@ -233,6 +292,12 @@ void CLogin::Render(ID2D1HwndRenderTarget* render_target)
 	RenderText(render_target, o_text, 204, 58, p_res_manager->p_text_format_Stencil_120_bold, brush_green);
 
 	SafeRelease(&brush);
+
+	if (isMessage)
+	{
+		RenderMessage(render_target);
+	}
+
 	return;
 }
 
