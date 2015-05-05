@@ -56,20 +56,12 @@ void CBomberManOnlineView::OnLButtonUp(CPoint point)
 	if (game_state == LOGIN)
 	{
 		GameState next_state = p_login->HandleLButtonUp(point);
-		if (next_state == LOBBY)
-		{
-			game_state = LOBBY;
-		}
-
+		game_state = next_state;
 	}
 	else if (game_state == LOBBY)
 	{
 		GameState next_state = p_lobby->HandleLButtonUp(point);
-		if (next_state == ROOM)
-		{
-			game_state = ROOM;
-		}
-
+		game_state = next_state;
 	}
 	else if (game_state == ROOM)
 	{
@@ -77,9 +69,8 @@ void CBomberManOnlineView::OnLButtonUp(CPoint point)
 		if (next_state == INGAME)
 		{
 			p_game->Init(1,1);
-			game_state = INGAME;
 		}
-
+		game_state = INGAME;
 	}
 }
 
