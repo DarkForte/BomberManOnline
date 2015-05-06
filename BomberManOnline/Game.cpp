@@ -98,12 +98,12 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 		p_res_manager->panel_rect.GetWidth(), p_res_manager->panel_rect.GetHeight(), 0, 0);
 
 	////////Time
-	RenderText(render_target, L"TIME", time_rect.left + 10, time_rect.top + 10, 
+	RenderText(render_target, L"TIME", (time_rect.left + time_rect.right)/2-50, time_rect.top + 20, 
 		p_res_manager->p_text_format_Arial_40_bold, black_brush);
 
-	swprintf_s(buf, L"%02d:%02d", rest_time/1000/60, int(rest_time/1000)%60);
-	RenderText(render_target, buf, time_rect.left + 5, time_rect.top + 20, 
-		p_res_manager->p_text_format_Arial_72_bold, black_brush);
+	swprintf_s(buf, L"%02d:%02d", int(rest_time/1000/60), int(rest_time/1000)%60);
+	RenderText(render_target, buf, (time_rect.left + time_rect.right)/2-120, time_rect.top + 90, 
+		p_res_manager->p_timer_number_format, black_brush);
 
 	////////Avatars
 	float target_width = p_res_manager->avatar_back.GetWidth();
@@ -626,7 +626,7 @@ GameState CGame::Update(float game_time)
 		player[now_owner].SetNowBombs(player[now_owner].NowBombs()-1);
 	}
 
-	if(player[my_player].Status() == PLAYER_STATUS::DEAD)
+	if(rest_time <= 0)
 	{
 		return LOGIN;
 	}
@@ -636,7 +636,7 @@ GameState CGame::Update(float game_time)
 
 int CGame::CalcBombResult()
 {
-	return int(Item::PANDA);
+	//return int(Item::PANDA);
 	/*50% rate of dropping an item*/
 	int r = rand()%100;
 	if(r>=50)
@@ -929,7 +929,7 @@ CMessage CGame::MakeMessage()
 		pair<Event, UINT> now = operations.front();
 		operations.pop();
 		
-		sprintf(ret.msg, "%s %d %u", ret.msg, int(now.first), now.second);
+		sprintf_s(ret.msg, "%s %d %u", ret.msg, int(now.first), now.second);
 	}
 	return ret;
 }
