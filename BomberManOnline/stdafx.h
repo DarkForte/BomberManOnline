@@ -20,6 +20,7 @@
 #include <SDKDDKVer.h>
 #include "mmsystem.h"
 #include <cassert>
+#include <atlconv.h>
 
 #include <stdlib.h>
 

@@ -271,6 +271,8 @@ bool CResourceManager::InitClient()
 		return false;
 	}
 	
+	account.ready = false;
+	account.user_name = "";
 
 	return true;
 }

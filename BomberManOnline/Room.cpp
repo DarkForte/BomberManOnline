@@ -9,12 +9,6 @@ GameState ButtonDown_room_BEGIN()
 	return GameState::INGAME;
 }
 
-GameState ButtonDown_room_CLOSE()
-{
-	PostMessage(NULL, WM_QUIT,0,0);
-	return GameState::LOBBY;
-}
-
 CRoom::CRoom(CResourceManager* p_res_manager)
 {
 	this->p_res_manager = p_res_manager;
@@ -22,11 +16,14 @@ CRoom::CRoom(CResourceManager* p_res_manager)
 	button[2].Init(1150, 220, 130, 80, 1, 1, NULL);
 	button[3].Init(1150, 320, 130, 80, 1, 1, NULL);
 	button[4].Init(1150, 420, 130, 80, 1, 1, NULL);
-	button[5].Init(1150, 520, 130, 80, 1, 1, ButtonDown_room_CLOSE);
+	//back
+	button[5].Init(1150, 520, 130, 80, 1, 1, NULL);
+	//player
 	button[6].Init(25, 211, 400, 105, 1, 1, NULL);
 	button[7].Init(435, 211, 400, 105, 1, 1, NULL);
 	button[8].Init(25, 326, 400, 105, 1, 1, NULL);
 	button[9].Init(435, 326, 400, 105, 1, 1, NULL);
+	//ready
 	button[10].Init(885, 211, 245, 127, 1, 1, ButtonDown_room_BEGIN);
 	button[11].Init(885, 211, 245, 127, 1, 1, NULL);
 
@@ -123,14 +120,20 @@ GameState CRoom::HandleLButtonUp(CPoint point)
 				point.y >= button[i].GetYPixel() &&
 				point.y <= button[i].GetYPixel() + button[i].GetHeight())
 			{
+				//help
 				if (i == 4)
 				{
 					isMessage = true;
 					msg_string = "Help Message";
 				}
-				else if (button[i].ButtonDown != NULL)
+				//back
+				else if (i == 5)
 				{
-					state = button[i].ButtonDown();
+					state = GameState::LOBBY;
+				}
+				else if (i == 10)
+				{
+					state = GameState::INGAME;
 				}
 			}
 		}

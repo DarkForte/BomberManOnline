@@ -179,7 +179,7 @@ GameState CLogin::HandleLButtonUp(CPoint point)
 								{
 									p_res_manager->account.VIP = false;
 								}
-								p_res_manager->account.user_name = user_name.getText();
+								p_res_manager->account.user_name = user_name.getText().GetBuffer();
 							}
 							else if (recv_msg.type1 == MSG_LOGIN && recv_msg.type2 == MSG_LOGIN_DENY)
 							{
