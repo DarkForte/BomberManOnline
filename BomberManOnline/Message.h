@@ -1,5 +1,4 @@
 #pragma once
-
 #define MSG_NULL				0x00
 
 #define MSG_SCENE				0x01
@@ -15,6 +14,12 @@
 #define MSG_LOGIN_ONLINE		0x04
 
 #define MSG_GAME				0x03
+#define MSG_GAME_OPERATION		0x01
+
+enum class Event
+{
+	KEY_DOWN, KEY_UP
+};
 
 #define MSG_ROOM				0x04
 #define MSG_ROOM_TRY			0x01
@@ -42,4 +47,11 @@ public:
 	int para1;
 	int para2;
 	char msg[100];
+
+	CMessage()
+	{
+		memset(str1,0,sizeof(str1));
+		memset(str2,0,sizeof(str2));
+		memset(msg,0,sizeof(msg));
+	}
 };

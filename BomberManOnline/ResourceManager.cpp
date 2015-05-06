@@ -250,6 +250,16 @@ void CResourceManager::InitTextFormat(IDWriteFactory* write_factory)
 		 L"en-us",                      // Local
 		 &p_corner_number_format        // Pointer to receive the created object
 		 );
+	 write_factory->CreateTextFormat(
+		 L"Subatomic Tsoonami",                   // Font family name
+		 NULL,                          // Font collection(NULL sets it to the system font collection)
+		 DWRITE_FONT_WEIGHT_REGULAR,    // Weight
+		 DWRITE_FONT_STYLE_NORMAL,      // Style
+		 DWRITE_FONT_STRETCH_NORMAL,    // Stretch
+		 80.0f,                         // Size    
+		 L"en-us",                      // Local
+		 &p_timer_number_format        // Pointer to receive the created object
+		 );
 }
 
 bool CResourceManager::InitClient()

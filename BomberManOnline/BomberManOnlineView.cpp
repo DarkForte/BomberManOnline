@@ -68,7 +68,10 @@ void CBomberManOnlineView::OnLButtonUp(CPoint point)
 		GameState next_state = p_room->HandleLButtonUp(point);
 		if (next_state == INGAME)
 		{
-			
+			int my_player = p_res_manager->account.seat_id;
+			int my_room = p_res_manager->account.room_id;
+			int my_type = p_res_manager->account.actor_id;
+			p_game->Init(my_player, 1, my_room, 1, my_type);
 		}
 		game_state = next_state;
 	}
@@ -195,9 +198,12 @@ void CBomberManOnlineView::Update(float game_time)
 	if (game_state == ROOM)
 	{
 		GameState next_gamestate = p_room->Update();
-		if (next_gamestate == GameState::INGAME)
+		if (next_state == INGAME)
 		{
-			p_game->Init(1, 1);
+			int my_player = p_res_manager->account.seat_id;
+			int my_room = p_res_manager->account.room_id;
+			int my_type = p_res_manager->account.actor_id;
+			p_game->Init(my_player, 1, my_room, 1, my_type);
 		}
 		game_state = next_gamestate;
 	}

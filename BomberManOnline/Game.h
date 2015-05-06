@@ -10,6 +10,9 @@
 #include "D2D1Header.h"
 #include "Item.h"
 #include <list>
+#include <queue>
+#include "Message.h"
+#include "Client.h"
 
 #pragma region RenderType Defination
 
@@ -80,10 +83,13 @@ public:
 	D2D1_RECT_F user_rect;
 
 	CPlayer player[MAX_PLAYER+1];
+	float rest_time;
 	
 	int money[MAX_PLAYER+1];
 
 	int my_player;
+	int room_number;
+	queue< pair<Event, UINT> > operations;
 
 	CGameMap game_map;
 	CBombManager bomb_manager;
@@ -98,7 +104,7 @@ public:
 	~CGame(void);
 	CGame(CResourceManager *res_manager);
 
-	void Init(int player_num, int map_num);
+	void Init(int player_num, int map_num, int room_num, int rand_seed, int player_type);
 	void Render(ID2D1HwndRenderTarget* render_target);
 	void HandleKeyDown(UINT nchar);
 	void HandleKeyUp(UINT nchar);
@@ -109,5 +115,8 @@ protected:
 	void TouchItem(int player_num, int item_index);
 	void UseItem(int user, Item item);
 	void KickBomb(int index, int direction);
+	void HandleKeyUpInUpdate(int player_num, UINT nchar);
+	void HandleKeyDownInUpdate(int player_num, UINT nchar);
+	CMessage MakeMessage();
 };
 

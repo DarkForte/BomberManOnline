@@ -58,8 +58,8 @@ const float DELTA_SPEED = 0.02f;
 const float DART_SPEED = 0.4;
 const float SLOW_SPEED = 0.1;
 const float DEFAULT_TRANSTIME=10000;
-const float TRANS_BEGINTIME=200;
-const float TRANS_ENDTIME = 800;
+const float TRANS_BEGINTIME=1000;
+const float TRANS_ENDTIME = 1000;
 
 const float QUICK_SPEED = 0.35;
 const int KICK_DISTANCE=10;
