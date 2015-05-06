@@ -2,6 +2,7 @@
 #include "Game.h"
 #include <algorithm>
 #include "RenderText.h"
+#include <sstream>
 using namespace std;
 
 CGame::CGame(void)
@@ -66,6 +67,7 @@ void CGame::Init(int player_num, int map_num, int room_num, int rand_seed, int p
 	player[4].Init(MAP_WIDTH - SPRITE_WIDTH, MAP_HEIGHT - SPRITE_HEIGHT,0);
 	
 	my_player = player_num;
+	room_number = room_num;
 	srand(rand_seed);
 }
 
@@ -402,90 +404,40 @@ bool CheckSpecialOk(CPoint pos, int direction)
 
 void CGame::HandleKeyDown(UINT nchar)
 {
-	if(nchar == VK_DOWN)
-	{
-		player[my_player].SetMovingState(DOWN);
-	}
-	if(nchar == VK_UP)
-	{
-		player[my_player].SetMovingState(UP);
-	}
-	if(nchar == VK_LEFT)
-	{
-		player[my_player].SetMovingState(LEFT);
-	}
-	if(nchar == VK_RIGHT)
-	{
-		player[my_player].SetMovingState(RIGHT);
-	}
-	if(nchar == VK_SPACE)
-	{
-		int now_bombs = player[my_player].NowBombs();
-		if(player[my_player].Trans() == PLAYER_TRANSFORM::DEMON || player[my_player].Trans() == PLAYER_TRANSFORM::UBW)
-			now_bombs = 0;
-
-		CPoint player_pos = player[my_player].GetPosJudgeGrid();
-
-		if(now_bombs < player[my_player].BombCapacity() && game_map.GridType(player_pos.x, player_pos.y) == MAP_ELEMENTS::NONE)
-		{
-			player[my_player].SetNowBombs(now_bombs +1);
-
-			CBomb bomb(my_player, player_pos.x, player_pos.y, DEFAULT_BOMBTIME, player[my_player].GetBombPower());
-			int bomb_index = bomb_manager.AddBomb(bomb);
-			game_map.SetGrid(player_pos.x, player_pos.y, MAP_ELEMENTS::BOMB, bomb_index);
-
-			player[my_player].SetSpecialAccess(player_pos);
-		}
-	}
-	if('1' <= nchar && nchar <= '6' || nchar == 'Q')
-	{
-		if(player[my_player].Trans() == PLAYER_TRANSFORM::PANDA && nchar == 'Q')
-		{
-			CPoint next_point = player[my_player].GetPosJudgeGrid() + DIRECT_VEC[player[my_player].Facing()];
-			if(game_map.GridType(next_point.x, next_point.y) == MAP_ELEMENTS::BOMB)
-			{
-				int index = game_map.GetIndex(next_point.x, next_point.y);
-				KickBomb(index, player[my_player].Facing());
-			}
-		}
-		else
-		{
-			int index = (nchar == 'Q')? MAX_ITEMS+1 : nchar-'0';
-			pair<Item, int> now_item = player[my_player].PeekItem(index);
-			if(now_item.first != Item::NONE)
-			{
-				UseItem(my_player, now_item.first);
-				player[my_player].PopItem(index);
-			}
-		}
-		
-	}
+	operations.push(make_pair(Event::KEY_DOWN, nchar));
 }
 
 void CGame::HandleKeyUp(UINT nchar)
 {
-	if(nchar == VK_DOWN)
-	{
-		player[my_player].CancelMovingState(DOWN);
-	}
-	if(nchar == VK_UP)
-	{
-		player[my_player].CancelMovingState(UP);
-	}
-	if(nchar == VK_LEFT)
-	{
-		player[my_player].CancelMovingState(LEFT);
-	}
-	if(nchar == VK_RIGHT)
-	{
-		player[my_player].CancelMovingState(RIGHT);
-	}
+	operations.push(make_pair(Event::KEY_UP, nchar));
 }
 
 GameState CGame::Update(float game_time)
 {
-	//update player
+	CMessage msg = MakeMessage();
+	CMessage recv = p_res_manager->m_Client._SendMessage(msg);
+	stringstream input(recv.msg);
 	int i;
+
+	//analyze recv operations
+	for(i=1; i<=MAX_PLAYER; i++)
+	{
+		int n;
+		input>>n;
+		for(int oper_i = 1; oper_i <= n; oper_i++)
+		{
+			int now_event;
+			UINT nchar;
+			input>>now_event>>nchar;
+
+			if(now_event == int(Event::KEY_UP))
+				HandleKeyUpInUpdate(i, nchar);
+			else //if(now_event == int(Event::KEY_DOWN))
+				HandleKeyDownInUpdate(i, nchar);
+		}
+	}
+
+	//update player
 	for(i=1; i<=MAX_PLAYER; i++)
 	{
 		player[i].Update(game_time);
@@ -868,4 +820,105 @@ void CGame::KickBomb( int index, int direction )
 
 	FlyingBomb now_flyingbomb(now_pos, end_pos, index, flying_time, direction);
 	flying_bombs.push_back(now_flyingbomb);
+}
+
+void CGame::HandleKeyUpInUpdate( int player_num, UINT nchar )
+{
+	if(nchar == VK_DOWN)
+	{
+		player[player_num].CancelMovingState(DOWN);
+	}
+	if(nchar == VK_UP)
+	{
+		player[player_num].CancelMovingState(UP);
+	}
+	if(nchar == VK_LEFT)
+	{
+		player[player_num].CancelMovingState(LEFT);
+	}
+	if(nchar == VK_RIGHT)
+	{
+		player[player_num].CancelMovingState(RIGHT);
+	}
+}
+
+void CGame::HandleKeyDownInUpdate( int player_num, UINT nchar )
+{
+	if(nchar == VK_DOWN)
+	{
+		player[player_num].SetMovingState(DOWN);
+	}
+	if(nchar == VK_UP)
+	{
+		player[player_num].SetMovingState(UP);
+	}
+	if(nchar == VK_LEFT)
+	{
+		player[player_num].SetMovingState(LEFT);
+	}
+	if(nchar == VK_RIGHT)
+	{
+		player[player_num].SetMovingState(RIGHT);
+	}
+	if(nchar == VK_SPACE)
+	{
+		int now_bombs = player[player_num].NowBombs();
+		if(player[player_num].Trans() == PLAYER_TRANSFORM::DEMON || player[player_num].Trans() == PLAYER_TRANSFORM::UBW)
+			now_bombs = 0;
+
+		CPoint player_pos = player[player_num].GetPosJudgeGrid();
+
+		if(now_bombs < player[player_num].BombCapacity() && game_map.GridType(player_pos.x, player_pos.y) == MAP_ELEMENTS::NONE)
+		{
+			player[player_num].SetNowBombs(now_bombs +1);
+
+			CBomb bomb(player_num, player_pos.x, player_pos.y, DEFAULT_BOMBTIME, player[player_num].GetBombPower());
+			int bomb_index = bomb_manager.AddBomb(bomb);
+			game_map.SetGrid(player_pos.x, player_pos.y, MAP_ELEMENTS::BOMB, bomb_index);
+
+			player[player_num].SetSpecialAccess(player_pos);
+		}
+	}
+	if('1' <= nchar && nchar <= '6' || nchar == 'Q')
+	{
+		if(player[player_num].Trans() == PLAYER_TRANSFORM::PANDA && nchar == 'Q')
+		{
+			CPoint next_point = player[player_num].GetPosJudgeGrid() + DIRECT_VEC[player[player_num].Facing()];
+			if(game_map.GridType(next_point.x, next_point.y) == MAP_ELEMENTS::BOMB)
+			{
+				int index = game_map.GetIndex(next_point.x, next_point.y);
+				KickBomb(index, player[player_num].Facing());
+			}
+		}
+		else
+		{
+			int index = (nchar == 'Q')? MAX_ITEMS+1 : nchar-'0';
+			pair<Item, int> now_item = player[player_num].PeekItem(index);
+			if(now_item.first != Item::NONE)
+			{
+				UseItem(player_num, now_item.first);
+				player[player_num].PopItem(index);
+			}
+		}
+
+	}
+}
+
+CMessage CGame::MakeMessage()
+{
+	CMessage ret;
+	ret.type1 = MSG_GAME;
+	ret.type2 = MSG_GAME_OPERATION;
+	ret.para1 = room_number;
+	ret.para2 = my_player;
+	sprintf_s(ret.msg, "%u", operations.size());
+
+	while(!operations.empty())
+	{
+		pair<Event, UINT> now = operations.front();
+		operations.pop();
+		
+		sprintf(ret.msg, "%s %d %u", ret.msg, int(now.first), now.second);
+	}
+	return ret;
 }

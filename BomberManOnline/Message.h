@@ -13,6 +13,7 @@
 #define MSG_LOGIN_DENY			0x03
 
 #define MSG_GAME				0x03
+#define MSG_GAME_OPERATION		0x01
 
 enum class Event
 {
@@ -29,4 +30,11 @@ public:
 	int para1;
 	int para2;
 	char msg[100];
+
+	CMessage()
+	{
+		memset(str1,0,sizeof(str1));
+		memset(str2,0,sizeof(str2));
+		memset(msg,0,sizeof(msg));
+	}
 };

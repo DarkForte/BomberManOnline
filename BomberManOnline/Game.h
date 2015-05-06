@@ -12,6 +12,7 @@
 #include <list>
 #include <queue>
 #include "Message.h"
+#include "Client.h"
 
 #pragma region RenderType Defination
 
@@ -87,7 +88,7 @@ public:
 
 	int my_player;
 	int room_number;
-	queue< pair<Event, int> > operations;
+	queue< pair<Event, UINT> > operations;
 
 	CGameMap game_map;
 	CBombManager bomb_manager;
@@ -113,5 +114,8 @@ protected:
 	void TouchItem(int player_num, int item_index);
 	void UseItem(int user, Item item);
 	void KickBomb(int index, int direction);
+	void HandleKeyUpInUpdate(int player_num, UINT nchar);
+	void HandleKeyDownInUpdate(int player_num, UINT nchar);
+	CMessage MakeMessage();
 };
 
