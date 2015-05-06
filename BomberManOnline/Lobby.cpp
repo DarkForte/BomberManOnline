@@ -11,8 +11,8 @@ GameState ButtonDown_lobby_ROOM()
 
 GameState ButtonDown_lobby_CLOSE()
 {
-	PostMessage(NULL, WM_QUIT,0,0);
-	return GameState::LOBBY;
+	//PostMessage(NULL, WM_QUIT,0,0);
+	return GameState::LOGIN;
 }
 
 CLobby::CLobby(CResourceManager* p_res_manager)
@@ -22,15 +22,15 @@ CLobby::CLobby(CResourceManager* p_res_manager)
 	button[2].Init(1150, 220, 130, 80, 1, 1, NULL);
 	button[3].Init(1150, 320, 130, 80, 1, 1, NULL);
 	button[4].Init(1150, 420, 130, 80, 1, 1, NULL);
-	button[5].Init(1150, 520, 130, 80, 1, 1, ButtonDown_lobby_CLOSE);
-	button[6].Init(25, 211, 400, 105, 1, 1, ButtonDown_lobby_ROOM);
-	button[7].Init(435, 211, 400, 105, 1, 1, ButtonDown_lobby_ROOM);
-	button[8].Init(25, 326, 400, 105, 1, 1, ButtonDown_lobby_ROOM);
-	button[9].Init(435, 326, 400, 105, 1, 1, ButtonDown_lobby_ROOM);
-	button[10].Init(25, 441, 400, 105, 1, 1, ButtonDown_lobby_ROOM);
-	button[11].Init(435, 441, 400, 105, 1, 1, ButtonDown_lobby_ROOM);
-	button[12].Init(25, 557, 400, 105, 1, 1, ButtonDown_lobby_ROOM);
-	button[13].Init(435, 557, 400, 105, 1, 1, ButtonDown_lobby_ROOM);
+	button[5].Init(1150, 520, 130, 80, 1, 1, NULL);
+	button[6].Init(25, 211, 400, 105, 1, 1, NULL);
+	button[7].Init(435, 211, 400, 105, 1, 1, NULL);
+	button[8].Init(25, 326, 400, 105, 1, 1, NULL);
+	button[9].Init(435, 326, 400, 105, 1, 1, NULL);
+	button[10].Init(25, 441, 400, 105, 1, 1, NULL);
+	button[11].Init(435, 441, 400, 105, 1, 1, NULL);
+	button[12].Init(25, 557, 400, 105, 1, 1, NULL);
+	button[13].Init(435, 557, 400, 105, 1, 1, NULL);
 
 	chat.Init(PointF(885, 635), "message", 245, 26, true, false, 10,true,424);
 
@@ -132,9 +132,81 @@ GameState CLobby::HandleLButtonUp(CPoint point)
 					isMessage = true;
 					msg_string = "Help Message";
 				}
-				else if (button[i].ButtonDown != NULL && isMessage == false)
+				else if (i == 5)
 				{
-					state = button[i].ButtonDown();
+					state = GameState::LOGIN;
+				}
+				else if (i >= 6 && i <= 13)
+				{
+					if (p_res_manager->m_Client.state == ClientState::CONNECT)
+					{
+						//定义发送消息/接收消息
+						CMessage msg, recv_msg;
+
+						//读取字符串的中间变量
+						std::string strTemp;
+						CStringA temp;
+
+						//初始化消息类型
+						msg.type1 = MSG_ROOM;
+						msg.type2 = MSG_ROOM_TRY;
+
+						//设置参数
+						msg.para1 = i - 5;
+						msg.para2 = p_res_manager->account.user_id;
+
+						//发送消息
+						recv_msg = p_res_manager->m_Client._SendMessage(msg);
+
+						if (recv_msg.type1 == MSG_ROOM && recv_msg.type2 == MSG_ROOM_CONFIRM)
+						{
+							state = GameState::ROOM;
+							p_res_manager->account.room_id = i - 5;
+							p_res_manager->account.seat_id = recv_msg.para1;
+							//初始化消息类型
+							msg.type1 = MSG_ROOM;
+							msg.type2 = MSG_ROOM_NAME;
+
+							//设置参数
+							msg.para1 = i - 6;
+							for (int j = 0; j < 4; j++)
+							{
+								msg.para2 = i + 1;
+
+								//发送消息
+								recv_msg = p_res_manager->m_Client._SendMessage(msg);
+								if (recv_msg.type1 == MSG_ROOM && recv_msg.type2 == MSG_ROOM_RETURN)
+								{
+									p_res_manager->account.seat[i] = recv_msg.para1;
+									size_t len = strlen(recv_msg.str1) + 1;
+									size_t converted = 0;
+									wchar_t WStr[20];
+									mbstowcs_s(&converted, WStr, len, recv_msg.str1, _TRUNCATE);
+									p_res_manager->account.seat_name[i].AppendChar(*WStr);
+								}
+								else if (recv_msg.type1 == MSG_ROOM && recv_msg.type2 == MSG_ROOM_EMPTY)
+								{
+									p_res_manager->account.seat[i] = 0;
+								}
+							}
+							
+						}
+						else if (recv_msg.type1 == MSG_ROOM && recv_msg.type2 == MSG_ROOM_DENY)
+						{
+							isMessage = true;
+							msg_string = "Can't entry the room!";
+						}
+						else
+						{
+							isMessage = true;
+							msg_string = "Undefined Error!";
+						}
+					}
+					else
+					{
+						isMessage = true;
+						msg_string = "Can not connect Server!";
+					}
 				}
 			}
 		}
@@ -203,7 +275,9 @@ void CLobby::Render(ID2D1HwndRenderTarget* render_target)
 	wstring o_text;
 	CString text;
 	ID2D1SolidColorBrush* brush_black;
+	ID2D1SolidColorBrush* brush_red;
 	render_target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &brush_black);
+	render_target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red), &brush_red);
 
 	//lobby text
 	text.Format(L"LOBBY");
@@ -211,17 +285,25 @@ void CLobby::Render(ID2D1HwndRenderTarget* render_target)
 	RenderText(render_target, o_text, 115, 48, p_res_manager->p_text_format_Arial_72_bold, brush);
 
 	//user details
-	text.Format(L"USER NAME");
+	text = p_res_manager->account.user_name;
 	o_text = text.GetString();
-	RenderText(render_target, o_text, 860, 51, p_res_manager->p_text_format_Arial_32_bold, brush);
+	
+	if (p_res_manager->account.VIP)
+	{
+		RenderText(render_target, o_text, 860, 51, p_res_manager->p_text_format_Arial_32_bold, brush_red);
+	}
+	else
+	{
+		RenderText(render_target, o_text, 860, 51, p_res_manager->p_text_format_Arial_32_bold, brush);
+	}
 
-	text.Format(L"RANK");
+	text.Format(L"EXP:%d",p_res_manager->account.exp);
 	o_text = text.GetString();
 	RenderText(render_target, o_text, 860, 88, p_res_manager->p_text_format_Arial_32_bold, brush);
 
-	text.Format(L"MONEY");
+	text.Format(L"$:%d", p_res_manager->account.money);
 	o_text = text.GetString();
-	RenderText(render_target, o_text, 998, 88, p_res_manager->p_text_format_Arial_32_bold, brush);
+	RenderText(render_target, o_text, 978, 88, p_res_manager->p_text_format_Arial_32_bold, brush);
 
 	//room number text
 	text.Format(L"01");
@@ -257,68 +339,116 @@ void CLobby::Render(ID2D1HwndRenderTarget* render_target)
 	RenderText(render_target, o_text, 551, 568, p_res_manager->p_text_format_Arial_32_bold, brush);
 
 	//room name text
-	text.Format(L"MAP NAME");
+	text.Format(L"ROOM");
 	o_text = text.GetString();
 	RenderText(render_target, o_text, 187, 222, p_res_manager->p_text_format_Arial_32_bold, brush);
 
-	text.Format(L"MAP NAME");
+	text.Format(L"ROOM");
 	o_text = text.GetString();
 	RenderText(render_target, o_text, 597, 222, p_res_manager->p_text_format_Arial_32_bold, brush);
 
-	text.Format(L"MAP NAME");
+	text.Format(L"ROOM");
 	o_text = text.GetString();
 	RenderText(render_target, o_text, 187, 336, p_res_manager->p_text_format_Arial_32_bold, brush);
 
-	text.Format(L"MAP NAME");
+	text.Format(L"ROOM");
 	o_text = text.GetString();
 	RenderText(render_target, o_text, 597, 336, p_res_manager->p_text_format_Arial_32_bold, brush);
 
-	text.Format(L"MAP NAME");
+	text.Format(L"ROOM");
 	o_text = text.GetString();
 	RenderText(render_target, o_text, 187, 451, p_res_manager->p_text_format_Arial_32_bold, brush);
 
-	text.Format(L"MAP NAME");
+	text.Format(L"ROOM");
 	o_text = text.GetString();
 	RenderText(render_target, o_text, 597, 451, p_res_manager->p_text_format_Arial_32_bold, brush);
 
-	text.Format(L"MAP NAME");
+	text.Format(L"ROOM");
 	o_text = text.GetString();
 	RenderText(render_target, o_text, 187, 568, p_res_manager->p_text_format_Arial_32_bold, brush);
 
-	text.Format(L"MAP NAME");
+	text.Format(L"ROOM");
 	o_text = text.GetString();
 	RenderText(render_target, o_text, 597, 568, p_res_manager->p_text_format_Arial_32_bold, brush);
 
 	//room detail
-	text.Format(L"1/4");
+
+	//定义发送消息/接收消息
+	CMessage msg, recv_msg;
+	
+	//初始化消息类型
+	msg.type1 = MSG_LOBBY;
+	msg.type2 = MSG_LOBBY_ROOM;
+
+	//设置参数
+	msg.para1 = 0;
+	//发送消息
+	recv_msg = p_res_manager->m_Client._SendMessage(msg);
+	//格式化信息
+	text.Format(L"%d/4",recv_msg.para1);
 	o_text = text.GetString();
 	RenderText(render_target, o_text, 355, 265, p_res_manager->p_text_format_Arial_32_bold, brush);
 
-	text.Format(L"0/4");
+	//设置参数
+	msg.para1 = 1;
+	//发送消息
+	recv_msg = p_res_manager->m_Client._SendMessage(msg);
+	//格式化信息
+	text.Format(L"%d/4", recv_msg.para1);
 	o_text = text.GetString();
 	RenderText(render_target, o_text, 765, 265, p_res_manager->p_text_format_Arial_32_bold, brush);
 
-	text.Format(L"1/4");
+	//设置参数
+	msg.para1 = 2;
+	//发送消息
+	recv_msg = p_res_manager->m_Client._SendMessage(msg);
+	//格式化信息
+	text.Format(L"%d/4", recv_msg.para1);
 	o_text = text.GetString();
 	RenderText(render_target, o_text, 355, 380, p_res_manager->p_text_format_Arial_32_bold, brush);
 
-	text.Format(L"0/4");
+	//设置参数
+	msg.para1 = 3;
+	//发送消息
+	recv_msg = p_res_manager->m_Client._SendMessage(msg);
+	//格式化信息
+	text.Format(L"%d/4", recv_msg.para1);
 	o_text = text.GetString();
 	RenderText(render_target, o_text, 765, 380, p_res_manager->p_text_format_Arial_32_bold, brush);
 
-	text.Format(L"1/4");
+	//设置参数
+	msg.para1 = 4;
+	//发送消息
+	recv_msg = p_res_manager->m_Client._SendMessage(msg);
+	//格式化信息
+	text.Format(L"%d/4", recv_msg.para1);
 	o_text = text.GetString();
 	RenderText(render_target, o_text, 355, 495, p_res_manager->p_text_format_Arial_32_bold, brush);
 
-	text.Format(L"0/4");
+	//设置参数
+	msg.para1 = 5;
+	//发送消息
+	recv_msg = p_res_manager->m_Client._SendMessage(msg);
+	//格式化信息
+	text.Format(L"%d/4", recv_msg.para1);
 	o_text = text.GetString();
 	RenderText(render_target, o_text, 765, 495, p_res_manager->p_text_format_Arial_32_bold, brush);
 
-	text.Format(L"1/4");
+	//设置参数
+	msg.para1 = 6;
+	//发送消息
+	recv_msg = p_res_manager->m_Client._SendMessage(msg);
+	//格式化信息
+	text.Format(L"%d/4", recv_msg.para1);
 	o_text = text.GetString();
 	RenderText(render_target, o_text, 355, 611, p_res_manager->p_text_format_Arial_32_bold, brush);
 
-	text.Format(L"0/4");
+	//设置参数
+	msg.para1 = 7;
+	//发送消息
+	recv_msg = p_res_manager->m_Client._SendMessage(msg);
+	//格式化信息
+	text.Format(L"%d/4", recv_msg.para1);
 	o_text = text.GetString();
 	RenderText(render_target, o_text, 765, 611, p_res_manager->p_text_format_Arial_32_bold, brush);
 

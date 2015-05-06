@@ -28,8 +28,8 @@ CLogin::CLogin(CResourceManager* p_res_manager)
 	button[6].Init(738, 365, 90, 30, 1, 1, &ButtonDown_Login_OK);
 
 	//init cedit
-	user_name.Init(PointF(628, 296), "user name", 200, 26, true, false, 10, false, 0);
-	user_password.Init(PointF(628, 331), "*****", 200, 26, false, true, 10, false, 0);
+	user_name.Init(PointF(628, 296), "player01", 200, 26, true, false, 10, false, 0);
+	user_password.Init(PointF(628, 331), "12345", 200, 26, false, true, 10, false, 0);
 
 	isMessage = false;
 	msg_button.Init(838, 365, 90, 30, 1, 1, NULL);
@@ -168,7 +168,17 @@ GameState CLogin::HandleLButtonUp(CPoint point)
 							if (recv_msg.type1 == MSG_LOGIN && recv_msg.type2 == MSG_LOGIN_CONFIRM)
 							{
 								state = button[i].ButtonDown();
+								p_res_manager->account.exp = 0;
 								p_res_manager->account.user_id = recv_msg.para1;
+								p_res_manager->account.money = recv_msg.para2;
+								if (strcmp(recv_msg.str1, "VIP") == 0)
+								{
+									p_res_manager->account.VIP = true;
+								}
+								else
+								{
+									p_res_manager->account.VIP = false;
+								}
 								p_res_manager->account.user_name = user_name.getText();
 							}
 							else if (recv_msg.type1 == MSG_LOGIN && recv_msg.type2 == MSG_LOGIN_DENY)

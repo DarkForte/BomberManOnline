@@ -11,4 +11,9 @@ public:
 	int seat_id;
 	bool ready;
 	int actor_id;
+	bool VIP;
+	int money;
+	int seat[4];
+	CString seat_name[4];
+	int exp;
 };
