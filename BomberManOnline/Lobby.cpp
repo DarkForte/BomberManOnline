@@ -178,17 +178,18 @@ GameState CLobby::HandleLButtonUp(CPoint point)
 								recv_msg = p_res_manager->m_Client._SendMessage(msg);
 								if (recv_msg.type1 == MSG_ROOM && recv_msg.type2 == MSG_ROOM_RETURN)
 								{
-									p_res_manager->account.seat[i] = recv_msg.para1;
+									p_res_manager->account.seat[j] = recv_msg.para1;
 									//size_t len = strlen(recv_msg.str1) + 1;
 									//size_t converted = 0;
 									//wchar_t WStr[20];
 									//mbstowcs_s(&converted, WStr, len, recv_msg.str1, _TRUNCATE);
-									//p_res_manager->account.seat_name[i].AppendChar(*WStr);
+									USES_CONVERSION;
+									p_res_manager->account.seat_name[j] = CA2T(recv_msg.str1);
 								}
 								else if (recv_msg.type1 == MSG_ROOM && recv_msg.type2 == MSG_ROOM_EMPTY)
 								{
-									p_res_manager->account.seat[i] = 0;
-									//p_res_manager->account.seat_name[i] = "";
+									p_res_manager->account.seat[j] = 0;
+									p_res_manager->account.seat_name[j] = "";
 								}
 							}
 							

@@ -7,7 +7,7 @@ class CAccount
 public:
 	int user_id;
 	CString user_name;
-	//CString seat_name[4];
+	CString seat_name[4];
 	int room_id;
 	int seat_id;
 	bool ready;
