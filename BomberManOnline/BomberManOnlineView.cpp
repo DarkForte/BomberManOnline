@@ -76,7 +76,7 @@ void CBomberManOnlineView::OnLButtonUp(CPoint point)
 		GameState next_state = p_room->HandleLButtonUp(point);
 		if (next_state == INGAME)
 		{
-			p_game->Init(1,1);
+			p_game->Init(1,1,1, 1, 1);
 			game_state = INGAME;
 		}
 

@@ -46,7 +46,7 @@ PointF GetPixelPoint(CPoint point_judge)
 	return PointF(tmp_x, tmp_y);
 }
 
-void CGame::Init(int player_num, int map_num)
+void CGame::Init(int player_num, int map_num, int room_num, int rand_seed, int player_type)
 {
 	SetD2D1Rect(&bottom_rect, PADDING, PADDING + MAP_HEIGHT, 
 		PADDING + MAP_WIDTH, WINDOW_HEIGHT - PADDING);
@@ -66,7 +66,7 @@ void CGame::Init(int player_num, int map_num)
 	player[4].Init(MAP_WIDTH - SPRITE_WIDTH, MAP_HEIGHT - SPRITE_HEIGHT,0);
 	
 	my_player = player_num;
-
+	srand(rand_seed);
 }
 
 

@@ -1,3 +1,4 @@
+#pragma once
 #define MSG_NULL				0x00
 
 #define MSG_SCENE				0x01
@@ -12,6 +13,11 @@
 #define MSG_LOGIN_DENY			0x03
 
 #define MSG_GAME				0x03
+
+enum class Event
+{
+	KEY_DOWN, KEY_UP
+};
 
 class CMessage
 {
