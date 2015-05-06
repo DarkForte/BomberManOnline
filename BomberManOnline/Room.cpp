@@ -381,9 +381,15 @@ GameState CRoom::Update()
 
 		//·¢ËÍÏûÏ¢
 		recv_msg = p_res_manager->m_Client._SendMessage(msg);
-		if (recv_msg.type1 == MSG_ROOM&&recv_msg.type2 == MSG_ROOM_GAME)
+		if (recv_msg.type1 == MSG_ROOM && recv_msg.type2 == MSG_ROOM_GAME)
 		{
 			state = GameState::INGAME;
+			//isMessage = true;
+			//msg_string = "Start Game";
+		}
+		else
+		{
+
 		}
 	}
 	return state;
