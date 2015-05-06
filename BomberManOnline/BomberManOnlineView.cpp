@@ -68,7 +68,7 @@ void CBomberManOnlineView::OnLButtonUp(CPoint point)
 		GameState next_state = p_room->HandleLButtonUp(point);
 		if (next_state == INGAME)
 		{
-			p_game->Init(1,1);
+			
 		}
 		game_state = next_state;
 	}
@@ -192,7 +192,16 @@ HRESULT CBomberManOnlineView::CreateDeviceResources()
 
 void CBomberManOnlineView::Update(float game_time)
 {
-	if(game_state == INGAME)
+	if (game_state == ROOM)
+	{
+		GameState next_gamestate = p_room->Update();
+		if (next_gamestate == GameState::INGAME)
+		{
+			p_game->Init(1, 1);
+		}
+		game_state = next_gamestate;
+	}
+	else if(game_state == INGAME)
 	{
 		GameState next_gamestate = p_game->Update(game_time);
 		game_state = next_gamestate;

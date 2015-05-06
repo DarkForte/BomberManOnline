@@ -161,7 +161,7 @@ GameState CLobby::HandleLButtonUp(CPoint point)
 						if (recv_msg.type1 == MSG_ROOM && recv_msg.type2 == MSG_ROOM_CONFIRM)
 						{
 							state = GameState::ROOM;
-							p_res_manager->account.room_id = i - 5;
+							p_res_manager->account.room_id = i - 6;
 							p_res_manager->account.seat_id = recv_msg.para1;
 							p_res_manager->account.ready = false;
 							//初始化消息类型
@@ -169,20 +169,16 @@ GameState CLobby::HandleLButtonUp(CPoint point)
 							msg.type2 = MSG_ROOM_NAME;
 
 							//设置参数
-							msg.para1 = i - 6;
+							msg.para1 = p_res_manager->account.room_id;
 							for (int j = 0; j < 4; j++)
 							{
-								msg.para2 = i + 1;
+								msg.para2 = j;
 
 								//发送消息
 								recv_msg = p_res_manager->m_Client._SendMessage(msg);
 								if (recv_msg.type1 == MSG_ROOM && recv_msg.type2 == MSG_ROOM_RETURN)
 								{
 									p_res_manager->account.seat[j] = recv_msg.para1;
-									//size_t len = strlen(recv_msg.str1) + 1;
-									//size_t converted = 0;
-									//wchar_t WStr[20];
-									//mbstowcs_s(&converted, WStr, len, recv_msg.str1, _TRUNCATE);
 									USES_CONVERSION;
 									p_res_manager->account.seat_name[j] = CA2T(recv_msg.str1);
 								}

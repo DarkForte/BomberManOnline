@@ -17,6 +17,7 @@ public:
 	GameState HandleLButtonDown(CPoint point);
 	GameState HandleLButtonUp(CPoint point);
 	GameState HandleLButtonMove(CPoint point);
+	GameState Update();
 	void Render(ID2D1HwndRenderTarget* render_target);
 	
 	void HandleKeyDown(UINT nchar);

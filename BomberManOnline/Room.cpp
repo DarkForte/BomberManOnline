@@ -4,11 +4,6 @@
 
 using namespace std;
 
-GameState ButtonDown_room_BEGIN()
-{
-	return GameState::INGAME;
-}
-
 CRoom::CRoom(CResourceManager* p_res_manager)
 {
 	this->p_res_manager = p_res_manager;
@@ -24,9 +19,10 @@ CRoom::CRoom(CResourceManager* p_res_manager)
 	button[8].Init(25, 326, 400, 105, 1, 1, NULL);
 	button[9].Init(435, 326, 400, 105, 1, 1, NULL);
 	//ready
-	button[10].Init(885, 211, 245, 127, 1, 1, ButtonDown_room_BEGIN);
+	button[10].Init(885, 211, 245, 127, 1, 1, NULL);
+	
 	button[11].Init(885, 211, 245, 127, 1, 1, NULL);
-
+	button[11].SetStatus(BUTTON_STATUS::DISABLE);
 	chat.Init(PointF(885, 582), "message", 245, 26, true, false, 10,true,188);
 
 	isMessage = false;
@@ -54,7 +50,10 @@ GameState CRoom::HandleLButtonDown(CPoint point)
 				point.y >= button[i].GetYPixel() &&
 				point.y <= button[i].GetYPixel() + button[i].GetHeight())
 			{
-				button[i].SetStatus(BUTTON_STATUS::MOUSE_DOWN);
+				if (button[i].GetStatus() != BUTTON_STATUS::DISABLE)
+				{
+					button[i].SetStatus(BUTTON_STATUS::MOUSE_DOWN);
+				}
 			}
 		}
 	}
@@ -86,11 +85,17 @@ GameState CRoom::HandleLButtonMove(CPoint point)
 				point.y >= button[i].GetYPixel() &&
 				point.y <= button[i].GetYPixel() + button[i].GetHeight())
 			{
-				button[i].SetStatus(BUTTON_STATUS::MOUSE_ON);
+				if (button[i].GetStatus() != BUTTON_STATUS::DISABLE)
+				{
+					button[i].SetStatus(BUTTON_STATUS::MOUSE_ON);
+				}
 			}
 			else
 			{
-				button[i].SetStatus(BUTTON_STATUS::IDLE);
+				if (button[i].GetStatus() != BUTTON_STATUS::DISABLE)
+				{
+					button[i].SetStatus(BUTTON_STATUS::IDLE);
+				}
 			}
 		}
 	}
@@ -99,7 +104,7 @@ GameState CRoom::HandleLButtonMove(CPoint point)
 
 GameState CRoom::HandleLButtonUp(CPoint point)
 {
-	GameState state = GameState::LOBBY;
+	GameState state = GameState::ROOM;
 	
 	if (isMessage)
 	{
@@ -129,11 +134,36 @@ GameState CRoom::HandleLButtonUp(CPoint point)
 				//back
 				else if (i == 5)
 				{
+					//定义发送消息/接收消息
+					CMessage msg, recv_msg;
+
+					//初始化消息类型
+					msg.type1 = MSG_ROOM;
+					msg.type2 = MSG_ROOM_EXIT;
+
+					//设置参数
+					msg.para1 = p_res_manager->account.room_id;
+					msg.para2 = p_res_manager->account.seat_id;
+
+					//发送消息
+					recv_msg = p_res_manager->m_Client._SendMessage(msg);
+
 					state = GameState::LOBBY;
 				}
-				else if (i == 10)
+				//not ready
+				else if (i == 10 && button[i].GetStatus() != BUTTON_STATUS::DISABLE)
 				{
-					state = GameState::INGAME;
+					button[10].SetStatus(BUTTON_STATUS::DISABLE);
+					button[11].SetStatus(BUTTON_STATUS::IDLE);
+					p_res_manager->account.ready = true;
+					break;
+				}
+				//ready
+				else if (i == 11 && button[i].GetStatus() != BUTTON_STATUS::DISABLE)
+				{
+					button[11].SetStatus(BUTTON_STATUS::DISABLE);
+					button[10].SetStatus(BUTTON_STATUS::IDLE);
+					p_res_manager->account.ready = false;
 				}
 			}
 		}
@@ -194,25 +224,36 @@ void CRoom::Render(ID2D1HwndRenderTarget* render_target)
 	wstring o_text;
 	CString text;
 	ID2D1SolidColorBrush* brush_black;
+	ID2D1SolidColorBrush* brush_red;
 	render_target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &brush_black);
+	render_target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red), &brush_red);
 
 	//lobby text
-	text.Format(L"ROOM");
+	text.Format(L"ROOM %d",p_res_manager->account.room_id+1);
 	o_text = text.GetString();
 	RenderText(render_target, o_text, 115, 48, p_res_manager->p_text_format_Arial_72_bold, brush);
+	
 
 	//user details
-	text.Format(L"USER NAME");
+	text = p_res_manager->account.user_name;
 	o_text = text.GetString();
-	RenderText(render_target, o_text, 860, 51, p_res_manager->p_text_format_Arial_32_bold, brush);
 
-	text.Format(L"RANK");
+	if (p_res_manager->account.VIP)
+	{
+		RenderText(render_target, o_text, 860, 51, p_res_manager->p_text_format_Arial_32_bold, brush_red);
+	}
+	else
+	{
+		RenderText(render_target, o_text, 860, 51, p_res_manager->p_text_format_Arial_32_bold, brush);
+	}
+
+	text.Format(L"EXP:%d", p_res_manager->account.exp);
 	o_text = text.GetString();
 	RenderText(render_target, o_text, 860, 88, p_res_manager->p_text_format_Arial_32_bold, brush);
 
-	text.Format(L"MONEY");
+	text.Format(L"$:%d", p_res_manager->account.money);
 	o_text = text.GetString();
-	RenderText(render_target, o_text, 998, 88, p_res_manager->p_text_format_Arial_32_bold, brush);
+	RenderText(render_target, o_text, 978, 88, p_res_manager->p_text_format_Arial_32_bold, brush);
 
 	//player number text
 	text.Format(L"01");
@@ -232,20 +273,48 @@ void CRoom::Render(ID2D1HwndRenderTarget* render_target)
 	RenderText(render_target, o_text, 551, 337, p_res_manager->p_text_format_Arial_32_bold, brush);
 
 	//player name text
-	text.Format(L"PLAYER NAME");
-	o_text = text.GetString();
+	if (p_res_manager->account.seat[0] != 0)
+	{
+		o_text = p_res_manager->account.seat_name[0].GetString();
+	}
+	else
+	{
+		text.Format(L"NO PLAYER");
+		o_text = text.GetString();
+	}
 	RenderText(render_target, o_text, 187, 222, p_res_manager->p_text_format_Arial_32_bold, brush);
 
-	text.Format(L"PLAYER NAME");
-	o_text = text.GetString();
+	if (p_res_manager->account.seat[1] != 0)
+	{
+		o_text = p_res_manager->account.seat_name[1].GetString();
+	}
+	else
+	{
+		text.Format(L"NO PLAYER");
+		o_text = text.GetString();
+	}
 	RenderText(render_target, o_text, 597, 222, p_res_manager->p_text_format_Arial_32_bold, brush);
 
-	text.Format(L"PLAYER NAME");
-	o_text = text.GetString();
+	if (p_res_manager->account.seat[2] != 0)
+	{
+		o_text = p_res_manager->account.seat_name[2].GetString();
+	}
+	else
+	{
+		text.Format(L"NO PLAYER");
+		o_text = text.GetString();
+	}
 	RenderText(render_target, o_text, 187, 337, p_res_manager->p_text_format_Arial_32_bold, brush);
 
-	text.Format(L"PLAYER NAME");
-	o_text = text.GetString();
+	if (p_res_manager->account.seat[3] != 0)
+	{
+		o_text = p_res_manager->account.seat_name[3].GetString();
+	}
+	else
+	{
+		text.Format(L"NO PLAYER");
+		o_text = text.GetString();
+	}
 	RenderText(render_target, o_text, 597, 337, p_res_manager->p_text_format_Arial_32_bold, brush);
 
 	//ready
@@ -266,4 +335,56 @@ void CRoom::Render(ID2D1HwndRenderTarget* render_target)
 void CRoom::HandleKeyDown(UINT nchar)
 {
 	chat.HandleKeyDown(nchar);
+}
+
+GameState CRoom::Update()
+{
+	GameState state = GameState::ROOM;
+	
+	//定义发送消息/接收消息
+	CMessage msg, recv_msg;
+
+	//初始化消息类型
+	msg.type1 = MSG_ROOM;
+	msg.type2 = MSG_ROOM_NAME;
+
+	//设置参数
+	msg.para1 = p_res_manager->account.room_id;
+	for (int j = 0; j < 4; j++)
+	{
+		msg.para2 = j;
+
+		//发送消息
+		recv_msg = p_res_manager->m_Client._SendMessage(msg);
+		if (recv_msg.type1 == MSG_ROOM && recv_msg.type2 == MSG_ROOM_RETURN)
+		{
+			p_res_manager->account.seat[j] = recv_msg.para1;
+			USES_CONVERSION;
+			p_res_manager->account.seat_name[j] = CA2T(recv_msg.str1);
+		}
+		else if (recv_msg.type1 == MSG_ROOM && recv_msg.type2 == MSG_ROOM_EMPTY)
+		{
+			p_res_manager->account.seat[j] = 0;
+			p_res_manager->account.seat_name[j] = "";
+		}
+	}
+
+	if (p_res_manager->account.ready)
+	{
+		//初始化消息类型
+		msg.type1 = MSG_ROOM;
+		msg.type2 = MSG_ROOM_READY;
+
+		//设置参数
+		msg.para1 = p_res_manager->account.room_id;
+		msg.para2 = p_res_manager->account.seat_id;
+
+		//发送消息
+		recv_msg = p_res_manager->m_Client._SendMessage(msg);
+		if (recv_msg.type1 == MSG_ROOM&&recv_msg.type2 == MSG_ROOM_GAME)
+		{
+			state = GameState::INGAME;
+		}
+	}
+	return state;
 }
