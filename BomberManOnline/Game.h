@@ -83,6 +83,7 @@ public:
 	D2D1_RECT_F user_rect;
 
 	CPlayer player[MAX_PLAYER+1];
+	float rest_time;
 	
 	int money[MAX_PLAYER+1];
 

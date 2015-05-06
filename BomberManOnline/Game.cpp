@@ -69,6 +69,7 @@ void CGame::Init(int player_num, int map_num, int room_num, int rand_seed, int p
 	my_player = player_num;
 	room_number = room_num;
 	srand(rand_seed);
+	rest_time = 4*60*1000;
 }
 
 
@@ -95,6 +96,14 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 
 	p_res_manager->panel_rect.DrawImage(render_target, panel_rect.left, panel_rect.top,
 		p_res_manager->panel_rect.GetWidth(), p_res_manager->panel_rect.GetHeight(), 0, 0);
+
+	////////Time
+	RenderText(render_target, L"TIME", time_rect.left + 10, time_rect.top + 10, 
+		p_res_manager->p_text_format_Arial_40_bold, black_brush);
+
+	swprintf_s(buf, L"%02d:%02d", rest_time/1000/60, int(rest_time/1000)%60);
+	RenderText(render_target, buf, time_rect.left + 5, time_rect.top + 20, 
+		p_res_manager->p_text_format_Arial_72_bold, black_brush);
 
 	////////Avatars
 	float target_width = p_res_manager->avatar_back.GetWidth();
@@ -418,6 +427,8 @@ GameState CGame::Update(float game_time)
 	CMessage recv = p_res_manager->m_Client._SendMessage(msg);
 	stringstream input(recv.msg);
 	int i;
+
+	rest_time -= game_time;
 
 	//analyze recv operations
 	for(i=1; i<=MAX_PLAYER; i++)
