@@ -7,6 +7,7 @@ class CAccount
 public:
 	int user_id;
 	CString user_name;
+	//CString seat_name[4];
 	int room_id;
 	int seat_id;
 	bool ready;
@@ -14,6 +15,6 @@ public:
 	bool VIP;
 	int money;
 	int seat[4];
-	CString seat_name[4];
+	
 	int exp;
 };

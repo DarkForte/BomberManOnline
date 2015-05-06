@@ -70,7 +70,7 @@ void CBomberManOnlineView::OnLButtonUp(CPoint point)
 		{
 			p_game->Init(1,1);
 		}
-		game_state = INGAME;
+		game_state = next_state;
 	}
 }
 
