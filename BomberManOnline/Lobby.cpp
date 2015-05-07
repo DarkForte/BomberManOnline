@@ -479,7 +479,7 @@ GameState CLobby::Update()
 	msg.type2 = MSG_CHAT_GET;
 
 	//设置参数
-	msg.para1 = chat.getLineNum();
+	msg.para1 = chat.getTotalLineNum();
 
 	//发送消息
 	recv_msg = p_res_manager->m_Client._SendMessage(msg);
@@ -497,7 +497,7 @@ GameState CLobby::Update()
 		chat.AddMessage(str_tmp);
 		
 		//设置参数
-		msg.para1 = chat.getLineNum();
+		msg.para1 = chat.getTotalLineNum();
 
 		recv_msg = p_res_manager->m_Client._SendMessage(msg);
 	}

@@ -24,6 +24,8 @@ CRoom::CRoom(CResourceManager* p_res_manager)
 	button[11].Init(885, 211, 245, 127, 1, 1, NULL);
 	button[11].SetStatus(BUTTON_STATUS::DISABLE);
 	chat.Init(PointF(885, 582), "message", 245, 26, true, false, 10,true,188);
+	chat.setClient(p_res_manager);
+	chat.setIsChat(true);
 
 	isMessage = false;
 	msg_button.Init(838, 365, 90, 30, 1, 1, NULL);
@@ -344,6 +346,8 @@ GameState CRoom::Update()
 	//定义发送消息/接收消息
 	CMessage msg, recv_msg;
 
+	//update player name
+
 	//初始化消息类型
 	msg.type1 = MSG_ROOM;
 	msg.type2 = MSG_ROOM_NAME;
@@ -369,6 +373,8 @@ GameState CRoom::Update()
 		}
 	}
 
+	//update if game start
+
 	if (p_res_manager->account.ready)
 	{
 		//初始化消息类型
@@ -384,6 +390,8 @@ GameState CRoom::Update()
 		if (recv_msg.type1 == MSG_ROOM && recv_msg.type2 == MSG_ROOM_GAME)
 		{
 			state = GameState::INGAME;
+			button[11].SetStatus(BUTTON_STATUS::DISABLE);
+			button[10].SetStatus(BUTTON_STATUS::IDLE);
 			p_res_manager->account.ready = false;
 			//isMessage = true;
 			//msg_string = "Start Game";
@@ -393,5 +401,36 @@ GameState CRoom::Update()
 
 		}
 	}
+
+	//update chat
+
+	//初始化消息类型
+	msg.type1 = MSG_CHAT;
+	msg.type2 = MSG_CHAT_GET;
+
+	//设置参数
+	msg.para1 = chat.getTotalLineNum();
+
+	//发送消息
+	recv_msg = p_res_manager->m_Client._SendMessage(msg);
+	while (recv_msg.type2 != MSG_CHAT_DENY)
+	{
+		if (recv_msg.type2 == MSG_NULL)
+		{
+			break;
+		}
+		CString str_tmp;
+		USES_CONVERSION;
+		str_tmp.Append(CA2T(recv_msg.str1));
+		str_tmp.Append(L":");
+		str_tmp.Append(CA2T(recv_msg.str2));
+		chat.AddMessage(str_tmp);
+
+		//设置参数
+		msg.para1 = chat.getTotalLineNum();
+
+		recv_msg = p_res_manager->m_Client._SendMessage(msg);
+	}
+
 	return state;
 }

@@ -19,6 +19,7 @@ private:
 	int top;
 	int max_line_num;
 	int line_num;
+	int total_line_num;
 	CString history[MAX_CHAT_HISTORY];
 	CResourceManager* p_res_manager;
 public:
@@ -30,6 +31,7 @@ public:
 	int getWidth(){ return width; }
 	int getHeight(){ return height; }
 	int getLineNum(){ return line_num; }
+	int getTotalLineNum(){ return total_line_num; }
 	bool getFocus(){ return focus; }
 	void setClient(CResourceManager* _p_res_manager){ p_res_manager = _p_res_manager; }
 	void setIsChat(bool _isChat){ isChat = _isChat; }
