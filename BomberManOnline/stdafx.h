@@ -86,6 +86,6 @@ const int MENU_WIDTH = 17;
 const int MAIN_VERSION = 1;
 const int MINOR_VERSION = 0;
 
-const int MAX_CHAT_HISTORY = 50;
+const int MAX_CHAT_HISTORY = 100;
 
 void OutputDebugPrintf(const char* strOutputString,...);

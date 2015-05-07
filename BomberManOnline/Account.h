@@ -15,6 +15,7 @@ public:
 	bool VIP;
 	int money;
 	int seat[4];
-	
+	pair<CString, CString> chat_message[100];
+	int chat_num;
 	int exp;
 };

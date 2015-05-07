@@ -24,6 +24,8 @@ void CEdit::Init(PointF _pos, CString _text, int _width, int _height, bool _focu
 	multline = _multline;
 	top = _top;
 	line_num = 0;
+	isChat = false;
+	max_line_num = 10;
 }
 
 void CEdit::setPos(PointF _pos)
@@ -166,18 +168,48 @@ void CEdit::HandleKeyDown(UINT nchar)
 		}
 		else if (nchar == VK_RETURN)
 		{
-			line_num++;
-			if (line_num > max_line_num)
+			if (isChat)
 			{
-				line_num--;
-				for (int i = 0; i < line_num; i++)
-				{
-					history[i] = history[i + 1];
-				}
+				//定义发送消息/接收消息
+				CMessage msg, recv_msg;
+
+				//读取字符串的中间变量
+				std::string strTemp;
+				CStringA temp;
+
+				//初始化消息类型
+				msg.type1 = MSG_CHAT;
+				msg.type2 = MSG_CHAT_SEND;
+
+				//设置参数
+
+				temp = p_res_manager->account.user_name.GetBuffer(0);
+				strTemp = temp.GetBuffer(0);
+				strcpy_s(msg.str1, strTemp.c_str());
+
+				temp = text.GetBuffer(0);
+				strTemp = temp.GetBuffer(0);
+				strcpy_s(msg.str2, strTemp.c_str());
+
+				//发送消息
+				recv_msg = p_res_manager->m_Client._SendMessage(msg);
+
+				text = "";
 			}
-			history[line_num-1] = "Player:";
-			history[line_num-1].Append(text);
-			text = "";
 		}
 	}
+}
+
+void CEdit::AddMessage(CString _msg)
+{
+	line_num++;
+	if (line_num > max_line_num)
+	{
+		line_num--;
+		for (int i = 0; i < line_num; i++)
+		{
+			history[i] = history[i + 1];
+		}
+	}
+	history[line_num - 1] = _msg;
 }
