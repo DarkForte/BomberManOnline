@@ -628,7 +628,11 @@ GameState CGame::Update(float game_time)
 
 	if(rest_time <= 0)
 	{
-		return LOGIN;
+		CMessage msg;
+		msg.type1 = MSG_GAME;
+		msg.type2 = MSG_GAME_QUIT;
+		p_res_manager->m_Client._SendMessage(msg);
+		return ROOM;
 	}
 
 	return INGAME;

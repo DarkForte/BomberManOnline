@@ -200,7 +200,7 @@ void CBomberManOnlineView::Update(float game_time)
 		GameState next_gamestate = p_room->Update();
 		if (next_gamestate == INGAME)
 		{
-			int my_player = p_res_manager->account.seat_id;
+			int my_player = p_res_manager->account.seat_id+1;
 			int my_room = p_res_manager->account.room_id;
 			int my_type = p_res_manager->account.actor_id;
 			p_game->Init(my_player, 1, my_room, 1, my_type);
