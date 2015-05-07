@@ -169,6 +169,7 @@ GameState CLogin::HandleLButtonUp(CPoint point)
 							{
 								state = button[i].ButtonDown();
 								p_res_manager->account.exp = 0;
+								p_res_manager->account.chat_num = 0;
 								p_res_manager->account.user_id = recv_msg.para1;
 								p_res_manager->account.money = recv_msg.para2;
 								if (strcmp(recv_msg.str1, "VIP") == 0)

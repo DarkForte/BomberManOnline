@@ -33,6 +33,8 @@ CLobby::CLobby(CResourceManager* p_res_manager)
 	button[13].Init(435, 557, 400, 105, 1, 1, NULL);
 
 	chat.Init(PointF(885, 635), "message", 245, 26, true, false, 10,true,424);
+	chat.setClient(p_res_manager);
+	chat.setIsChat(true);
 
 	isMessage = false;
 	msg_button.Init(838, 365, 90, 30, 1, 1, NULL);
@@ -464,4 +466,40 @@ void CLobby::Render(ID2D1HwndRenderTarget* render_target)
 void CLobby::HandleKeyDown(UINT nchar)
 {
 	chat.HandleKeyDown(nchar);
+}
+
+GameState CLobby::Update()
+{
+	GameState state = GameState::LOBBY;
+	//定义发送消息/接收消息
+	CMessage msg, recv_msg;
+
+	//初始化消息类型
+	msg.type1 = MSG_CHAT;
+	msg.type2 = MSG_CHAT_GET;
+
+	//设置参数
+	msg.para1 = chat.getLineNum();
+
+	//发送消息
+	recv_msg = p_res_manager->m_Client._SendMessage(msg);
+	while (recv_msg.type2!=MSG_CHAT_DENY)
+	{
+		if (recv_msg.type2 == MSG_NULL)
+		{
+			break;
+		}
+		CString str_tmp;
+		USES_CONVERSION;
+		str_tmp.Append(CA2T(recv_msg.str1));
+		str_tmp.Append(L":");
+		str_tmp.Append(CA2T(recv_msg.str2));
+		chat.AddMessage(str_tmp);
+		
+		//设置参数
+		msg.para1 = chat.getLineNum();
+
+		recv_msg = p_res_manager->m_Client._SendMessage(msg);
+	}
+	return state;
 }

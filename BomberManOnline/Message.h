@@ -1,4 +1,5 @@
 #pragma once
+
 #define MSG_NULL				0x00
 
 #define MSG_SCENE				0x01
@@ -38,6 +39,13 @@ enum class Event
 #define MSG_LOBBY_ROOM			0x01
 #define MSG_LOBBY_RETURN		0x02
 
+#define MSG_CHAT				0x06
+#define MSG_CHAT_SEND			0x01
+#define MSG_CHAT_GET			0x02
+#define MSG_CHAT_RETURN			0x03
+#define MSG_CHAT_END			0x04
+#define MSG_CHAT_DENY			0x05
+
 class CMessage
 {
 public:
@@ -51,8 +59,8 @@ public:
 
 	CMessage()
 	{
-		memset(str1,0,sizeof(str1));
-		memset(str2,0,sizeof(str2));
-		memset(msg,0,sizeof(msg));
+		memset(str1, 0, sizeof(str1));
+		memset(str2, 0, sizeof(str2));
+		memset(msg, 0, sizeof(msg));
 	}
 };

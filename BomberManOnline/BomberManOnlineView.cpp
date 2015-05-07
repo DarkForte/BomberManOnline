@@ -195,7 +195,12 @@ HRESULT CBomberManOnlineView::CreateDeviceResources()
 
 void CBomberManOnlineView::Update(float game_time)
 {
-	if (game_state == ROOM)
+	if (game_state == LOBBY)
+	{
+		GameState next_gamestate = p_lobby->Update();
+		game_state = next_gamestate;
+	}
+	else if (game_state == ROOM)
 	{
 		GameState next_gamestate = p_room->Update();
 		if (next_gamestate == INGAME)
