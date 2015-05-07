@@ -384,6 +384,7 @@ GameState CRoom::Update()
 		if (recv_msg.type1 == MSG_ROOM && recv_msg.type2 == MSG_ROOM_GAME)
 		{
 			state = GameState::INGAME;
+			p_res_manager->account.ready = false;
 			//isMessage = true;
 			//msg_string = "Start Game";
 		}
