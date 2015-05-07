@@ -69,7 +69,7 @@ void CGame::Init(int player_num, int map_num, int room_num, int rand_seed, int p
 	my_player = player_num;
 	room_number = room_num;
 	srand(rand_seed);
-	rest_time = 4*60*1000;
+	rest_time = 1000;
 }
 
 
@@ -628,10 +628,7 @@ GameState CGame::Update(float game_time)
 
 	if(rest_time <= 0)
 	{
-		CMessage msg;
-		msg.type1 = MSG_GAME;
-		msg.type2 = MSG_GAME_QUIT;
-		p_res_manager->m_Client._SendMessage(msg);
+		SendQuitMessage();
 		return ROOM;
 	}
 
@@ -936,4 +933,15 @@ CMessage CGame::MakeMessage()
 		sprintf_s(ret.msg, "%s %d %u", ret.msg, int(now.first), now.second);
 	}
 	return ret;
+}
+
+void CGame::SendQuitMessage()
+{
+	CMessage msg;
+	msg.type1 = MSG_GAME;
+	msg.type2 = MSG_GAME_QUIT;
+	msg.para1 = room_number;
+	msg.para2 = my_player;
+	p_res_manager->m_Client._SendMessage(msg);
+	return;
 }

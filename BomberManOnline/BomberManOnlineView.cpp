@@ -225,7 +225,10 @@ void CBomberManOnlineView::Update(float game_time)
 void CBomberManOnlineView::OnDestroy()
 {
 	// TODO: 在此处添加消息处理程序代码
-
+	if(game_state == INGAME)
+	{
+		p_game->SendQuitMessage();
+	}
 	delete(p_res_manager);
 	delete(p_login);
 	delete(p_game);

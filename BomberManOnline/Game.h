@@ -109,6 +109,7 @@ public:
 	void HandleKeyDown(UINT nchar);
 	void HandleKeyUp(UINT nchar);
 	GameState Update(float game_time);
+	void SendQuitMessage();
 
 protected:
 	int CalcBombResult();
@@ -118,5 +119,6 @@ protected:
 	void HandleKeyUpInUpdate(int player_num, UINT nchar);
 	void HandleKeyDownInUpdate(int player_num, UINT nchar);
 	CMessage MakeMessage();
+	
 };
 
