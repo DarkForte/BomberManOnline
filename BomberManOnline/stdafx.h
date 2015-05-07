@@ -21,6 +21,7 @@
 #include "mmsystem.h"
 #include <cassert>
 #include <atlconv.h>
+#include <fstream>
 
 #include <stdlib.h>
 

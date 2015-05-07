@@ -269,6 +269,18 @@ bool CResourceManager::InitClient()
 	CString strIP;
 	strIP = DEFAULT_IP;
 
+	ifstream fin;
+	char ip[20];
+	fin.open("ip.txt");
+
+	if (fin)
+	{
+		fin >> ip;
+		USES_CONVERSION;
+		strIP = "";
+		strIP.Append(CA2T(ip));
+	}
+
 	// 给CClient设置参数
 	m_Client.LoadSocketLib();
 	m_Client.SetIP(strIP);
