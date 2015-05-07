@@ -26,6 +26,7 @@ void CEdit::Init(PointF _pos, CString _text, int _width, int _height, bool _focu
 	line_num = 0;
 	isChat = false;
 	max_line_num = 10;
+	total_line_num = 0;
 }
 
 void CEdit::setPos(PointF _pos)
@@ -203,6 +204,7 @@ void CEdit::HandleKeyDown(UINT nchar)
 void CEdit::AddMessage(CString _msg)
 {
 	line_num++;
+	total_line_num++;
 	if (line_num > max_line_num)
 	{
 		line_num--;
