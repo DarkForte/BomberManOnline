@@ -69,7 +69,7 @@ void CGame::Init(int player_num, int map_num, int room_num, int rand_seed, int p
 	my_player = player_num;
 	room_number = room_num;
 	srand(rand_seed);
-	rest_time = 1000;
+	rest_time = 4*60*1000;
 }
 
 
