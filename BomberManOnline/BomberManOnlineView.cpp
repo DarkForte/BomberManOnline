@@ -208,7 +208,14 @@ void CBomberManOnlineView::Update(float game_time)
 			int my_player = p_res_manager->account.seat_id+1;
 			int my_room = p_res_manager->account.room_id;
 			int my_type = p_res_manager->account.actor_id;
-			p_game->Init(my_player, 1, my_room, 1, my_type);
+			CMessage msg;
+			msg.type1 = MSG_GAME;
+			msg.type2 = MSG_GAME_START;
+			msg.para1 = my_room;
+			msg.para2 = my_player;
+			CMessage ret = p_res_manager->m_Client._SendMessage(msg);
+			unsigned int now_seed = ret.para1;
+			p_game->Init(my_player, 1, my_room, now_seed, my_type);
 		}
 		game_state = next_gamestate;
 	}

@@ -47,7 +47,7 @@ PointF GetPixelPoint(CPoint point_judge)
 	return PointF(tmp_x, tmp_y);
 }
 
-void CGame::Init(int player_num, int map_num, int room_num, int rand_seed, int player_type)
+void CGame::Init(int player_num, int map_num, int room_num, unsigned int rand_seed, int player_type)
 {
 	SetD2D1Rect(&bottom_rect, PADDING, PADDING + MAP_HEIGHT, 
 		PADDING + MAP_WIDTH, WINDOW_HEIGHT - PADDING);
@@ -423,18 +423,20 @@ void CGame::HandleKeyUp(UINT nchar)
 
 GameState CGame::Update(float game_time)
 {
-	CMessage msg = MakeMessage();
+	CMessage msg = MakeMessage(game_time);
 	CMessage recv = p_res_manager->m_Client._SendMessage(msg);
 	stringstream input(recv.msg);
 	int i;
 
 	rest_time -= game_time;
+	float game_times[MAX_PLAYER+1]={0};
 
 	//analyze recv operations
 	for(i=1; i<=MAX_PLAYER; i++)
 	{
 		int n;
 		input>>n;
+		input>>game_times[i];
 		for(int oper_i = 1; oper_i <= n; oper_i++)
 		{
 			int now_event;
@@ -451,11 +453,11 @@ GameState CGame::Update(float game_time)
 	//update player
 	for(i=1; i<=MAX_PLAYER; i++)
 	{
-		player[i].Update(game_time);
+		player[i].Update(game_times[i]);
 		if(player[i].Status() == PLAYER_STATUS::DEAD)
 			continue;
 
-		PointF next_pos_pixel = player[i].TryMove(game_time);
+		PointF next_pos_pixel = player[i].TryMove(game_times[i]);
 		CPoint next_pos_judge = GetJudgePoint(next_pos_pixel);
 		int now_direction = player[i].GetMovingDirection();
 
@@ -466,7 +468,7 @@ GameState CGame::Update(float game_time)
 		if(game_map.InBound(next_pos_pixel) && no_collision )
 		{
 			//OutputDebugPrintf("%lf %lf\n", player[my_player].GetPosPixel().x, player[my_player].GetPosPixel().y);
-			player[i].Move(game_time);
+			player[i].Move(game_times[i]);
 
 			CPoint now_judgegrid = player[i].GetPosJudgeGrid();
 			if(now_judgegrid != player[i].SpecialAccess().first)
@@ -916,14 +918,14 @@ void CGame::HandleKeyDownInUpdate( int player_num, UINT nchar )
 	}
 }
 
-CMessage CGame::MakeMessage()
+CMessage CGame::MakeMessage(float game_time)
 {
 	CMessage ret;
 	ret.type1 = MSG_GAME;
 	ret.type2 = MSG_GAME_OPERATION;
 	ret.para1 = room_number;
 	ret.para2 = my_player;
-	sprintf_s(ret.msg, "%u", operations.size());
+	sprintf_s(ret.msg, "%u %f", operations.size(), game_time);
 
 	while(!operations.empty())
 	{

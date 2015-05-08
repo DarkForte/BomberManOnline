@@ -17,6 +17,7 @@
 #define MSG_GAME				0x03
 #define MSG_GAME_OPERATION		0x01
 #define MSG_GAME_QUIT			0x02
+#define MSG_GAME_START			0x03
 
 enum class Event
 {

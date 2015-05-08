@@ -104,7 +104,7 @@ public:
 	~CGame(void);
 	CGame(CResourceManager *res_manager);
 
-	void Init(int player_num, int map_num, int room_num, int rand_seed, int player_type);
+	void Init(int player_num, int map_num, int room_num, unsigned int rand_seed, int player_type);
 	void Render(ID2D1HwndRenderTarget* render_target);
 	void HandleKeyDown(UINT nchar);
 	void HandleKeyUp(UINT nchar);
@@ -118,7 +118,7 @@ protected:
 	void KickBomb(int index, int direction);
 	void HandleKeyUpInUpdate(int player_num, UINT nchar);
 	void HandleKeyDownInUpdate(int player_num, UINT nchar);
-	CMessage MakeMessage();
+	CMessage MakeMessage(float game_time);
 	
 };
 
