@@ -64,11 +64,9 @@ public:
 
 	CD2DImage icons;
 #pragma endregion
+
 	CClient m_Client;
-	
-
 	CD2DImage message_bg;
-
 	CAccount account;
 public:
 	CResourceManager(void);

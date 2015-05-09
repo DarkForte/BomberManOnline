@@ -72,7 +72,7 @@ const int LOGIN_MAX_ICON = 3;
 const int LOBBY_MAX_BUTTON = 13;
 const int LOBBY_MAX_ICON = 3;
 
-const int ROOM_MAX_BUTTON = 11;
+const int ROOM_MAX_BUTTON = 17;
 const int ROOM_MAX_ICON = 3;
 
 const int GAME_MAX_BUTTON = 0;

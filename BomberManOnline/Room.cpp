@@ -23,6 +23,15 @@ CRoom::CRoom(CResourceManager* p_res_manager)
 	
 	button[11].Init(885, 211, 245, 127, 1, 1, NULL);
 	button[11].SetStatus(BUTTON_STATUS::DISABLE);
+
+	//actor
+	button[12].Init(25, 488, 120, 120, 1, 1, NULL);
+	button[13].Init(163, 488, 120, 120, 1, 1, NULL);
+	button[14].Init(301, 488, 120, 120, 1, 1, NULL);
+	button[15].Init(439, 488, 120, 120, 1, 1, NULL);
+	button[16].Init(577, 488, 120, 120, 1, 1, NULL);
+	button[17].Init(715, 488, 120, 120, 1, 1, NULL);
+
 	chat.Init(PointF(885, 582), "message", 245, 26, true, false, 10,true,188);
 	chat.setClient(p_res_manager);
 	chat.setIsChat(true);
@@ -45,7 +54,7 @@ GameState CRoom::HandleLButtonDown(CPoint point)
 	}
 	else
 	{
-		for (int i = 1; i <= LOBBY_MAX_BUTTON; i++)
+		for (int i = 1; i <= ROOM_MAX_BUTTON; i++)
 		{
 			if (point.x >= button[i].GetXPixel() &&
 				point.x <= button[i].GetXPixel() + button[i].GetWidth() &&
@@ -80,7 +89,7 @@ GameState CRoom::HandleLButtonMove(CPoint point)
 	}
 	else
 	{
-		for (int i = 1; i <= LOBBY_MAX_BUTTON; i++)
+		for (int i = 1; i <= ROOM_MAX_BUTTON; i++)
 		{
 			if (point.x >= button[i].GetXPixel() &&
 				point.x <= button[i].GetXPixel() + button[i].GetWidth() &&
@@ -120,7 +129,7 @@ GameState CRoom::HandleLButtonUp(CPoint point)
 	}
 	else
 	{
-		for (int i = 1; i <= LOBBY_MAX_BUTTON; i++)
+		for (int i = 1; i <= ROOM_MAX_BUTTON; i++)
 		{
 			if (point.x >= button[i].GetXPixel() &&
 				point.x <= button[i].GetXPixel() + button[i].GetWidth() &&
@@ -167,6 +176,10 @@ GameState CRoom::HandleLButtonUp(CPoint point)
 					button[10].SetStatus(BUTTON_STATUS::IDLE);
 					p_res_manager->account.ready = false;
 				}
+				else if (i >= 12 && i <= 17)
+				{
+					p_res_manager->account.actor_id = i - 12;
+				}
 			}
 		}
 	}
@@ -180,9 +193,9 @@ void CRoom::Render(ID2D1HwndRenderTarget* render_target)
 
 	p_res_manager->room_ui.DrawImage(render_target, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0);
 
-	for (int i = 1; i <= LOBBY_MAX_BUTTON; i++)
+	for (int i = 1; i <= ROOM_MAX_BUTTON; i++)
 	{
-		if (button[i].GetStatus() == BUTTON_STATUS::IDLE)
+		if (button[i].GetStatus() == BUTTON_STATUS::IDLE && i - 12!=p_res_manager->account.actor_id)
 		{
 			p_res_manager->room_button_sprite[i][0].DrawImage(render_target,
 				button[i].GetXPixel(), button[i].GetYPixel(),
@@ -190,7 +203,7 @@ void CRoom::Render(ID2D1HwndRenderTarget* render_target)
 				0, 0,
 				button[i].GetXScale(), button[i].GetYScale());
 		}
-		else if (button[i].GetStatus() == BUTTON_STATUS::MOUSE_ON)
+		else if (button[i].GetStatus() == BUTTON_STATUS::MOUSE_ON || i - 12 == p_res_manager->account.actor_id)
 		{
 			p_res_manager->room_button_sprite[i][1].DrawImage(render_target,
 				button[i].GetXPixel(), button[i].GetYPixel(),

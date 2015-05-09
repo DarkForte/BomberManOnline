@@ -9,6 +9,7 @@
 class CRoom : public CSceneBase
 {
 	Button button[LOBBY_MAX_BUTTON + 1];
+	Button actor_button[5];
 	CEdit chat;
 public:
 	CRoom();

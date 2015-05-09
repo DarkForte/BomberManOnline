@@ -94,7 +94,6 @@ void CResourceManager::LoadPics( IWICImagingFactory * pIWICFactory, ID2D1HwndRen
 	{
 		WCHAR buf[60];
 		swprintf_s(buf, L"pic\\scene_ui\\icon0%d.png", i);
-
 		login_icon_sprite[i].Load(pIWICFactory, render_target, buf);
 	}
 
@@ -295,6 +294,8 @@ bool CResourceManager::InitClient()
 	
 	account.ready = false;
 	account.user_name = "";
+
+	account.actor_id = 0;
 
 	return true;
 }
