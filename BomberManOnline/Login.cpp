@@ -116,8 +116,22 @@ GameState CLogin::HandleLButtonUp(CPoint point)
 				point.y >= button[i].GetYPixel() &&
 				point.y <= button[i].GetYPixel() + button[i].GetHeight())
 			{
+				//user data
+				if (i == 1)
+				{
+					isMessage = true;
+					msg_string = "You Are Not Login!";
+					msg_string2 = "";
+				}
+				//sign up
+				else if (i == 2)
+				{
+					isMessage = true;
+					msg_string = "Sign up is comming soon!";
+					msg_string2 = "";
+				}
 				//setting
-				if (i == 3)
+				else if (i == 3)
 				{
 					isMessage = true;
 					msg_string = "IP:";

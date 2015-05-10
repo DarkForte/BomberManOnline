@@ -129,8 +129,24 @@ GameState CLobby::HandleLButtonUp(CPoint point)
 				point.y >= button[i].GetYPixel() &&
 				point.y <= button[i].GetYPixel() + button[i].GetHeight())
 			{
+				//user data
+				if (i == 1)
+				{
+					isMessage = true;
+					msg_string = "Name:";
+					msg_string.Append(p_res_manager->account.user_name);
+					msg_string.AppendFormat(L" Id:%d", p_res_manager->account.user_id);
+					msg_string2.Format(L"Money:%d Exp:%d", p_res_manager->account.money,p_res_manager->account.exp);
+				}
+				//shop
+				else if (i == 2)
+				{
+					isMessage = true;
+					msg_string = "Shop is comming soon!";
+					msg_string2 = "";
+				}
 				//setting
-				if (i == 3)
+				else if (i == 3)
 				{
 					isMessage = true;
 					msg_string = "IP:";
