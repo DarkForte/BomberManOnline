@@ -18,26 +18,26 @@ GameState ButtonDown_lobby_CLOSE()
 CLobby::CLobby(CResourceManager* p_res_manager)
 {
 	this->p_res_manager = p_res_manager;
-	button[1].Init(1150, 120, 130, 80, 1, 1, NULL);
-	button[2].Init(1150, 220, 130, 80, 1, 1, NULL);
-	button[3].Init(1150, 320, 130, 80, 1, 1, NULL);
-	button[4].Init(1150, 420, 130, 80, 1, 1, NULL);
-	button[5].Init(1150, 520, 130, 80, 1, 1, NULL);
-	button[6].Init(25, 211, 400, 105, 1, 1, NULL);
-	button[7].Init(435, 211, 400, 105, 1, 1, NULL);
-	button[8].Init(25, 326, 400, 105, 1, 1, NULL);
-	button[9].Init(435, 326, 400, 105, 1, 1, NULL);
-	button[10].Init(25, 441, 400, 105, 1, 1, NULL);
-	button[11].Init(435, 441, 400, 105, 1, 1, NULL);
-	button[12].Init(25, 557, 400, 105, 1, 1, NULL);
-	button[13].Init(435, 557, 400, 105, 1, 1, NULL);
+	button[1].Init(1150, 120, 130, 80, 1, 1);
+	button[2].Init(1150, 220, 130, 80, 1, 1);
+	button[3].Init(1150, 320, 130, 80, 1, 1);
+	button[4].Init(1150, 420, 130, 80, 1, 1);
+	button[5].Init(1150, 520, 130, 80, 1, 1);
+	button[6].Init(25, 211, 400, 105, 1, 1);
+	button[7].Init(435, 211, 400, 105, 1, 1);
+	button[8].Init(25, 326, 400, 105, 1, 1);
+	button[9].Init(435, 326, 400, 105, 1, 1);
+	button[10].Init(25, 441, 400, 105, 1, 1);
+	button[11].Init(435, 441, 400, 105, 1, 1);
+	button[12].Init(25, 557, 400, 105, 1, 1);
+	button[13].Init(435, 557, 400, 105, 1, 1);
 
 	chat.Init(PointF(885, 635), "message", 245, 26, true, false, 10,true,424);
 	chat.setClient(p_res_manager);
 	chat.setIsChat(true);
 
 	isMessage = false;
-	msg_button.Init(838, 365, 90, 30, 1, 1, NULL);
+	msg_button.Init(838, 365, 90, 30, 1, 1);
 }
 
 GameState CLobby::HandleLButtonDown(CPoint point)
@@ -129,15 +129,27 @@ GameState CLobby::HandleLButtonUp(CPoint point)
 				point.y >= button[i].GetYPixel() &&
 				point.y <= button[i].GetYPixel() + button[i].GetHeight())
 			{
-				if (i == 4)
+				//setting
+				if (i == 3)
 				{
 					isMessage = true;
-					msg_string = "Help Message";
+					msg_string = "IP:";
+					msg_string.Append(p_res_manager->m_Client.GetIp());
+					msg_string2.Format(L"Port:%d", p_res_manager->m_Client.GetPort());
 				}
+				//help
+				else if (i == 4)
+				{
+					isMessage = true;
+					msg_string = "Move:¡ü¡ý¡û¡ú";
+					msg_string2 = "Bomb:Space Tool:1~6";
+				}
+				//back
 				else if (i == 5)
 				{
 					state = GameState::LOGIN;
 				}
+				//room
 				else if (i >= 6 && i <= 13)
 				{
 					if (p_res_manager->m_Client.state == ClientState::CONNECT)

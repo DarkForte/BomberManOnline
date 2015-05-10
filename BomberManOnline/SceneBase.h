@@ -10,6 +10,7 @@ protected:
 	bool isMessage;
 	Button msg_button;
 	CString msg_string;
+	CString msg_string2;
 
 public:
 	CSceneBase(void);

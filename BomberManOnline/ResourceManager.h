@@ -33,6 +33,7 @@ public:
 	IDWriteTextFormat* p_text_format_Stencil_120_bold;
 	IDWriteTextFormat* p_text_format_Arial_80;
 	IDWriteTextFormat* p_text_format_Arial_72_bold;
+	IDWriteTextFormat* p_text_format_Arial_48_bold;
 	IDWriteTextFormat* p_text_format_Arial_40_bold;
 	IDWriteTextFormat* p_text_format_Arial_32;
 	IDWriteTextFormat* p_text_format_Arial_32_bold;

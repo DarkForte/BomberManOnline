@@ -205,6 +205,16 @@ void CResourceManager::InitTextFormat(IDWriteFactory* write_factory)
 		 DWRITE_FONT_WEIGHT_BOLD,    // Weight
 		 DWRITE_FONT_STYLE_NORMAL,      // Style
 		 DWRITE_FONT_STRETCH_NORMAL,    // Stretch
+		 48.0f,                         // Size    
+		 L"en-us",                      // Local
+		 &p_text_format_Arial_48_bold        // Pointer to receive the created object
+		 );
+	 write_factory->CreateTextFormat(
+		 L"Arial",                   // Font family name
+		 NULL,                          // Font collection(NULL sets it to the system font collection)
+		 DWRITE_FONT_WEIGHT_BOLD,    // Weight
+		 DWRITE_FONT_STYLE_NORMAL,      // Style
+		 DWRITE_FONT_STRETCH_NORMAL,    // Stretch
 		 72.0f,                         // Size    
 		 L"en-us",                      // Local
 		 &p_text_format_Arial_72_bold        // Pointer to receive the created object

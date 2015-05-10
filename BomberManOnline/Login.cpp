@@ -4,35 +4,24 @@
 
 using namespace std;
 
-GameState ButtonDown_Login_OK()
-{
-	return GameState::LOBBY;
-}
-
-GameState ButtonDown_Login_CLOSE()
-{
-	PostMessage(NULL, WM_QUIT,0,0);
-	return GameState::LOGIN;
-}
-
 CLogin::CLogin(CResourceManager* p_res_manager)
 {
 	this->p_res_manager = p_res_manager;
 
 	//init button
-	button[1].Init(1150, 120, 130, 80, 1, 1, NULL);
-	button[2].Init(1150, 220, 130, 80, 1, 1, NULL);
-	button[3].Init(1150, 320, 130, 80, 1, 1, NULL);
-	button[4].Init(1150, 420, 130, 80, 1, 1, NULL);
-	button[5].Init(1150, 520, 130, 80, 1, 1, &ButtonDown_Login_CLOSE);
-	button[6].Init(738, 365, 90, 30, 1, 1, &ButtonDown_Login_OK);
+	button[1].Init(1150, 120, 130, 80, 1, 1);
+	button[2].Init(1150, 220, 130, 80, 1, 1);
+	button[3].Init(1150, 320, 130, 80, 1, 1);
+	button[4].Init(1150, 420, 130, 80, 1, 1);
+	button[5].Init(1150, 520, 130, 80, 1, 1);
+	button[6].Init(738, 365, 90, 30, 1, 1);
 
 	//init cedit
 	user_name.Init(PointF(628, 296), "player01", 200, 26, true, false, 10, false, 0);
 	user_password.Init(PointF(628, 331), "12345", 200, 26, false, true, 10, false, 0);
 
 	isMessage = false;
-	msg_button.Init(838, 365, 90, 30, 1, 1, NULL);
+	msg_button.Init(838, 365, 90, 30, 1, 1);
 }
 
 GameState CLogin::HandleLButtonDown(CPoint point)
@@ -127,81 +116,90 @@ GameState CLogin::HandleLButtonUp(CPoint point)
 				point.y >= button[i].GetYPixel() &&
 				point.y <= button[i].GetYPixel() + button[i].GetHeight())
 			{
-				if (i == 4)
+				//setting
+				if (i == 3)
 				{
 					isMessage = true;
-					msg_string = "Help Message";
+					msg_string = "IP:";
+					msg_string.Append(p_res_manager->m_Client.GetIp());
+					msg_string2.Format(L"Port:%d", p_res_manager->m_Client.GetPort());
 				}
-				else if (button[i].ButtonDown != NULL)
+				//help
+				else if (i == 4)
 				{
-					if (i == 6)
+					isMessage = true;
+					msg_string = "Move:↑↓←→";
+					msg_string2 = "Bomb:Space Tool:1~6";
+				}
+				//exit
+				else if (i == 5)
+				{
+					PostMessage(NULL, WM_QUIT, 0, 0);
+				}
+				//login
+				else if (i == 6)
+				{
+					//state = button[i].ButtonDown();
+					if (p_res_manager->m_Client.state == ClientState::CONNECT)
 					{
-						//state = button[i].ButtonDown();
-						if (p_res_manager->m_Client.state == ClientState::CONNECT)
+						//定义发送消息/接收消息
+						CMessage msg, recv_msg;
+
+						//读取字符串的中间变量
+						std::string strTemp;
+						CStringA temp;
+
+						//初始化消息类型
+						msg.type1 = MSG_LOGIN;
+						msg.type2 = MSG_LOGIN_CKECK;
+
+						//设置参数
+						temp = user_name.getText().GetBuffer(0);
+						strTemp = temp.GetBuffer(0);
+						strcpy_s(msg.str1, strTemp.c_str());
+
+						temp = user_password.getText().GetBuffer(0);
+						strTemp = temp.GetBuffer(0);
+
+						strcpy_s(msg.str2, strTemp.c_str());
+
+						//发送消息
+						//OutputDebugPrintf("%d\n",timeGetTime());
+						recv_msg = p_res_manager->m_Client._SendMessage(msg);
+						//OutputDebugPrintf("%d\n", timeGetTime());
+
+						if (recv_msg.type1 == MSG_LOGIN && recv_msg.type2 == MSG_LOGIN_CONFIRM)
 						{
-							//定义发送消息/接收消息
-							CMessage msg, recv_msg;
-
-							//读取字符串的中间变量
-							std::string strTemp;
-							CStringA temp;
-
-							//初始化消息类型
-							msg.type1 = MSG_LOGIN;
-							msg.type2 = MSG_LOGIN_CKECK;
-
-							//设置参数
-							temp = user_name.getText().GetBuffer(0);
-							strTemp = temp.GetBuffer(0);
-							strcpy_s(msg.str1, strTemp.c_str());
-
-							temp = user_password.getText().GetBuffer(0);
-							strTemp = temp.GetBuffer(0);
-
-							strcpy_s(msg.str2, strTemp.c_str());
-
-							//发送消息
-							//OutputDebugPrintf("%d\n",timeGetTime());
-							recv_msg = p_res_manager->m_Client._SendMessage(msg);
-							//OutputDebugPrintf("%d\n", timeGetTime());
-
-							if (recv_msg.type1 == MSG_LOGIN && recv_msg.type2 == MSG_LOGIN_CONFIRM)
+							state = GameState::LOBBY;
+							p_res_manager->account.exp = 0;
+							p_res_manager->account.chat_num = 0;
+							p_res_manager->account.user_id = recv_msg.para1;
+							p_res_manager->account.money = recv_msg.para2;
+							if (strcmp(recv_msg.str1, "VIP") == 0)
 							{
-								state = button[i].ButtonDown();
-								p_res_manager->account.exp = 0;
-								p_res_manager->account.chat_num = 0;
-								p_res_manager->account.user_id = recv_msg.para1;
-								p_res_manager->account.money = recv_msg.para2;
-								if (strcmp(recv_msg.str1, "VIP") == 0)
-								{
-									p_res_manager->account.VIP = true;
-								}
-								else
-								{
-									p_res_manager->account.VIP = false;
-								}
-								p_res_manager->account.user_name = user_name.getText().GetBuffer();
-							}
-							else if (recv_msg.type1 == MSG_LOGIN && recv_msg.type2 == MSG_LOGIN_DENY)
-							{
-								isMessage = true;
-								msg_string = "Invaild User Name or Password!";
+								p_res_manager->account.VIP = true;
 							}
 							else
 							{
-								isMessage = true;
-								msg_string = "Undefined Error!";
+								p_res_manager->account.VIP = false;
 							}
+							p_res_manager->account.user_name = user_name.getText().GetBuffer();
+						}
+						else if (recv_msg.type1 == MSG_LOGIN && recv_msg.type2 == MSG_LOGIN_DENY)
+						{
+							isMessage = true;
+							msg_string = "Invaild User Name or Password!";
 						}
 						else
 						{
 							isMessage = true;
-							msg_string = "Can not connect Server!";
+							msg_string = "Undefined Error!";
 						}
 					}
 					else
 					{
-						state = button[i].ButtonDown();
+						isMessage = true;
+						msg_string = "Can not connect Server!";
 					}
 				}
 			}

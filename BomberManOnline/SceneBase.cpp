@@ -25,7 +25,10 @@ void CSceneBase::RenderMessage(ID2D1HwndRenderTarget* render_target)
 
 	wstring o_text;
 	o_text = msg_string.GetString();
-	RenderText(render_target, o_text, 200, 250, p_res_manager->p_text_format_Arial_80, brush);
+	RenderText(render_target, o_text, 230, 260, p_res_manager->p_text_format_Arial_48_bold, brush);
+
+	o_text = msg_string2.GetString();
+	RenderText(render_target, o_text, 230, 310, p_res_manager->p_text_format_Arial_48_bold, brush);
 
 	if (msg_button.GetStatus() == BUTTON_STATUS::IDLE)
 	{

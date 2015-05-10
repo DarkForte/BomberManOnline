@@ -67,6 +67,9 @@ public:
 
 	ClientState state;
 
+	CString GetIp(){ return m_strServerIP; }
+	int GetPort(){ return m_nPort; }
+
 private:
 
 	// 建立连接

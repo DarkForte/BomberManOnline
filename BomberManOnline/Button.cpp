@@ -13,12 +13,12 @@ Button::~Button(void)
 {
 }
 
-Button::Button(float x, float y, float w, float h, float _XScale, float _YScale, GameState (*_ButtonDown)())
+Button::Button(float x, float y, float w, float h, float _XScale, float _YScale)
 {
-	Init(x, y, w, h, _XScale, _YScale, _ButtonDown);
+	Init(x, y, w, h, _XScale, _YScale);
 }
 
-void Button::Init(float x, float y, float w, float h, float _XScale, float _YScale, GameState (*_ButtonDown)())
+void Button::Init(float x, float y, float w, float h, float _XScale, float _YScale)
 {
 	pos.SetPoint(x,y);
 	status = BUTTON_STATUS::IDLE;
@@ -26,5 +26,4 @@ void Button::Init(float x, float y, float w, float h, float _XScale, float _YSca
 	width = w;
 	XScale = _XScale;
 	YScale = _YScale;
-	ButtonDown = _ButtonDown;
 }

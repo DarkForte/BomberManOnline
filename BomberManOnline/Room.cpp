@@ -7,37 +7,37 @@ using namespace std;
 CRoom::CRoom(CResourceManager* p_res_manager)
 {
 	this->p_res_manager = p_res_manager;
-	button[1].Init(1150, 120, 130, 80, 1, 1, NULL);
-	button[2].Init(1150, 220, 130, 80, 1, 1, NULL);
-	button[3].Init(1150, 320, 130, 80, 1, 1, NULL);
-	button[4].Init(1150, 420, 130, 80, 1, 1, NULL);
+	button[1].Init(1150, 120, 130, 80, 1, 1);
+	button[2].Init(1150, 220, 130, 80, 1, 1);
+	button[3].Init(1150, 320, 130, 80, 1, 1);
+	button[4].Init(1150, 420, 130, 80, 1, 1);
 	//back
-	button[5].Init(1150, 520, 130, 80, 1, 1, NULL);
+	button[5].Init(1150, 520, 130, 80, 1, 1);
 	//player
-	button[6].Init(25, 211, 400, 105, 1, 1, NULL);
-	button[7].Init(435, 211, 400, 105, 1, 1, NULL);
-	button[8].Init(25, 326, 400, 105, 1, 1, NULL);
-	button[9].Init(435, 326, 400, 105, 1, 1, NULL);
+	button[6].Init(25, 211, 400, 105, 1, 1);
+	button[7].Init(435, 211, 400, 105, 1, 1);
+	button[8].Init(25, 326, 400, 105, 1, 1);
+	button[9].Init(435, 326, 400, 105, 1, 1);
 	//ready
-	button[10].Init(885, 211, 245, 127, 1, 1, NULL);
+	button[10].Init(885, 211, 245, 127, 1, 1);
 	
-	button[11].Init(885, 211, 245, 127, 1, 1, NULL);
+	button[11].Init(885, 211, 245, 127, 1, 1);
 	button[11].SetStatus(BUTTON_STATUS::DISABLE);
 
 	//actor
-	button[12].Init(25, 488, 120, 120, 1, 1, NULL);
-	button[13].Init(163, 488, 120, 120, 1, 1, NULL);
-	button[14].Init(301, 488, 120, 120, 1, 1, NULL);
-	button[15].Init(439, 488, 120, 120, 1, 1, NULL);
-	button[16].Init(577, 488, 120, 120, 1, 1, NULL);
-	button[17].Init(715, 488, 120, 120, 1, 1, NULL);
+	button[12].Init(25, 488, 120, 120, 1, 1);
+	button[13].Init(163, 488, 120, 120, 1, 1);
+	button[14].Init(301, 488, 120, 120, 1, 1);
+	button[15].Init(439, 488, 120, 120, 1, 1);
+	button[16].Init(577, 488, 120, 120, 1, 1);
+	button[17].Init(715, 488, 120, 120, 1, 1);
 
 	chat.Init(PointF(885, 582), "message", 245, 26, true, false, 10,true,188);
 	chat.setClient(p_res_manager);
 	chat.setIsChat(true);
 
 	isMessage = false;
-	msg_button.Init(838, 365, 90, 30, 1, 1, NULL);
+	msg_button.Init(838, 365, 90, 30, 1, 1);
 }
 
 GameState CRoom::HandleLButtonDown(CPoint point)
@@ -136,11 +136,20 @@ GameState CRoom::HandleLButtonUp(CPoint point)
 				point.y >= button[i].GetYPixel() &&
 				point.y <= button[i].GetYPixel() + button[i].GetHeight())
 			{
-				//help
-				if (i == 4)
+				//setting
+				if (i == 3)
 				{
 					isMessage = true;
-					msg_string = "Help Message";
+					msg_string = "IP:";
+					msg_string.Append(p_res_manager->m_Client.GetIp());
+					msg_string2.Format(L"Port:%d", p_res_manager->m_Client.GetPort());
+				}
+				//help
+				else if (i == 4)
+				{
+					isMessage = true;
+					msg_string = "Move:¡ü¡ý¡û¡ú";
+					msg_string2 = "Bomb:Space Tool:1~6";
 				}
 				//back
 				else if (i == 5)
@@ -176,6 +185,7 @@ GameState CRoom::HandleLButtonUp(CPoint point)
 					button[10].SetStatus(BUTTON_STATUS::IDLE);
 					p_res_manager->account.ready = false;
 				}
+				//choose actor
 				else if (i >= 12 && i <= 17)
 				{
 					p_res_manager->account.actor_id = i - 12;
