@@ -18,4 +18,5 @@ public:
 	pair<CString, CString> chat_message[100];
 	int chat_num;
 	int exp;
+	int room_num[8];
 };

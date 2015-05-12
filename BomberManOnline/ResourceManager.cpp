@@ -307,5 +307,10 @@ bool CResourceManager::InitClient()
 
 	account.actor_id = 0;
 
+	for (int i = 0; i < 8; i++)
+	{
+		account.room_num[i] = 0;
+	}
+
 	return true;
 }

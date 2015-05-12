@@ -402,82 +402,43 @@ void CLobby::Render(ID2D1HwndRenderTarget* render_target)
 
 	//room detail
 
-	//定义发送消息/接收消息
-	CMessage msg, recv_msg;
-	
-	//初始化消息类型
-	msg.type1 = MSG_LOBBY;
-	msg.type2 = MSG_LOBBY_ROOM;
-
-	//设置参数
-	msg.para1 = 0;
-	//发送消息
-	recv_msg = p_res_manager->m_Client._SendMessage(msg);
 	//格式化信息
-	text.Format(L"%d/4",recv_msg.para1);
+	text.Format(L"%d/4", p_res_manager->account.room_num[0]);
 	o_text = text.GetString();
 	RenderText(render_target, o_text, 355, 265, p_res_manager->p_text_format_Arial_32_bold, brush);
 
-	//设置参数
-	msg.para1 = 1;
-	//发送消息
-	recv_msg = p_res_manager->m_Client._SendMessage(msg);
 	//格式化信息
-	text.Format(L"%d/4", recv_msg.para1);
+	text.Format(L"%d/4", p_res_manager->account.room_num[1]);
 	o_text = text.GetString();
 	RenderText(render_target, o_text, 765, 265, p_res_manager->p_text_format_Arial_32_bold, brush);
 
-	//设置参数
-	msg.para1 = 2;
-	//发送消息
-	recv_msg = p_res_manager->m_Client._SendMessage(msg);
 	//格式化信息
-	text.Format(L"%d/4", recv_msg.para1);
+	text.Format(L"%d/4", p_res_manager->account.room_num[2]);
 	o_text = text.GetString();
 	RenderText(render_target, o_text, 355, 380, p_res_manager->p_text_format_Arial_32_bold, brush);
 
-	//设置参数
-	msg.para1 = 3;
-	//发送消息
-	recv_msg = p_res_manager->m_Client._SendMessage(msg);
 	//格式化信息
-	text.Format(L"%d/4", recv_msg.para1);
+	text.Format(L"%d/4", p_res_manager->account.room_num[3]);
 	o_text = text.GetString();
 	RenderText(render_target, o_text, 765, 380, p_res_manager->p_text_format_Arial_32_bold, brush);
 
-	//设置参数
-	msg.para1 = 4;
-	//发送消息
-	recv_msg = p_res_manager->m_Client._SendMessage(msg);
 	//格式化信息
-	text.Format(L"%d/4", recv_msg.para1);
+	text.Format(L"%d/4", p_res_manager->account.room_num[4]);
 	o_text = text.GetString();
 	RenderText(render_target, o_text, 355, 495, p_res_manager->p_text_format_Arial_32_bold, brush);
 
-	//设置参数
-	msg.para1 = 5;
-	//发送消息
-	recv_msg = p_res_manager->m_Client._SendMessage(msg);
 	//格式化信息
-	text.Format(L"%d/4", recv_msg.para1);
+	text.Format(L"%d/4", p_res_manager->account.room_num[5]);
 	o_text = text.GetString();
 	RenderText(render_target, o_text, 765, 495, p_res_manager->p_text_format_Arial_32_bold, brush);
 
-	//设置参数
-	msg.para1 = 6;
-	//发送消息
-	recv_msg = p_res_manager->m_Client._SendMessage(msg);
 	//格式化信息
-	text.Format(L"%d/4", recv_msg.para1);
+	text.Format(L"%d/4", p_res_manager->account.room_num[6]);
 	o_text = text.GetString();
 	RenderText(render_target, o_text, 355, 611, p_res_manager->p_text_format_Arial_32_bold, brush);
 
-	//设置参数
-	msg.para1 = 7;
-	//发送消息
-	recv_msg = p_res_manager->m_Client._SendMessage(msg);
 	//格式化信息
-	text.Format(L"%d/4", recv_msg.para1);
+	text.Format(L"%d/4", p_res_manager->account.room_num[7]);
 	o_text = text.GetString();
 	RenderText(render_target, o_text, 765, 611, p_res_manager->p_text_format_Arial_32_bold, brush);
 
@@ -528,6 +489,20 @@ GameState CLobby::Update()
 		msg.para1 = chat.getTotalLineNum();
 
 		recv_msg = p_res_manager->m_Client._SendMessage(msg);
+	}
+
+	for (int i = 0; i < 8; i++)
+	{
+		//初始化消息类型
+		msg.type1 = MSG_LOBBY;
+		msg.type2 = MSG_LOBBY_ROOM;
+
+		//设置参数
+		msg.para1 = i;
+		//发送消息
+		recv_msg = p_res_manager->m_Client._SendMessage(msg);
+
+		p_res_manager->account.room_num[i] = recv_msg.para1;
 	}
 	return state;
 }
