@@ -42,7 +42,7 @@ DWORD WINAPI CClient::_ConnectionThread(LPVOID lpParam)
 
 ///////////////////////////////////////////////////////////////////////////////////
 // ·¢ËÍÏûÏ¢
-CMessage  CClient::_SendMessage(CMessage msg)
+CMessage  CClient::SendMessage(CMessage msg)
 {
 	char szRecv[MAX_BUFFER_LEN];
 	memset(szRecv, 0, MAX_BUFFER_LEN);
@@ -103,7 +103,7 @@ bool  CClient::EstablishConnections()
 		
 		CMessage msg, recv_msg;
 		msg.type1 = MSG_NULL;
-		recv_msg = _SendMessage(msg);
+		recv_msg = SendMessage(msg);
 
 	}
 

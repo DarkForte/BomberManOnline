@@ -47,7 +47,7 @@ PointF GetPixelPoint(CPoint point_judge)
 	return PointF(tmp_x, tmp_y);
 }
 
-void CGame::Init(int player_num, int map_num, int room_num, unsigned int rand_seed, int player_type)
+void CGame::Init(int player_num, int map_num, int room_num, unsigned int rand_seed, int player_type, CString player_names[])
 {
 	SetD2D1Rect(&bottom_rect, PADDING, PADDING + MAP_HEIGHT, 
 		PADDING + MAP_WIDTH, WINDOW_HEIGHT - PADDING);
@@ -61,11 +61,16 @@ void CGame::Init(int player_num, int map_num, int room_num, unsigned int rand_se
 	game_map.Init(map_num);
 	bomb_manager.Init();
 
-	player[1].Init(0,0,0);
-	player[2].Init(MAP_WIDTH - SPRITE_WIDTH, 0, 0);
-	player[3].Init(0, MAP_HEIGHT - SPRITE_HEIGHT, 0);
-	player[4].Init(MAP_WIDTH - SPRITE_WIDTH, MAP_HEIGHT - SPRITE_HEIGHT,0);
+	player[1].Init(0,0,1 , 1);
+	player[2].Init(MAP_WIDTH - SPRITE_WIDTH, 0, 1, 1);
+	player[3].Init(0, MAP_HEIGHT - SPRITE_HEIGHT, 1, 2);
+	player[4].Init(MAP_WIDTH - SPRITE_WIDTH, MAP_HEIGHT - SPRITE_HEIGHT, 1, 2);
 	
+	for(int i=0;i<=MAX_PLAYER-1; i++)
+	{
+		this->player_names[i+1] = player_names[i].GetString();
+	}
+
 	my_player = player_num;
 	room_number = room_num;
 	srand(rand_seed);
@@ -322,24 +327,47 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 			PLAYER_TRANSFORM now_trans = player[now_i].Trans();
 			if(now_trans == PLAYER_TRANSFORM::NONE)
 			{
-				p_res_manager->player_sprite[now_i].DrawImage(render_target,
+				int now_actor = player[now_i].Actor();
+				p_res_manager->player_sprite[now_actor].DrawImage(render_target,
 					now.pos.x, now.pos.y,
 					SPRITE_WIDTH, SPRITE_HEIGHT, 
 					SPRITE_WIDTH * player[now_i].NowFrame(), SPRITE_HEIGHT * player[now_i].Facing());
 			}
+			
 			else if(now_trans == PLAYER_TRANSFORM::TRANS_START || now_trans == PLAYER_TRANSFORM::TRANS_END)
 			{
-				p_res_manager->player_sprite[now_i].DrawImage(render_target,
+				int now_actor = player[now_i].Actor();
+				p_res_manager->player_sprite[now_actor].DrawImage(render_target,
 					now.pos.x, now.pos.y,
 					SPRITE_WIDTH, SPRITE_HEIGHT, 
 					SPRITE_WIDTH * player[now_i].NowFrame(), SPRITE_HEIGHT * player[now_i].Facing(),
 					1, 1, (sin(player[now_i].TransTime()/50)+1)/2);
 			}
-			else
+			else if(now_trans == PLAYER_TRANSFORM::GHOST)
 			{
-				p_res_manager->player_sprite[now_i].DrawImage(render_target,
+				int trans_index = int(now_trans);
+				float opacity;
+				if(player[now_i].Team() == player[my_player].Team())
+				{
+					opacity = 1;
+				}
+				else
+				{
+					opacity = 0.2;
+				}
+
+				p_res_manager->trans_sprite[trans_index].DrawImage(render_target,
 					now.pos.x, now.pos.y,
-					SPRITE_WIDTH, SPRITE_HEIGHT, 
+					SPRITE_WIDTH, SPRITE_HEIGHT,
+					SPRITE_WIDTH * player[now_i].NowFrame(), SPRITE_HEIGHT * player[now_i].Facing(),
+					1.0, 1.0, opacity);
+			}
+			else if(now_trans != PLAYER_TRANSFORM::FLY) // Fly will be handled later
+			{
+				int trans_index = int(now_trans);
+				p_res_manager->trans_sprite[trans_index].DrawImage(render_target,
+					now.pos.x, now.pos.y,
+					SPRITE_WIDTH, SPRITE_HEIGHT,
 					SPRITE_WIDTH * player[now_i].NowFrame(), SPRITE_HEIGHT * player[now_i].Facing());
 			}
 		}
@@ -383,7 +411,7 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 	{
 		if(player[i].Trans() == PLAYER_TRANSFORM::FLY)
 		{
-			p_res_manager->player_sprite[i].DrawImage(render_target,
+			p_res_manager->trans_sprite[int(PLAYER_TRANSFORM::FLY)].DrawImage(render_target,
 				player[i].GetXPixel(), player[i].GetYPixel(),
 				SPRITE_WIDTH, SPRITE_HEIGHT, 
 				SPRITE_WIDTH * player[i].NowFrame(), SPRITE_HEIGHT * player[i].Facing());
@@ -424,7 +452,7 @@ void CGame::HandleKeyUp(UINT nchar)
 GameState CGame::Update(float game_time)
 {
 	CMessage msg = MakeMessage(game_time);
-	CMessage recv = p_res_manager->m_Client._SendMessage(msg);
+	CMessage recv = p_res_manager->m_Client.SendMessage(msg);
 	stringstream input(recv.msg);
 	int i;
 
@@ -591,9 +619,15 @@ GameState CGame::Update(float game_time)
 				for(int i_player=1; i_player<=MAX_PLAYER; i_player++)
 				{
 					if(player[i_player].GetPosJudgeGrid() == now_point 
+						&& player[i_player].Status() != PLAYER_STATUS::DEAD && player[i_player].Status() != PLAYER_STATUS::WRAPPED
 						&& player[i_player].Trans() != PLAYER_TRANSFORM::TRANS_END && player[i_player].Trans() != PLAYER_TRANSFORM::TRANS_START)
 					{
-						player[i_player].SetStatus(PLAYER_STATUS::WRAPPED, DEFAULT_WRAPTIME);
+						if(player[i_player].Trans() == PLAYER_TRANSFORM::NONE)
+							player[i_player].SetStatus(PLAYER_STATUS::WRAPPED, DEFAULT_WRAPTIME);
+						else
+						{
+							player[i_player].SetTrans(PLAYER_TRANSFORM::TRANS_END, TRANS_ENDTIME, PLAYER_TRANSFORM::NONE);
+						}
 					}
 				}
 				now_point += DIRECT_VEC[i_direct];
@@ -639,7 +673,7 @@ GameState CGame::Update(float game_time)
 
 int CGame::CalcBombResult()
 {
-	//return int(Item::PANDA);
+	return int(Item::FLY);
 	/*50% rate of dropping an item*/
 	int r = rand()%100;
 	if(r>=50)
@@ -944,6 +978,6 @@ void CGame::SendQuitMessage()
 	msg.type2 = MSG_GAME_QUIT;
 	msg.para1 = room_number;
 	msg.para2 = my_player;
-	p_res_manager->m_Client._SendMessage(msg);
+	p_res_manager->m_Client.SendMessage(msg);
 	return;
 }

@@ -182,21 +182,28 @@ PointF CGameMap::RepelPoint( PointF next_point, int direction )
 
 	if(direction == UP) // Repel to down
 	{
-		return PointF(points[1].x, ceil(points[1].y/GRID_HEIGHT)*GRID_HEIGHT);
+		float targety = ceil(points[1].y/GRID_HEIGHT)*GRID_HEIGHT;
+		return PointF(points[1].x, max(targety, 0));
 	}
 	else if(direction == DOWN) //Repel to up
 	{
 		points[3].y = floor(points[3].y/GRID_HEIGHT)*GRID_HEIGHT;
+		points[3].y = min(points[3].y, MAP_HEIGHT);
+
 		return points[3] + PointF(0, -SPRITE_HEIGHT);
 	}
 	else if(direction == LEFT) //Repel to right
 	{
 		points[1].x = ceil(points[1].x/GRID_WIDTH)*GRID_WIDTH;
+		points[1].x = max(points[1].x, 0);
+
 		return points[1];
 	}
 	else /*if (direction == RIGHT)*/
 	{
 		points[2].x = floor(points[2].x/GRID_WIDTH)*GRID_WIDTH;
+		points[2].x = min(points[2].x, MAP_WIDTH);
+
 		return points[2] + PointF(-SPRITE_WIDTH, 0);
 	}
 }

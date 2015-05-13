@@ -10,7 +10,8 @@ public:
 	CD2DImage bomb_sprite;
 	CD2DImage fire_sprite;
 
-	CD2DImage player_sprite[MAX_PLAYER+1];
+	CD2DImage player_sprite[6+1];
+	CD2DImage trans_sprite[27+1];
 
 #pragma region Lobby UI Definations
 	CD2DImage lobby_button_sprite[LOBBY_MAX_BUTTON + 1][3];
