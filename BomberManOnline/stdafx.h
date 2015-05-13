@@ -22,6 +22,7 @@
 #include <cassert>
 #include <atlconv.h>
 #include <fstream>
+#include <sstream>
 
 #include <stdlib.h>
 
