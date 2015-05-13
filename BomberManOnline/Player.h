@@ -33,7 +33,7 @@ class CPlayer : public CMovingObjects
 	int bomb_capacity;
 	int bomb_power;
 
-	int type;
+	int actor;
 
 	int team;
 	int now_bombs;
@@ -45,8 +45,8 @@ class CPlayer : public CMovingObjects
 public:
 	CPlayer(void);
 	~CPlayer(void);
-	CPlayer(float x, float y, int type);
-	void Init(float x, float y, int type);
+	CPlayer(float x, float y, int type, int team_num);
+	void Init(float x, float y, int type, int team_num);
 
 	int GetBombPower();
 	int GetBombCapacity();
@@ -100,6 +100,8 @@ public:
 	void Team(int val) { team = val; }
 
 	void ClearMovingState();
+
+	int Actor() const { return actor; }
 
 protected:
 	PointF CalcRealSpeed();

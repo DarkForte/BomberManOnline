@@ -63,7 +63,7 @@ public:
 	// 设置并发线程数量
 	void SetThreads(const int& n)      { m_nThreads=n; }
 
-	CMessage _SendMessage(CMessage msg);
+	CMessage SendMessage(CMessage msg);
 
 	ClientState state;
 

@@ -179,7 +179,7 @@ GameState CLogin::HandleLButtonUp(CPoint point)
 
 						//·¢ËÍÏûÏ¢
 						//OutputDebugPrintf("%d\n",timeGetTime());
-						recv_msg = p_res_manager->m_Client._SendMessage(msg);
+						recv_msg = p_res_manager->m_Client.SendMessage(msg);
 						//OutputDebugPrintf("%d\n", timeGetTime());
 
 						if (recv_msg.type1 == MSG_LOGIN && recv_msg.type2 == MSG_LOGIN_CONFIRM)

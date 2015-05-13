@@ -193,7 +193,7 @@ void CEdit::HandleKeyDown(UINT nchar)
 				strcpy_s(msg.str2, strTemp.c_str());
 
 				//·¢ËÍÏûÏ¢
-				recv_msg = p_res_manager->m_Client._SendMessage(msg);
+				recv_msg = p_res_manager->m_Client.SendMessage(msg);
 
 				text = "";
 			}

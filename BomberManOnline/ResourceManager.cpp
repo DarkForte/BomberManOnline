@@ -30,13 +30,20 @@ CResourceManager::~CResourceManager(void)
 
 void CResourceManager::LoadPics( IWICImagingFactory * pIWICFactory, ID2D1HwndRenderTarget* render_target )
 {
-	map_back.Load(pIWICFactory, render_target, L"pic\\meadow.png");
-	for(int i=1; i<=MAX_PLAYER; i++)
+	//map_back.Load(pIWICFactory, render_target, L"pic\\meadow.png");
+	for(int i=1; i<=6; i++)
 	{
 		WCHAR buf[60];
-		swprintf_s(buf, L"pic\\player%d.png", i);
+		swprintf_s(buf, L"pic\\sprites\\player%d.png", i);
 
 		player_sprite[i].Load(pIWICFactory, render_target, buf);
+	}
+	for (int i=20;i<=27;i++)
+	{
+		WCHAR buf[60];
+		swprintf_s(buf, L"pic\\sprites\\trans%d.png", i);
+
+		trans_sprite[i].Load(pIWICFactory, render_target, buf);
 	}
 
 	bomb_sprite.Load(pIWICFactory, render_target, L"pic\\bomb_sprite.png");

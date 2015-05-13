@@ -182,7 +182,7 @@ GameState CRoom::HandleLButtonUp(CPoint point)
 					msg.para2 = p_res_manager->account.seat_id;
 
 					//发送消息
-					recv_msg = p_res_manager->m_Client._SendMessage(msg);
+					recv_msg = p_res_manager->m_Client.SendMessage(msg);
 
 					button[11].SetStatus(BUTTON_STATUS::DISABLE);
 					button[10].SetStatus(BUTTON_STATUS::IDLE);
@@ -439,7 +439,7 @@ GameState CRoom::Update()
 		msg.para2 = j;
 
 		//发送消息
-		recv_msg = p_res_manager->m_Client._SendMessage(msg);
+		recv_msg = p_res_manager->m_Client.SendMessage(msg);
 		if (recv_msg.type1 == MSG_ROOM && recv_msg.type2 == MSG_ROOM_RETURN)
 		{
 			p_res_manager->account.seat[j] = recv_msg.para1;
@@ -466,7 +466,7 @@ GameState CRoom::Update()
 		msg.para2 = p_res_manager->account.seat_id;
 
 		//发送消息
-		recv_msg = p_res_manager->m_Client._SendMessage(msg);
+		recv_msg = p_res_manager->m_Client.SendMessage(msg);
 		if (recv_msg.type1 == MSG_ROOM && recv_msg.type2 == MSG_ROOM_GAME)
 		{
 			state = GameState::INGAME;
@@ -492,7 +492,7 @@ GameState CRoom::Update()
 	msg.para1 = chat.getTotalLineNum();
 
 	//发送消息
-	recv_msg = p_res_manager->m_Client._SendMessage(msg);
+	recv_msg = p_res_manager->m_Client.SendMessage(msg);
 	while (recv_msg.type2 != MSG_CHAT_DENY)
 	{
 		if (recv_msg.type2 == MSG_NULL)
@@ -509,7 +509,7 @@ GameState CRoom::Update()
 		//设置参数
 		msg.para1 = chat.getTotalLineNum();
 
-		recv_msg = p_res_manager->m_Client._SendMessage(msg);
+		recv_msg = p_res_manager->m_Client.SendMessage(msg);
 	}
 
 	return state;

@@ -81,6 +81,7 @@ public:
 	//D2D1_RECT_F info_rect;
 	D2D1_RECT_F panel_rect;
 	D2D1_RECT_F user_rect;
+	wstring player_names[MAX_PLAYER+1];
 
 	CPlayer player[MAX_PLAYER+1];
 	float rest_time;
@@ -104,7 +105,7 @@ public:
 	~CGame(void);
 	CGame(CResourceManager *res_manager);
 
-	void Init(int player_num, int map_num, int room_num, unsigned int rand_seed, int player_type);
+	void Init(int player_num, int map_num, int room_num, unsigned int rand_seed, int player_type, CString player_names[]);
 	void Render(ID2D1HwndRenderTarget* render_target);
 	void HandleKeyDown(UINT nchar);
 	void HandleKeyUp(UINT nchar);

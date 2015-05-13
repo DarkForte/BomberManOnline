@@ -8,7 +8,7 @@ float CPlayer::frame_time = 120;
 CPlayer::CPlayer(void)
 {
 	pos.SetPoint(0,0);
-	type=0;
+	actor=0;
 }
 
 
@@ -16,21 +16,20 @@ CPlayer::~CPlayer(void)
 {
 }
 
-CPlayer::CPlayer(float x, float y, int type)
+CPlayer::CPlayer(float x, float y, int type, int team_num)
 {
-	Init(x,y,type);
+	Init(x,y,type,team_num);
 }
 
-void CPlayer::Init(float x, float y, int type)
+void CPlayer::Init(float x, float y, int actor_id, int team_num)
 {
 	pos.SetPoint(x,y);
-	this->type = type;
-	if(type == 0)
-	{
-		SetMaxCapacity(5);
-		SetMaxPower(10);
-		SetMaxSpeed(0.3);
-	}
+	this->actor = actor_id;
+	
+	SetMaxCapacity(5);
+	SetMaxPower(10);
+	SetMaxSpeed(0.3);
+	
 	
 	speed.SetPoint(0.2, 0.2);
 
@@ -39,7 +38,7 @@ void CPlayer::Init(float x, float y, int type)
 	SetStatus(PLAYER_STATUS::NONE);
 	SetTrans(PLAYER_TRANSFORM::NONE, 0, PLAYER_TRANSFORM::NONE);
 	moving_state = 0;
-	team=1;
+	team = team_num;
 
 	now_bombs = 0;
 	
@@ -240,7 +239,7 @@ pair<Item, int> CPlayer::PeekItem( int index )
 
 void CPlayer::Update( float game_time )
 {
-	if(status.first == PLAYER_STATUS::SLOW)
+	if(status.first == PLAYER_STATUS::SLOW || status.first == PLAYER_STATUS::BOMB_INVIS)
 	{
 		status.second -= game_time;
 		if(status.second <=0)
