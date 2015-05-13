@@ -184,6 +184,10 @@ GameState CRoom::HandleLButtonUp(CPoint point)
 					//·¢ËÍÏûÏ¢
 					recv_msg = p_res_manager->m_Client._SendMessage(msg);
 
+					button[11].SetStatus(BUTTON_STATUS::DISABLE);
+					button[10].SetStatus(BUTTON_STATUS::IDLE);
+					p_res_manager->account.ready = false;
+
 					state = GameState::LOBBY;
 				}
 				//not ready
