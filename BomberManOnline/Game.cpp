@@ -550,13 +550,16 @@ GameState CGame::Update(float game_time)
 			next_pos_pixel.y = next_pos_judge.y*GRID_HEIGHT;
 			if(game_map.InBound(next_pos_pixel) )
 			{
-				if(game_map.GridType(next_pos_judge.x, next_pos_judge.y) != MAP_ELEMENTS::BOMB)
+				/*if(game_map.GridType(next_pos_judge.x, next_pos_judge.y) != MAP_ELEMENTS::BOMB)
 				{
 					next_pos_judge += DIRECT_VEC[it->GetMovingDirection()];
+				}*/
+				if(game_map.GridType(next_pos_judge.x, next_pos_judge.y) == MAP_ELEMENTS::BOMB)
+				{
+					int index = game_map.GetIndex(next_pos_judge.x, next_pos_judge.y);
+					bomb_manager.SuddenExplode(index);
 				}
 
-				int index = game_map.GetIndex(next_pos_judge.x, next_pos_judge.y);
-				bomb_manager.SuddenExplode(index);
 			}
 			it=darts.erase(it);
 		}
@@ -627,7 +630,7 @@ GameState CGame::Update(float game_time)
 							player[i_player].SetStatus(PLAYER_STATUS::WRAPPED, DEFAULT_WRAPTIME);
 						else
 						{
-							player[i_player].SetTrans(PLAYER_TRANSFORM::TRANS_END, TRANS_ENDTIME, PLAYER_TRANSFORM::NONE);
+							player[i_player].SetTransTime(0);//Do not use SetTrans because canceling the effects happens when turning from current form to trans_end.
 						}
 					}
 				}
@@ -674,7 +677,7 @@ GameState CGame::Update(float game_time)
 
 int CGame::CalcBombResult()
 {
-	//return int(Item::FLY)
+	return int(Item::KILLER);
 	/*50% rate of dropping an item*/
 	int r = rand()%100;
 	if(r>=50)

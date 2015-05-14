@@ -317,11 +317,11 @@ void CPlayer::ClearMovingState()
 	moving_state = 0;
 }
 
-void CPlayer::SetTrans( PLAYER_TRANSFORM v1, float v2, PLAYER_TRANSFORM next_transform)
+void CPlayer::SetTrans( PLAYER_TRANSFORM v1, float t, PLAYER_TRANSFORM next_transform)
 {
 	SetStatus(PLAYER_STATUS::NONE);
 	trans.first = v1;
-	trans.second = v2;
+	trans.second = t;
 	target_transform = next_transform;
 	return;
 }
@@ -330,5 +330,10 @@ void CPlayer::SetSpecialItem( Item item, int number/*=1*/ )
 {
 	items[MAX_ITEMS+1].first = item;
 	items[MAX_ITEMS+1].second = number;
+}
+
+void CPlayer::SetTransTime( float t )
+{
+	trans.second = t;
 }
 

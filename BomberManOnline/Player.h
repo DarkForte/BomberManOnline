@@ -69,7 +69,8 @@ public:
 	
 	PLAYER_TRANSFORM Trans() const {return trans.first; }
 	float TransTime() const {return trans.second;}
-	void SetTrans(PLAYER_TRANSFORM v1, float v2, PLAYER_TRANSFORM next_transform);
+	void SetTrans(PLAYER_TRANSFORM v1, float t, PLAYER_TRANSFORM next_transform);
+	void SetTransTime(float t);
 	
 	int Facing() const { return facing; }
 
