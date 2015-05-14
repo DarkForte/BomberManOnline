@@ -105,7 +105,7 @@ public:
 	~CGame(void);
 	CGame(CResourceManager *res_manager);
 
-	void Init(int player_num, int map_num, int room_num, unsigned int rand_seed, int player_type, CString player_names[]);
+	void Init(int player_num, int map_num, int room_num, unsigned int rand_seed, int player_types[], CString player_names[]);
 	void Render(ID2D1HwndRenderTarget* render_target);
 	void HandleKeyDown(UINT nchar);
 	void HandleKeyUp(UINT nchar);

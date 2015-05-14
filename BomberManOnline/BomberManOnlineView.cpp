@@ -200,7 +200,6 @@ void CBomberManOnlineView::Update(float game_time)
 		{
 			int my_player = p_res_manager->account.seat_id+1;
 			int my_room = p_res_manager->account.room_id;
-			int my_actorid = p_res_manager->account.actor_id;
 			//Ask for random seed
 			CMessage msg;
 			msg.type1 = MSG_GAME;
@@ -209,7 +208,7 @@ void CBomberManOnlineView::Update(float game_time)
 			msg.para2 = my_player;
 			CMessage ret = p_res_manager->m_Client.SendMessage(msg);
 			unsigned int now_seed = ret.para1;
-			p_game->Init(my_player, 1, my_room, now_seed, my_actorid, p_res_manager->account.seat_name);
+			p_game->Init(my_player, 1, my_room, now_seed, p_res_manager->account.room_actor, p_res_manager->account.seat_name);
 		}
 		game_state = next_gamestate;
 	}

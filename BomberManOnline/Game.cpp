@@ -47,7 +47,7 @@ PointF GetPixelPoint(CPoint point_judge)
 	return PointF(tmp_x, tmp_y);
 }
 
-void CGame::Init(int player_num, int map_num, int room_num, unsigned int rand_seed, int player_type, CString player_names[])
+void CGame::Init(int player_num, int map_num, int room_num, unsigned int rand_seed, int player_types[], CString player_names[])
 {
 	SetD2D1Rect(&bottom_rect, PADDING, PADDING + MAP_HEIGHT, 
 		PADDING + MAP_WIDTH, WINDOW_HEIGHT - PADDING);
@@ -61,10 +61,11 @@ void CGame::Init(int player_num, int map_num, int room_num, unsigned int rand_se
 	game_map.Init(map_num);
 	bomb_manager.Init();
 
-	player[1].Init(0,0,1 , 1);
-	player[2].Init(MAP_WIDTH - SPRITE_WIDTH, 0, 1, 1);
-	player[3].Init(0, MAP_HEIGHT - SPRITE_HEIGHT, 1, 2);
-	player[4].Init(MAP_WIDTH - SPRITE_WIDTH, MAP_HEIGHT - SPRITE_HEIGHT, 1, 2);
+
+	player[1].Init(0,0, player_types[0]+1 , 1);
+	player[2].Init(MAP_WIDTH - SPRITE_WIDTH, 0, player_types[1]+1, 1);
+	player[3].Init(0, MAP_HEIGHT - SPRITE_HEIGHT, player_types[2]+1, 2);
+	player[4].Init(MAP_WIDTH - SPRITE_WIDTH, MAP_HEIGHT - SPRITE_HEIGHT, player_types[3]+1, 2);
 	
 	for(int i=0;i<=MAX_PLAYER-1; i++)
 	{

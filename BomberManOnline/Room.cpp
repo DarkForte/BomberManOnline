@@ -405,7 +405,7 @@ GameState CRoom::Update()
 	msg.msg[0] = p_res_manager->account.actor_id;
 
 	//发送消息
-	recv_msg = p_res_manager->m_Client._SendMessage(msg);
+	recv_msg = p_res_manager->m_Client.SendMessage(msg);
 
 	for (int j = 0; j < 4; j++)
 	{
@@ -418,7 +418,7 @@ GameState CRoom::Update()
 		msg.para2 = j;
 
 		//发送消息
-		recv_msg = p_res_manager->m_Client._SendMessage(msg);
+		recv_msg = p_res_manager->m_Client.SendMessage(msg);
 
 		if (recv_msg.type1 == MSG_ROOM && recv_msg.type2 == MSG_ROOM_RETURN_ACTOR)
 		{
