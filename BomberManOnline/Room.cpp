@@ -184,6 +184,10 @@ GameState CRoom::HandleLButtonUp(CPoint point)
 					//发送消息
 					recv_msg = p_res_manager->m_Client.SendMessage(msg);
 
+					button[11].SetStatus(BUTTON_STATUS::DISABLE);
+					button[10].SetStatus(BUTTON_STATUS::IDLE);
+					p_res_manager->account.ready = false;
+
 					state = GameState::LOBBY;
 				}
 				//not ready
@@ -257,10 +261,14 @@ void CRoom::Render(ID2D1HwndRenderTarget* render_target)
 	//user image
 	p_res_manager->room_icon_sprite[2].DrawImage(render_target, 786, 56, 64, 64, 0, 0);
 	//player icon
-	p_res_manager->room_icon_sprite[2].DrawImage(render_target, 43, 230, 67, 67, 0, 0);
-	p_res_manager->room_icon_sprite[2].DrawImage(render_target, 453, 230, 67, 67, 0, 0);
-	p_res_manager->room_icon_sprite[2].DrawImage(render_target, 43, 345, 67, 67, 0, 0);
-	p_res_manager->room_icon_sprite[2].DrawImage(render_target, 453, 345, 67, 67, 0, 0);
+	//p_res_manager->room_icon_sprite[2].DrawImage(render_target, 43, 230, 67, 67, 0, 0);
+	//p_res_manager->room_icon_sprite[2].DrawImage(render_target, 453, 230, 67, 67, 0, 0);
+	//p_res_manager->room_icon_sprite[2].DrawImage(render_target, 43, 345, 67, 67, 0, 0);
+	//p_res_manager->room_icon_sprite[2].DrawImage(render_target, 453, 345, 67, 67, 0, 0);
+	p_res_manager->room_button_sprite[p_res_manager->account.room_actor[0] + 12][0].DrawImage(render_target, 18, 204, 120, 120, 0, 0);
+	p_res_manager->room_button_sprite[p_res_manager->account.room_actor[1] + 12][0].DrawImage(render_target, 428, 204, 120, 120, 0, 0);
+	p_res_manager->room_button_sprite[p_res_manager->account.room_actor[2] + 12][0].DrawImage(render_target, 18, 319, 120, 120, 0, 0);
+	p_res_manager->room_button_sprite[p_res_manager->account.room_actor[3] + 12][0].DrawImage(render_target, 428, 319, 120, 120, 0, 0);
 
 	wstring o_text;
 	CString text;
@@ -384,6 +392,39 @@ GameState CRoom::Update()
 	
 	//定义发送消息/接收消息
 	CMessage msg, recv_msg;
+
+	//update player actor
+
+	//初始化消息类型
+	msg.type1 = MSG_ROOM;
+	msg.type2 = MSG_ROOM_SET_ACTOR;
+
+	//设置参数
+	msg.para1 = p_res_manager->account.room_id;
+	msg.para2 = p_res_manager->account.seat_id;
+	msg.msg[0] = p_res_manager->account.actor_id;
+
+	//发送消息
+	recv_msg = p_res_manager->m_Client._SendMessage(msg);
+
+	for (int j = 0; j < 4; j++)
+	{
+		//初始化消息类型
+		msg.type1 = MSG_ROOM;
+		msg.type2 = MSG_ROOM_GET_ACTOR;
+
+		//设置参数
+		msg.para1 = p_res_manager->account.room_id;
+		msg.para2 = j;
+
+		//发送消息
+		recv_msg = p_res_manager->m_Client._SendMessage(msg);
+
+		if (recv_msg.type1 == MSG_ROOM && recv_msg.type2 == MSG_ROOM_RETURN_ACTOR)
+		{
+			p_res_manager->account.room_actor[recv_msg.para1] = recv_msg.para2;
+		}
+	}
 
 	//update player name
 

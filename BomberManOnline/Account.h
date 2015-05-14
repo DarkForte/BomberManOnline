@@ -19,4 +19,5 @@ public:
 	int chat_num;
 	int exp;
 	int room_num[8];
+	int room_actor[4];
 };
