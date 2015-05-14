@@ -153,7 +153,7 @@ void CPlayer::CancelMovingState(int state)
 	if(Status() == PLAYER_STATUS::FLIPPING)
 		return;
 
-	moving_state -= 1<<state;
+	moving_state &= ~(1<<state);
 }
 
 int CPlayer::GetMovingDirection()

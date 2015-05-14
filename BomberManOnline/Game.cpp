@@ -673,7 +673,7 @@ GameState CGame::Update(float game_time)
 
 int CGame::CalcBombResult()
 {
-	return int(Item::FLY);
+	return int(Item::BANANA);
 	/*50% rate of dropping an item*/
 	int r = rand()%100;
 	if(r>=50)
