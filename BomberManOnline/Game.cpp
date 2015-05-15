@@ -1125,7 +1125,7 @@ void CGame::SendRewardMessage()
 	}
 
 	set_msg.type1 = MSG_DATA;
-	set_msg.type2 = MSG_DATA_SET_MONEY;
+	set_msg.type2 = MSG_DATA_SET_EXP;
 	set_msg.para1 = my_player;
 	set_msg.para2 = now_exp;
 	set_msg = p_res_manager->m_Client.SendMessage(set_msg);
