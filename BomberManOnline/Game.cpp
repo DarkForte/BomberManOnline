@@ -746,21 +746,24 @@ GameState CGame::Update(float game_time)
 	//Win lose
 	if( (out_member[1] == out_member[2] && out_member[2] == 2) || rest_time<=0)
 	{
+		game_result = GAME_RESULT::TIE;
 		SendQuitMessage();
 		SendRewardMessage();
-		game_result = GAME_RESULT::TIE;
+		
 	}
 	else if(out_member[player[my_player].Team()] ==2)
 	{
+		game_result = GAME_RESULT::LOSE;
 		SendQuitMessage();
 		SendRewardMessage();
-		game_result = GAME_RESULT::LOSE;
+		
 	}
 	else if(out_member[3-player[my_player].Team()] ==2)
 	{
+		game_result = GAME_RESULT::WIN;
 		SendQuitMessage();
 		SendRewardMessage();
-		game_result = GAME_RESULT::WIN;
+		
 	}
 
 	return INGAME;
