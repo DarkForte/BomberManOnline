@@ -73,6 +73,8 @@ void CGame::Init(int player_num, int map_num, int room_num, unsigned int rand_se
 		this->player_names[i+1] = player_names[i].GetString();
 	}
 
+	memset(money,0,sizeof(money));
+
 	my_player = player_num;
 	room_number = room_num;
 	srand(rand_seed);
@@ -506,8 +508,6 @@ GameState CGame::Update(float game_time)
 {
 	if(game_result == GAME_RESULT::ACKNOWLEDGED)
 	{
-		SendQuitMessage();
-		SendRewardMessage();
 		return ROOM;
 	}
 	else if(game_result != GAME_RESULT::INGAME)
@@ -744,22 +744,23 @@ GameState CGame::Update(float game_time)
 	}
 
 	//Win lose
-	if(out_member[1] == out_member[2] && out_member[2] == 2)
+	if( (out_member[1] == out_member[2] && out_member[2] == 2) || rest_time<=0)
 	{
+		SendQuitMessage();
+		SendRewardMessage();
 		game_result = GAME_RESULT::TIE;
 	}
 	else if(out_member[player[my_player].Team()] ==2)
 	{
+		SendQuitMessage();
+		SendRewardMessage();
 		game_result = GAME_RESULT::LOSE;
 	}
 	else if(out_member[3-player[my_player].Team()] ==2)
 	{
+		SendQuitMessage();
+		SendRewardMessage();
 		game_result = GAME_RESULT::WIN;
-	}
-
-	if(rest_time <= 0)
-	{
-		game_result = GAME_RESULT::TIE;
 	}
 
 	return INGAME;
