@@ -72,6 +72,11 @@ struct FlyingBomb
 	
 };
 
+enum class GAME_RESULT
+{
+	INGAME, TIE, WIN, LOSE, ACKNOWLEDGED
+};
+
 class CGame : public CSceneBase
 {
 public:
@@ -81,6 +86,7 @@ public:
 	//D2D1_RECT_F info_rect;
 	D2D1_RECT_F panel_rect;
 	D2D1_RECT_F user_rect;
+	D2D1_RECT_F message_rect;
 	wstring player_names[MAX_PLAYER+1];
 
 	CPlayer player[MAX_PLAYER+1];
@@ -100,6 +106,8 @@ public:
 	list<CMovingObjects> darts;
 	list<FlyingBomb> flying_bombs;
 
+	GAME_RESULT game_result;
+
 public:
 	CGame(void);
 	~CGame(void);
@@ -109,6 +117,7 @@ public:
 	void Render(ID2D1HwndRenderTarget* render_target);
 	void HandleKeyDown(UINT nchar);
 	void HandleKeyUp(UINT nchar);
+	void HandleLButtonDown();
 	GameState Update(float game_time);
 	void SendQuitMessage();
 

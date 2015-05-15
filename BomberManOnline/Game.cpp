@@ -5,10 +5,17 @@
 #include <sstream>
 using namespace std;
 
+void SetD2D1Rect(D2D1_RECT_F *r, float left, float top, float right, float bottom)
+{
+	r->left = left;
+	r->top = top;
+	r->right = right;
+	r->bottom = bottom;
+}
+
 CGame::CGame(void)
 {
 	
-
 }
 
 CGame::~CGame(void)
@@ -20,13 +27,7 @@ CGame::CGame(CResourceManager *res_manager)
 	p_res_manager = res_manager;
 }
 
-void SetD2D1Rect(D2D1_RECT_F *r, float left, float top, float right, float bottom)
-{
-	r->left = left;
-	r->top = top;
-	r->right = right;
-	r->bottom = bottom;
-}
+
 
 CPoint GetJudgePoint(PointF point_pixel)
 {
@@ -55,12 +56,12 @@ void CGame::Init(int player_num, int map_num, int room_num, unsigned int rand_se
 		WINDOW_WIDTH - PADDING, 200);
 	SetD2D1Rect(&panel_rect, bottom_rect.right, bottom_rect.top, 
 		time_rect.right, bottom_rect.bottom);
+	SetD2D1Rect(&message_rect, 0, WINDOW_HEIGHT/2-30, WINDOW_WIDTH, WINDOW_HEIGHT/2 + 30);
 
 	SetD2D1Rect(&map_area, PADDING, PADDING, MAP_WIDTH + PADDING, MAP_HEIGHT + PADDING);
 
 	game_map.Init(map_num);
 	bomb_manager.Init();
-
 
 	player[1].Init(0,0, player_types[0]+1 , 1);
 	player[2].Init(MAP_WIDTH - SPRITE_WIDTH, 0, player_types[1]+1, 1);
@@ -76,6 +77,8 @@ void CGame::Init(int player_num, int map_num, int room_num, unsigned int rand_se
 	room_number = room_num;
 	srand(rand_seed);
 	rest_time = 4*60*1000;
+
+	game_result = GAME_RESULT::INGAME;
 }
 
 
@@ -92,6 +95,9 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 
 	ID2D1SolidColorBrush *stroke_brush;
 	render_target->CreateSolidColorBrush(ColorF(ColorF::DarkGray), &stroke_brush);
+
+	ID2D1SolidColorBrush *message_brush;
+	render_target->CreateSolidColorBrush(ColorF(ColorF::LightBlue), &message_brush);
 
 	////////Rectangles
 	p_res_manager->bottom_rect.DrawImage(render_target, bottom_rect.left, bottom_rect.top, 
@@ -329,10 +335,23 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 			if(now_trans == PLAYER_TRANSFORM::NONE)
 			{
 				int now_actor = player[now_i].Actor();
-				p_res_manager->player_sprite[now_actor].DrawImage(render_target,
-					now.pos.x, now.pos.y,
-					SPRITE_WIDTH, SPRITE_HEIGHT, 
-					SPRITE_WIDTH * player[now_i].NowFrame(), SPRITE_HEIGHT * player[now_i].Facing());
+				if(player[now_i].Status() == PLAYER_STATUS::WRAPPED)
+				{
+					float now_time = player[now_i].StatusTime();
+					p_res_manager->player_sprite[now_actor].DrawImage(render_target,
+						now.pos.x, now.pos.y,
+						SPRITE_WIDTH, SPRITE_HEIGHT,
+						SPRITE_WIDTH * player[now_i].NowFrame(), SPRITE_HEIGHT * player[now_i].Facing(),
+						now_time/DEFAULT_WRAPTIME, now_time/DEFAULT_WRAPTIME);
+				}
+				else
+				{
+					p_res_manager->player_sprite[now_actor].DrawImage(render_target,
+						now.pos.x, now.pos.y,
+						SPRITE_WIDTH, SPRITE_HEIGHT, 
+						SPRITE_WIDTH * player[now_i].NowFrame(), SPRITE_HEIGHT * player[now_i].Facing());
+				}
+				
 			}
 			
 			else if(now_trans == PLAYER_TRANSFORM::TRANS_START || now_trans == PLAYER_TRANSFORM::TRANS_END)
@@ -422,8 +441,30 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 	//Draw Map Border
 	render_target->DrawRectangle(&map_area, stroke_brush, 1);
 
+	if(game_result != GAME_RESULT::INGAME)
+	{
+		wstring message;
+		if(game_result == GAME_RESULT::WIN)
+		{
+			message = L"Congratulations! You win the match!";
+		}
+		else if(game_result == GAME_RESULT::LOSE)
+		{
+			message = L"Too bad! You lose the match!";
+		}
+		else if(game_result == GAME_RESULT::TIE)
+		{
+			message = L"It is a tie match! Battle again!";
+		}
+
+		render_target->FillRectangle(message_rect, message_brush);
+		RenderText(render_target, message, message_rect.left + 150, message_rect.top+2, 
+			p_res_manager->p_text_format_Arial_48_bold, black_brush);
+	}
+
 	SafeRelease(&black_brush);
 	SafeRelease(&stroke_brush);
+	SafeRelease(&message_brush);
 }
 
 bool CheckSpecialOk(CPoint pos, int direction)
@@ -442,6 +483,11 @@ bool CheckSpecialOk(CPoint pos, int direction)
 
 void CGame::HandleKeyDown(UINT nchar)
 {
+	if(game_result != GAME_RESULT::INGAME)
+	{
+		game_result = GAME_RESULT::ACKNOWLEDGED;
+		return;
+	}
 	operations.push(make_pair(Event::KEY_DOWN, nchar));
 }
 
@@ -452,6 +498,16 @@ void CGame::HandleKeyUp(UINT nchar)
 
 GameState CGame::Update(float game_time)
 {
+	if(game_result == GAME_RESULT::ACKNOWLEDGED)
+	{
+		SendQuitMessage();
+		return ROOM;
+	}
+	else if(game_result != GAME_RESULT::INGAME)
+	{
+		return INGAME;
+	}
+
 	CMessage msg = MakeMessage(game_time);
 	CMessage recv = p_res_manager->m_Client.SendMessage(msg);
 	stringstream input(recv.msg);
@@ -479,13 +535,16 @@ GameState CGame::Update(float game_time)
 		}
 	}
 
+	int out_member[3]={0};
 	//update player
 	for(i=1; i<=MAX_PLAYER; i++)
 	{
 		player[i].Update(game_times[i]);
 		if(player[i].Status() == PLAYER_STATUS::DEAD)
+		{
+			out_member[player[i].Team()] ++;
 			continue;
-
+		}
 		PointF next_pos_pixel = player[i].TryMove(game_times[i]);
 		CPoint next_pos_judge = GetJudgePoint(next_pos_pixel);
 		int now_direction = player[i].GetMovingDirection();
@@ -500,7 +559,7 @@ GameState CGame::Update(float game_time)
 			player[i].Move(game_times[i]);
 
 			CPoint now_judgegrid = player[i].GetPosJudgeGrid();
-			if(now_judgegrid != player[i].SpecialAccess().first)
+			if(player[i].SpecialAccess().second == true && now_judgegrid != player[i].SpecialAccess().first)
 			{
 				player[i].ShutSpecialAccess();
 			}
@@ -512,8 +571,19 @@ GameState CGame::Update(float game_time)
 				TouchItem(i, game_map.GetIndex(now_judgegrid.x, now_judgegrid.y) );
 				game_map.SetGrid(now_judgegrid.x, now_judgegrid.y, MAP_ELEMENTS::NONE);
 			}
+
+			int target_i;
+			for(target_i=1;target_i<=MAX_PLAYER;target_i++)
+			{
+				if( target_i != i && player[target_i].Status() == PLAYER_STATUS::WRAPPED 
+					&& player[target_i].Team() == player[i].Team() && player[target_i].GetPosJudgeGrid() == now_judgegrid)
+					
+				{
+					player[target_i].SetStatus(PLAYER_STATUS::NONE);
+				}
+			}
 		}
-		else if(now_direction != STOP)
+		else if(now_direction != STOP) // collide with border/obstacle
 		{
 			if(player[i].Status() == PLAYER_STATUS::FLIPPING)
 			{
@@ -666,10 +736,23 @@ GameState CGame::Update(float game_time)
 		player[now_owner].SetNowBombs(player[now_owner].NowBombs()-1);
 	}
 
+	//Win lose
+	if(out_member[1] == out_member[2] && out_member[2] == 2)
+	{
+		game_result = GAME_RESULT::TIE;
+	}
+	else if(out_member[player[my_player].Team()] ==2)
+	{
+		game_result = GAME_RESULT::LOSE;
+	}
+	else if(out_member[3-player[my_player].Team()] ==2)
+	{
+		game_result = GAME_RESULT::WIN;
+	}
+
 	if(rest_time <= 0)
 	{
-		SendQuitMessage();
-		return ROOM;
+		game_result = GAME_RESULT::TIE;
 	}
 
 	return INGAME;
@@ -677,7 +760,7 @@ GameState CGame::Update(float game_time)
 
 int CGame::CalcBombResult()
 {
-	return int(Item::KILLER);
+	//return int(Item::KILLER);
 	/*50% rate of dropping an item*/
 	int r = rand()%100;
 	if(r>=50)
@@ -990,5 +1073,14 @@ void CGame::SendQuitMessage()
 	msg.para1 = room_number;
 	msg.para2 = my_player;
 	p_res_manager->m_Client.SendMessage(msg);
+	return;
+}
+
+void CGame::HandleLButtonDown()
+{
+	if(game_result != GAME_RESULT::INGAME)
+	{
+		game_result = GAME_RESULT::ACKNOWLEDGED;
+	}
 	return;
 }

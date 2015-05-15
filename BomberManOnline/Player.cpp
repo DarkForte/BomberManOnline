@@ -124,7 +124,7 @@ void CPlayer::Move(float game_time)
 		}
 		else
 		{
-			now_frame = 2;
+			now_frame = 1;
 			rest_frametime = frame_time;
 		}
 	}

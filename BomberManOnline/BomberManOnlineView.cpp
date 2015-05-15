@@ -48,6 +48,10 @@ void CBomberManOnlineView::OnLButtonDown(CPoint point)
 	{
 		GameState next_state = p_room->HandleLButtonDown(point);
 	}
+	else if(game_state == INGAME)
+	{
+		p_game->HandleLButtonDown();
+	}
 }
 
 void CBomberManOnlineView::OnLButtonUp(CPoint point)
