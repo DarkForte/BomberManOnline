@@ -1097,20 +1097,20 @@ void CGame::SendRewardMessage()
 	CMessage msg;
 	msg.type1 = MSG_DATA;
 	msg.type2 = MSG_DATA_GET_MONEY;
-	msg.para1 = my_player;
+	msg.para1 = p_res_manager->account.user_id;
 	msg = p_res_manager->m_Client.SendMessage(msg);
 	
 	CMessage set_msg;
 	int now_money = msg.para1 + money[my_player];
 	set_msg.type1 = MSG_DATA;
 	set_msg.type2 = MSG_DATA_SET_MONEY;
-	set_msg.para1 = my_player;
+	set_msg.para1 = p_res_manager->account.user_id;
 	set_msg.para2 = now_money;
 	set_msg = p_res_manager->m_Client.SendMessageW(set_msg);
 
 	msg.type1 = MSG_DATA;
 	msg.type2 = MSG_DATA_GET_EXP;
-	msg.para1 = my_player;
+	msg.para1 = p_res_manager->account.user_id;
 	msg = p_res_manager->m_Client.SendMessage(msg);
 
 	int now_exp = msg.para1;
@@ -1126,7 +1126,7 @@ void CGame::SendRewardMessage()
 
 	set_msg.type1 = MSG_DATA;
 	set_msg.type2 = MSG_DATA_SET_EXP;
-	set_msg.para1 = my_player;
+	set_msg.para1 = p_res_manager->account.user_id;
 	set_msg.para2 = now_exp;
 	set_msg = p_res_manager->m_Client.SendMessage(set_msg);
 
