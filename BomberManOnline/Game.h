@@ -120,6 +120,7 @@ public:
 	void HandleLButtonDown();
 	GameState Update(float game_time);
 	void SendQuitMessage();
+	void SendRewardMessage();
 
 protected:
 	int CalcBombResult();

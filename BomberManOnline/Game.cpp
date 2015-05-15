@@ -99,6 +99,9 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 	ID2D1SolidColorBrush *message_brush;
 	render_target->CreateSolidColorBrush(ColorF(ColorF::LightBlue), &message_brush);
 
+	ID2D1SolidColorBrush *name_brush;
+	render_target->CreateSolidColorBrush(ColorF(ColorF::Gainsboro), &name_brush);
+
 	////////Rectangles
 	p_res_manager->bottom_rect.DrawImage(render_target, bottom_rect.left, bottom_rect.top, 
 		p_res_manager->bottom_rect.GetWidth(), p_res_manager->bottom_rect.GetHeight(), 0,0);
@@ -139,6 +142,9 @@ void CGame::Render(ID2D1HwndRenderTarget* render_target)
 		p_res_manager->userinfo_rect[i].DrawImage(render_target, 
 			time_rect.left + target_width, now_avatar_back_up,
 			p_res_manager->userinfo_rect[i].GetWidth(), p_res_manager->userinfo_rect[i].GetHeight(), 0,0);
+
+		RenderText(render_target, player_names[i], time_rect.left + target_width + 5, now_avatar_back_up+20,
+			p_res_manager->p_text_format_Arial_48_bold, name_brush);
 	}
 
 	////////Bottom Icons
@@ -501,6 +507,7 @@ GameState CGame::Update(float game_time)
 	if(game_result == GAME_RESULT::ACKNOWLEDGED)
 	{
 		SendQuitMessage();
+		SendRewardMessage();
 		return ROOM;
 	}
 	else if(game_result != GAME_RESULT::INGAME)
@@ -1072,7 +1079,7 @@ void CGame::SendQuitMessage()
 	msg.type2 = MSG_GAME_QUIT;
 	msg.para1 = room_number;
 	msg.para2 = my_player;
-	p_res_manager->m_Client.SendMessage(msg);
+	msg = p_res_manager->m_Client.SendMessage(msg);
 	return;
 }
 
@@ -1083,4 +1090,44 @@ void CGame::HandleLButtonDown()
 		game_result = GAME_RESULT::ACKNOWLEDGED;
 	}
 	return;
+}
+
+void CGame::SendRewardMessage()
+{
+	CMessage msg;
+	msg.type1 = MSG_DATA;
+	msg.type2 = MSG_DATA_GET_MONEY;
+	msg.para1 = my_player;
+	msg = p_res_manager->m_Client.SendMessage(msg);
+	
+	CMessage set_msg;
+	int now_money = msg.para1 + money[my_player];
+	set_msg.type1 = MSG_DATA;
+	set_msg.type2 = MSG_DATA_SET_MONEY;
+	set_msg.para1 = my_player;
+	set_msg.para2 = now_money;
+	set_msg = p_res_manager->m_Client.SendMessageW(set_msg);
+
+	msg.type1 = MSG_DATA;
+	msg.type2 = MSG_DATA_GET_EXP;
+	msg.para1 = my_player;
+	msg = p_res_manager->m_Client.SendMessage(msg);
+
+	int now_exp = msg.para1;
+
+	if(game_result == GAME_RESULT::WIN)
+		now_exp += 10;
+	else if(game_result == GAME_RESULT::TIE)
+		now_exp +=5;
+	else if(game_result == GAME_RESULT::LOSE)
+	{
+		now_exp +=1;
+	}
+
+	set_msg.type1 = MSG_DATA;
+	set_msg.type2 = MSG_DATA_SET_MONEY;
+	set_msg.para1 = my_player;
+	set_msg.para2 = now_exp;
+	set_msg = p_res_manager->m_Client.SendMessage(set_msg);
+
 }
