@@ -504,5 +504,36 @@ GameState CLobby::Update()
 
 		p_res_manager->account.room_num[i] = recv_msg.para1;
 	}
+
+	//初始化消息类型
+	msg.type1 = MSG_DATA;
+	msg.type2 = MSG_DATA_GET_MONEY;
+
+	//设置参数
+	msg.para1 = p_res_manager->account.user_id;
+
+	//发送消息
+	recv_msg = p_res_manager->m_Client.SendMessage(msg);
+
+	if (recv_msg.type1 == MSG_DATA&&recv_msg.type2 == MSG_DATA_SUCCESS)
+	{
+		p_res_manager->account.money = recv_msg.para1;
+	}
+
+	//初始化消息类型
+	msg.type1 = MSG_DATA;
+	msg.type2 = MSG_DATA_GET_EXP;
+
+	//设置参数
+	msg.para1 = p_res_manager->account.user_id;
+
+	//发送消息
+	recv_msg = p_res_manager->m_Client.SendMessage(msg);
+
+	if (recv_msg.type1 == MSG_DATA&&recv_msg.type2 == MSG_DATA_SUCCESS)
+	{
+		p_res_manager->account.exp = recv_msg.para1;
+	}
+
 	return state;
 }
