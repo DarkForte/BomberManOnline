@@ -22,4 +22,5 @@ public:
 	int room_actor[4];
 	int room_money[4];
 	int room_exp[4];
+	int room_ready[4];
 };

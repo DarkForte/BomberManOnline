@@ -335,7 +335,11 @@ void CRoom::Render(ID2D1HwndRenderTarget* render_target)
 
 	text.Format(L"EXP:%d", p_res_manager->account.room_exp[0]);
 	o_text = text.GetString();
-	RenderText(render_target, o_text, 187, 259, p_res_manager->p_text_format_Arial_32_bold, brush);
+	RenderText(render_target, o_text, 141, 259, p_res_manager->p_text_format_Arial_32_bold, brush);
+
+	text.Format(L"$:%d", p_res_manager->account.room_money[0]);
+	o_text = text.GetString();
+	RenderText(render_target, o_text, 290, 259, p_res_manager->p_text_format_Arial_32_bold, brush);
 
 	if (p_res_manager->account.seat[1] != 0)
 	{
@@ -350,7 +354,11 @@ void CRoom::Render(ID2D1HwndRenderTarget* render_target)
 
 	text.Format(L"EXP:%d", p_res_manager->account.room_exp[1]);
 	o_text = text.GetString();
-	RenderText(render_target, o_text, 597, 259, p_res_manager->p_text_format_Arial_32_bold, brush);
+	RenderText(render_target, o_text, 551, 259, p_res_manager->p_text_format_Arial_32_bold, brush);
+
+	text.Format(L"$:%d", p_res_manager->account.room_money[1]);
+	o_text = text.GetString();
+	RenderText(render_target, o_text, 700, 259, p_res_manager->p_text_format_Arial_32_bold, brush);
 
 	if (p_res_manager->account.seat[2] != 0)
 	{
@@ -365,7 +373,11 @@ void CRoom::Render(ID2D1HwndRenderTarget* render_target)
 
 	text.Format(L"EXP:%d", p_res_manager->account.room_exp[2]);
 	o_text = text.GetString();
-	RenderText(render_target, o_text, 187, 374, p_res_manager->p_text_format_Arial_32_bold, brush);
+	RenderText(render_target, o_text, 141, 374, p_res_manager->p_text_format_Arial_32_bold, brush);
+
+	text.Format(L"$:%d", p_res_manager->account.room_money[2]);
+	o_text = text.GetString();
+	RenderText(render_target, o_text, 290, 374, p_res_manager->p_text_format_Arial_32_bold, brush);
 
 	if (p_res_manager->account.seat[3] != 0)
 	{
@@ -380,7 +392,11 @@ void CRoom::Render(ID2D1HwndRenderTarget* render_target)
 
 	text.Format(L"EXP:%d", p_res_manager->account.room_exp[3]);
 	o_text = text.GetString();
-	RenderText(render_target, o_text, 597, 374, p_res_manager->p_text_format_Arial_32_bold, brush);
+	RenderText(render_target, o_text, 551, 374, p_res_manager->p_text_format_Arial_32_bold, brush);
+
+	text.Format(L"$:%d", p_res_manager->account.room_money[3]);
+	o_text = text.GetString();
+	RenderText(render_target, o_text, 700, 374, p_res_manager->p_text_format_Arial_32_bold, brush);
 
 	//ready
 	text.Format(L"READY");
@@ -548,15 +564,18 @@ GameState CRoom::Update()
 	//update room player money
 	for (int i = 0; i < 4; i++)
 	{
-		//设置参数
-		msg.para1 = p_res_manager->account.seat[i];
-
-		//发送消息
-		recv_msg = p_res_manager->m_Client.SendMessage(msg);
-
-		if (recv_msg.type1 == MSG_DATA&&recv_msg.type2 == MSG_DATA_SUCCESS)
+		if (p_res_manager->account.seat[i] != 0)
 		{
-			p_res_manager->account.room_money[i] = recv_msg.para1;
+			//设置参数
+			msg.para1 = p_res_manager->account.seat[i];
+
+			//发送消息
+			recv_msg = p_res_manager->m_Client.SendMessage(msg);
+
+			if (recv_msg.type1 == MSG_DATA&&recv_msg.type2 == MSG_DATA_SUCCESS)
+			{
+				p_res_manager->account.room_money[i] = recv_msg.para1;
+			}
 		}
 	}
 
@@ -580,15 +599,18 @@ GameState CRoom::Update()
 	//update room player exp
 	for (int i = 0; i < 4; i++)
 	{
-		//设置参数
-		msg.para1 = p_res_manager->account.seat[i];
-
-		//发送消息
-		recv_msg = p_res_manager->m_Client.SendMessage(msg);
-
-		if (recv_msg.type1 == MSG_DATA&&recv_msg.type2 == MSG_DATA_SUCCESS)
+		if (p_res_manager->account.seat[i] != 0)
 		{
-			p_res_manager->account.room_exp[i] = recv_msg.para1;
+			//设置参数
+			msg.para1 = p_res_manager->account.seat[i];
+
+			//发送消息
+			recv_msg = p_res_manager->m_Client.SendMessage(msg);
+
+			if (recv_msg.type1 == MSG_DATA&&recv_msg.type2 == MSG_DATA_SUCCESS)
+			{
+				p_res_manager->account.room_exp[i] = recv_msg.para1;
+			}
 		}
 	}
 
