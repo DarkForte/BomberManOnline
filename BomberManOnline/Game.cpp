@@ -579,14 +579,17 @@ GameState CGame::Update(float game_time)
 				game_map.SetGrid(now_judgegrid.x, now_judgegrid.y, MAP_ELEMENTS::NONE);
 			}
 
-			int target_i;
-			for(target_i=1;target_i<=MAX_PLAYER;target_i++)
+			if(player[i].Status() != PLAYER_STATUS::WRAPPED)
 			{
-				if( target_i != i && player[target_i].Status() == PLAYER_STATUS::WRAPPED 
-					&& player[target_i].Team() == player[i].Team() && player[target_i].GetPosJudgeGrid() == now_judgegrid)
-					
+				int target_i;
+				for(target_i=1;target_i<=MAX_PLAYER;target_i++)
 				{
-					player[target_i].SetStatus(PLAYER_STATUS::NONE);
+					if( target_i != i && player[target_i].Status() == PLAYER_STATUS::WRAPPED 
+						&& player[target_i].Team() == player[i].Team() && player[target_i].GetPosJudgeGrid() == now_judgegrid)
+
+					{
+						player[target_i].SetStatus(PLAYER_STATUS::NONE);
+					}
 				}
 			}
 		}
