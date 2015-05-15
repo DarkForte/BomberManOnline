@@ -333,6 +333,10 @@ void CRoom::Render(ID2D1HwndRenderTarget* render_target)
 	}
 	RenderText(render_target, o_text, 187, 222, p_res_manager->p_text_format_Arial_32_bold, brush);
 
+	text.Format(L"EXP:%d", p_res_manager->account.room_exp[0]);
+	o_text = text.GetString();
+	RenderText(render_target, o_text, 187, 259, p_res_manager->p_text_format_Arial_32_bold, brush);
+
 	if (p_res_manager->account.seat[1] != 0)
 	{
 		o_text = p_res_manager->account.seat_name[1].GetString();
@@ -343,6 +347,10 @@ void CRoom::Render(ID2D1HwndRenderTarget* render_target)
 		o_text = text.GetString();
 	}
 	RenderText(render_target, o_text, 597, 222, p_res_manager->p_text_format_Arial_32_bold, brush);
+
+	text.Format(L"EXP:%d", p_res_manager->account.room_exp[1]);
+	o_text = text.GetString();
+	RenderText(render_target, o_text, 597, 259, p_res_manager->p_text_format_Arial_32_bold, brush);
 
 	if (p_res_manager->account.seat[2] != 0)
 	{
@@ -355,6 +363,10 @@ void CRoom::Render(ID2D1HwndRenderTarget* render_target)
 	}
 	RenderText(render_target, o_text, 187, 337, p_res_manager->p_text_format_Arial_32_bold, brush);
 
+	text.Format(L"EXP:%d", p_res_manager->account.room_exp[2]);
+	o_text = text.GetString();
+	RenderText(render_target, o_text, 187, 374, p_res_manager->p_text_format_Arial_32_bold, brush);
+
 	if (p_res_manager->account.seat[3] != 0)
 	{
 		o_text = p_res_manager->account.seat_name[3].GetString();
@@ -365,6 +377,10 @@ void CRoom::Render(ID2D1HwndRenderTarget* render_target)
 		o_text = text.GetString();
 	}
 	RenderText(render_target, o_text, 597, 337, p_res_manager->p_text_format_Arial_32_bold, brush);
+
+	text.Format(L"EXP:%d", p_res_manager->account.room_exp[3]);
+	o_text = text.GetString();
+	RenderText(render_target, o_text, 597, 374, p_res_manager->p_text_format_Arial_32_bold, brush);
 
 	//ready
 	text.Format(L"READY");
@@ -512,6 +528,8 @@ GameState CRoom::Update()
 		recv_msg = p_res_manager->m_Client.SendMessage(msg);
 	}
 
+	//update money
+
 	//初始化消息类型
 	msg.type1 = MSG_DATA;
 	msg.type2 = MSG_DATA_GET_MONEY;
@@ -527,6 +545,23 @@ GameState CRoom::Update()
 		p_res_manager->account.money = recv_msg.para1;
 	}
 
+	//update room player money
+	for (int i = 0; i < 4; i++)
+	{
+		//设置参数
+		msg.para1 = p_res_manager->account.seat[i];
+
+		//发送消息
+		recv_msg = p_res_manager->m_Client.SendMessage(msg);
+
+		if (recv_msg.type1 == MSG_DATA&&recv_msg.type2 == MSG_DATA_SUCCESS)
+		{
+			p_res_manager->account.room_money[i] = recv_msg.para1;
+		}
+	}
+
+	//update exp
+
 	//初始化消息类型
 	msg.type1 = MSG_DATA;
 	msg.type2 = MSG_DATA_GET_EXP;
@@ -540,6 +575,21 @@ GameState CRoom::Update()
 	if (recv_msg.type1 == MSG_DATA&&recv_msg.type2 == MSG_DATA_SUCCESS)
 	{
 		p_res_manager->account.exp = recv_msg.para1;
+	}
+
+	//update room player exp
+	for (int i = 0; i < 4; i++)
+	{
+		//设置参数
+		msg.para1 = p_res_manager->account.seat[i];
+
+		//发送消息
+		recv_msg = p_res_manager->m_Client.SendMessage(msg);
+
+		if (recv_msg.type1 == MSG_DATA&&recv_msg.type2 == MSG_DATA_SUCCESS)
+		{
+			p_res_manager->account.room_exp[i] = recv_msg.para1;
+		}
 	}
 
 	return state;

@@ -20,4 +20,6 @@ public:
 	int exp;
 	int room_num[8];
 	int room_actor[4];
+	int room_money[4];
+	int room_exp[4];
 };
