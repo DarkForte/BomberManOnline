@@ -914,45 +914,52 @@ void CGame::HandleKeyDownInUpdate( int player_num, UINT nchar )
 	}
 	if(nchar == VK_SPACE)
 	{
-		int now_bombs = player[player_num].NowBombs();
-		if(player[player_num].Trans() == PLAYER_TRANSFORM::DEMON || player[player_num].Trans() == PLAYER_TRANSFORM::UBW)
-			now_bombs = 0;
-
-		CPoint player_pos = player[player_num].GetPosJudgeGrid();
-
-		if(now_bombs < player[player_num].BombCapacity() && game_map.GridType(player_pos.x, player_pos.y) == MAP_ELEMENTS::NONE)
+		PLAYER_STATUS now_status = player[player_num].Status();
+		if(now_status != PLAYER_STATUS::DEAD && now_status != PLAYER_STATUS::WRAPPED)
 		{
-			player[player_num].SetNowBombs(now_bombs +1);
+			int now_bombs = player[player_num].NowBombs();
+			if(player[player_num].Trans() == PLAYER_TRANSFORM::DEMON || player[player_num].Trans() == PLAYER_TRANSFORM::UBW)
+				now_bombs = 0;
 
-			CBomb bomb(player_num, player_pos.x, player_pos.y, DEFAULT_BOMBTIME, player[player_num].GetBombPower());
-			int bomb_index = bomb_manager.AddBomb(bomb);
-			game_map.SetGrid(player_pos.x, player_pos.y, MAP_ELEMENTS::BOMB, bomb_index);
+			CPoint player_pos = player[player_num].GetPosJudgeGrid();
 
-			player[player_num].SetSpecialAccess(player_pos);
+			if(now_bombs < player[player_num].BombCapacity() && game_map.GridType(player_pos.x, player_pos.y) == MAP_ELEMENTS::NONE)
+			{
+				player[player_num].SetNowBombs(now_bombs +1);
+
+				CBomb bomb(player_num, player_pos.x, player_pos.y, DEFAULT_BOMBTIME, player[player_num].GetBombPower());
+				int bomb_index = bomb_manager.AddBomb(bomb);
+				game_map.SetGrid(player_pos.x, player_pos.y, MAP_ELEMENTS::BOMB, bomb_index);
+
+				player[player_num].SetSpecialAccess(player_pos);
+			}
 		}
 	}
 	if('1' <= nchar && nchar <= '6' || nchar == 'Q')
 	{
-		if(player[player_num].Trans() == PLAYER_TRANSFORM::PANDA && nchar == 'Q')
+		PLAYER_STATUS now_status = player[player_num].Status();
+		if(now_status != PLAYER_STATUS::DEAD)
 		{
-			CPoint next_point = player[player_num].GetPosJudgeGrid() + DIRECT_VEC[player[player_num].Facing()];
-			if(game_map.GridType(next_point.x, next_point.y) == MAP_ELEMENTS::BOMB)
+			if(player[player_num].Trans() == PLAYER_TRANSFORM::PANDA && nchar == 'Q')
 			{
-				int index = game_map.GetIndex(next_point.x, next_point.y);
-				KickBomb(index, player[player_num].Facing());
+				CPoint next_point = player[player_num].GetPosJudgeGrid() + DIRECT_VEC[player[player_num].Facing()];
+				if(game_map.GridType(next_point.x, next_point.y) == MAP_ELEMENTS::BOMB)
+				{
+					int index = game_map.GetIndex(next_point.x, next_point.y);
+					KickBomb(index, player[player_num].Facing());
+				}
+			}
+			else
+			{
+				int index = (nchar == 'Q')? MAX_ITEMS+1 : nchar-'0';
+				pair<Item, int> now_item = player[player_num].PeekItem(index);
+				if(now_item.first != Item::NONE)
+				{
+					UseItem(player_num, now_item.first);
+					player[player_num].PopItem(index);
+				}
 			}
 		}
-		else
-		{
-			int index = (nchar == 'Q')? MAX_ITEMS+1 : nchar-'0';
-			pair<Item, int> now_item = player[player_num].PeekItem(index);
-			if(now_item.first != Item::NONE)
-			{
-				UseItem(player_num, now_item.first);
-				player[player_num].PopItem(index);
-			}
-		}
-
 	}
 }
 
