@@ -23,4 +23,5 @@ public:
 	int room_money[4];
 	int room_exp[4];
 	int room_ready[4];
+	int room_vip[4];
 };
