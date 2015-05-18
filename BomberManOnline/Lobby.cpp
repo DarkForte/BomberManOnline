@@ -332,7 +332,7 @@ void CLobby::Render(ID2D1HwndRenderTarget* render_target)
 
 	text.Format(L"$:%d", p_res_manager->account.money);
 	o_text = text.GetString();
-	RenderText(render_target, o_text, 978, 88, p_res_manager->p_text_format_Arial_32_bold, brush);
+	RenderText(render_target, o_text, 1010, 88, p_res_manager->p_text_format_Arial_32_bold, brush);
 
 	//room number text
 	text.Format(L"01");

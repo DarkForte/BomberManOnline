@@ -38,6 +38,7 @@ enum class Event
 #define MSG_ROOM_SET_ACTOR		0x11
 #define MSG_ROOM_GET_ACTOR		0x12
 #define MSG_ROOM_RETURN_ACTOR	0x13
+#define MSG_ROOM_NOT_READY		0x14
 
 #define MSG_LOBBY				0x05
 #define MSG_LOBBY_ROOM			0x01
@@ -57,6 +58,8 @@ enum class Event
 #define MSG_DATA_SET_EXP		0x04
 #define MSG_DATA_SUCCESS		0x05
 #define MSG_DATA_ERROR			0x06
+#define MSG_DATA_GET_READY		0x07
+#define MSG_DATA_GET_VIP		0x08
 
 class CMessage
 {

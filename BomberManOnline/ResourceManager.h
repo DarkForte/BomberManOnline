@@ -27,6 +27,8 @@ public:
 
 	CD2DImage edit;
 	CD2DImage edit_focus;
+
+	CD2DImage ready;
 #pragma endregion
 	
 #pragma region Font Definations

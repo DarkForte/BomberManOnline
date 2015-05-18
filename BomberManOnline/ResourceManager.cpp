@@ -113,6 +113,8 @@ void CResourceManager::LoadPics( IWICImagingFactory * pIWICFactory, ID2D1HwndRen
 
 	message_bg.Load(pIWICFactory, render_target, L"pic\\scene_ui\\message_bg.png");
 
+	ready.Load(pIWICFactory, render_target, L"pic\\scene_ui\\ready.png");
+
 #pragma endregion
 
 #pragma region Game UI Loading
@@ -322,6 +324,10 @@ bool CResourceManager::InitClient()
 	for (int i = 0; i < 4; i++)
 	{
 		account.room_actor[i] = 0;
+		account.room_exp[i] = 0;
+		account.room_money[i] = 0;
+		account.room_ready[i] = 0;
+		account.room_vip[i] = 0;
 	}
 
 	return true;
